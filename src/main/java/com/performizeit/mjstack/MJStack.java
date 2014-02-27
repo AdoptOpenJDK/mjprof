@@ -1,10 +1,10 @@
 package com.performizeit.mjstack;
 
+import com.performizeit.mjstack.comparators.PropComparator;
 import com.performizeit.mjstack.filters.JStackFilterField;
 import com.performizeit.mjstack.mappers.PropEliminator;
-import com.performizeit.mjstack.parser.HexaLong;
 import com.performizeit.mjstack.parser.JStackDump;
-import com.sun.xml.internal.bind.v2.schemagen.xmlschema.Particle;
+
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,7 +18,8 @@ public class MJStack {
     public static void main(String[] args) throws IOException {
 
 
-        parseCommandLine(args);
+        ArrayList<MJStep> steps  = parseCommandLine(args);
+        System.out.println("steps"+steps.size());
         ArrayList<String> stackStrings = getStackStringsFromStdIn();
 
         ArrayList<JStackDump> jStackDumps =      buildJstacks (stackStrings);
@@ -26,6 +27,24 @@ public class MJStack {
      //   stckDump = stckDump.filterDump(new JStackFilterField(args[0], args[1])).mapDump(new PropEliminator(args[2]));
 
         //System.out.println(stackDumps.size());
+        for (MJStep mjstep  : steps) {
+            ArrayList<JStackDump> jStackDumpsOrig = jStackDumps;
+            jStackDumps = new ArrayList<JStackDump>(jStackDumpsOrig.size());
+            for (JStackDump jsd : jStackDumpsOrig) {
+                System.out.println("aaaaaa");
+
+                if (mjstep.getStepName().equals("contains")) {
+                    System.out.println( mjstep.getStepArg(0)+mjstep.getStepArg(1));
+                    jStackDumps.add(jsd.filterDump(new JStackFilterField(mjstep.getStepArg(0),mjstep.getStepArg(1))));
+                } else  if (mjstep.getStepName().equals("sort")) {
+                    System.out.println( mjstep.getStepArg(0));
+                    jStackDumps.add(jsd.sortDump(new PropComparator(mjstep.getStepArg(0))));
+                } else  if (mjstep.getStepName().equals("eliminate")) {
+                    jStackDumps.add(jsd.mapDump(new PropEliminator(mjstep.getStepArg(0))));
+                }
+
+            }
+        }
         for (int i = 0; i < jStackDumps.size(); i++) {
             //System.out.println(jStackDumps.get(i).toString().equals(stackDumps.get(i)));
 
@@ -44,7 +63,7 @@ public class MJStack {
         }
         ArrayList<MJStep> mjsteps = new ArrayList<MJStep>();
         for (String s: args[0].split("\\.") ) {
-            Pattern p = Pattern.compile("(.*)\\((.*)\\)");
+            Pattern p = Pattern.compile("(.*)/(.*)/");
             Matcher m = p.matcher(s);
             if (m.find()) {
                 MJStep mjStep = new MJStep(m.group(1));
@@ -53,12 +72,13 @@ public class MJStack {
                     System.out.println(q);
                     mjStep.addStepArg(q);
                 }
+                mjsteps.add(mjStep);
             }
             System.out.println(s);
 
         }
 
-        System.exit(1);
+
         return mjsteps;
     }
 

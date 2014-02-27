@@ -4,9 +4,6 @@ import com.performizeit.mjstack.parser.JStackMetadataStack;
 
 import java.util.Comparator;
 
-/**
- * Created by life on 24/2/14.
- */
 public class PropComparator implements Comparator<JStackMetadataStack> {
     private final String prop;
 
@@ -15,7 +12,7 @@ public class PropComparator implements Comparator<JStackMetadataStack> {
     }
     @Override
     public int compare(JStackMetadataStack o1, JStackMetadataStack o2) {
-        return ((Comparable)o1.getVal(prop)) .compareTo(o2);
+        return ((Comparable)o1.getVal(prop)) .compareTo(o2.getVal(prop));
 
     }
 }
