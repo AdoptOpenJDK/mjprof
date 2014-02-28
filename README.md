@@ -22,7 +22,7 @@ Run mjstack
 mjstack reads its standard input and writes to standard output so  you can pipe jstack output to it or stream a saved jstack
 output (or even several) into it.
 The following example will filter out all the threads which are not in RUNNABLE state.  
-`jstack -l pid | ./mjs.sh **contains**/state,RUNNABLE/`  
+`jstack -l pid | ./mjs.sh contains/state,RUNNABLE/`  
 The commands pass to mjstack are several building blocks concatenated with . (comma)
 Parameters to building blocks are wrapped with / (instead of () {} or [] which are special chars in the shell) and seperated by ,
 
