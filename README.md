@@ -21,16 +21,10 @@ Run mjstack
 ===========
 mjstack reads its standard input and writes to standard output so  you can pipe jstack output to it or stream a saved jstack
 output (or even several) into it.
-The following example will filter out all the threads which are not in RUNNABLE state.
-
-`jstack -l pid | ./mjs.sh **contains**/state,RUNNABLE/`
-
-The commands pass to mjstack are several building blocks concatenated with .
+The following example will filter out all the threads which are not in RUNNABLE state.  
+`jstack -l pid | ./mjs.sh **contains**/state,RUNNABLE/`  
+The commands pass to mjstack are several building blocks concatenated with . (comma)
 Parameters to building blocks are wrapped with / (instead of () {} or [] which are special chars in the shell) and seperated by ,
-
-
-
-
 
 Building Blocks
 ===============
@@ -55,11 +49,10 @@ Terminals
 * _**list**_             -list the stack trace attributes
 * _**group**/attr/_      - group by a certain attribute
 
-
 Properties
 ----------
 Properties may change from one dump to another and the can also be eliminated by **mjstack**.
-Following is the list of usual properties
+Following is the list of usual properties  
 * _**status**_          - the status of the thread
 * _**nid**_             - native thread id ( a number)
 * _**name**_            - name of thread
@@ -70,44 +63,28 @@ Following is the list of usual properties
 * _**prio**_            - Priority a number
 * _**stack**_           - The actual stack trace
 
-
-You can also get the actual list of properties bu using the list monad.
-
+You can also get the actual list of properties bu using the list monad.  
 `jstack -l pid | ./mjs.sh list`
 
 Examples
 =============
-jstack Original output:
-
-`jstack -l 38515 > mystack.txt`
-
-Keep only thread which their names contain ISCREAM:
-
-`jstack -l 38515  | ./mjs.sh contains/name,ISCREAM/`
-
-Sort them by state
-
-`cat mystack.txt  | ./mjs.sh contains/name,ISCREAM/.sort/state/`
-
-Eliminate the Locked Ownable Synchronizers Section
-
-`jstack -l 38515  | ./mjs.sh contains/name,ISCREAM/.sort/state/.eliminate/los/`
-
-Shorten stack traces to include only 10 last stack frames
-
-`jstack -l 38515  | ./mjs.sh contains/name,ISCREAM/.sort/state/.eliminate/los/.keeptop/10/`
-
-Count threads
-
+jstack Original output:  
+`jstack -l 38515 > mystack.txt`  
+Keep only thread which their names contain ISCREAM:  
+`jstack -l 38515  | ./mjs.sh contains/name,ISCREAM/`  
+Sort them by state  
+`cat mystack.txt  | ./mjs.sh contains/name,ISCREAM/.sort/state/`  
+Eliminate the Locked Ownable Synchronizers Section  
+`jstack -l 38515  | ./mjs.sh contains/name,ISCREAM/.sort/state/.eliminate/los/`  
+Shorten stack traces to include only 10 last stack frames  
+`jstack -l 38515  | ./mjs.sh contains/name,ISCREAM/.sort/state/.eliminate/los/.keeptop/10/`  
+Count threads  
 `jstack -l 38515  | ./mjs.sh contains/name,ISCREAM/.sort/state/.eliminate/los/.keeptop/10/.count`
-
 
 
 
 Build mjstack
 =============
-Build mjstack with the following command line:
-
-`mvn install assembly:assembly`
-
+Build mjstack with the following command line:  
+`mvn install assembly:assembly`  
 This will create a zip file which contains everything you need.
