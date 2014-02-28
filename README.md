@@ -77,18 +77,27 @@ You can also get the actual list of properties bu using the list monad.
 
 Examples
 =============
-
 jstack Original output:
-`jstack -l 38515`
+
+`jstack -l 38515 > mystack.txt`
+
 Keep only thread which their names contain ISCREAM:
+
 `jstack -l 38515  | ./mjs.sh contains/name,ISCREAM/`
+
 Sort them by state
-`jstack -l 38515  | ./mjs.sh contains/name,ISCREAM/.sort/state/`
+
+`cat mystack.txt  | ./mjs.sh contains/name,ISCREAM/.sort/state/`
+
 Eliminate the Locked Ownable Synchronizers Section
+
 `jstack -l 38515  | ./mjs.sh contains/name,ISCREAM/.sort/state/.eliminate/los/`
+
 Shorten stack traces to include only 10 last stack frames
 
 `jstack -l 38515  | ./mjs.sh contains/name,ISCREAM/.sort/state/.eliminate/los/.keeptop/10/`
+
+Count threads
 
 `jstack -l 38515  | ./mjs.sh contains/name,ISCREAM/.sort/state/.eliminate/los/.keeptop/10/.count`
 
