@@ -107,7 +107,7 @@ public class MJStack {
     }
 
     private static ArrayList<MJStep> parseCommandLine(String[] args) {
-        if (args.length != 1) {
+        if (args.length < 1) {
             printSynopsisAndExit();
         }
         ArrayList<MJStep> mjsteps = new ArrayList<MJStep>();

@@ -15,13 +15,7 @@ So, You are out there in the wild vs a production machine. All you have have in 
 You take one, two, three stack dumps and then you need to look at them manually inside an editor, vi or less etc....
 If you done it enough you will probably know that it is a lot of manual work.
 
-Build mjstack
-=============
-Build mjstack with the following command line:
 
-`mvn install assembly:assembly`
-
-This will create a zip file which contains everything you need.
 
 Run mjstack
 ===========
@@ -80,3 +74,31 @@ Following is the list of usual properties
 You can also get the actual list of properties bu using the list monad.
 
 `jstack -l pid | ./mjs.sh list`
+
+Examples
+=============
+
+jstack Original output:
+`jstack -l 38515`
+Keep only thread which their names contain ISCREAM:
+`jstack -l 38515  | ./mjs.sh contains/name,ISCREAM/`
+Sort them by state
+`jstack -l 38515  | ./mjs.sh contains/name,ISCREAM/.sort/state/`
+Eliminate the Locked Ownable Synchronizers Section
+`jstack -l 38515  | ./mjs.sh contains/name,ISCREAM/.sort/state/.eliminate/los/`
+Shorten stack traces to include only 10 last stack frames
+
+`jstack -l 38515  | ./mjs.sh contains/name,ISCREAM/.sort/state/.eliminate/los/.keeptop/10/`
+
+`jstack -l 38515  | ./mjs.sh contains/name,ISCREAM/.sort/state/.eliminate/los/.keeptop/10/.count`
+
+
+
+
+Build mjstack
+=============
+Build mjstack with the following command line:
+
+`mvn install assembly:assembly`
+
+This will create a zip file which contains everything you need.
