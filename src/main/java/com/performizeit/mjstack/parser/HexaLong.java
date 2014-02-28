@@ -11,7 +11,10 @@ public class HexaLong implements Comparable<HexaLong>{
     }
 
     public HexaLong(String s) throws NumberFormatException {
-        this(Long.parseLong(s, 16)) ;
+        if (s.startsWith("0x")) {
+            s=s.substring(2);
+        }
+        value = Long.parseLong(s, 16) ;
 
     }
 
@@ -23,5 +26,9 @@ public class HexaLong implements Comparable<HexaLong>{
     @Override
     public int compareTo(HexaLong o) {
         return new Long(value).compareTo(o.value);
+    }
+
+    public long getValue() {
+        return value;
     }
 }

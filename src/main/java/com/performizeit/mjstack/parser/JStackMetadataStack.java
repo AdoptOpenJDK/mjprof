@@ -81,7 +81,7 @@ public class JStackMetadataStack {
     }
 
     private void parseMetaLine(String metaLine) {
-        Pattern p = Pattern.compile("^\"(.*)\".* prio=(\\d*) tid=([0-9a-f]*) nid=0x([0-9a-f]*) (.*)");
+        Pattern p = Pattern.compile("^\"(.*)\".* prio=(\\d*) tid=([0-9a-fx]*) nid=0x([0-9a-fx]*) (.*)");
         Matcher m = p.matcher(metaLine);
 
         if (m.find()) {

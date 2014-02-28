@@ -36,6 +36,7 @@ public class MJStep {
         } else {
             stepName = stepString;
         }
+
     }
 
     public String getStepName() {
@@ -54,6 +55,14 @@ public class MJStep {
         stepArgs.add(arg);
     }
 
-
-
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(stepName).append("/");
+        for (String stepV : stepArgs) {
+            sb.append(stepV).append(",");
+        }
+        sb.append("/");
+        return sb.toString();
+    }
 }

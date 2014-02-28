@@ -8,6 +8,7 @@ import com.performizeit.mjstack.mappers.StackFrameContains;
 import com.performizeit.mjstack.mappers.TrimBottom;
 import com.performizeit.mjstack.mappers.TrimTop;
 import com.performizeit.mjstack.monads.MJStep;
+import com.performizeit.mjstack.monads.StepProps;
 import com.performizeit.mjstack.terminals.CountThreads;
 import com.performizeit.mjstack.terminals.GroupByProp;
 import com.performizeit.mjstack.mappers.PropEliminator;
@@ -88,6 +89,20 @@ public class MJStack {
 
     private static void printSynopsisAndExit() {
         System.out.println("synopsis");
+        System.out.println("Building Blocks\n" +
+                " contains/attr,string/  - returns only threads which contains the string (regexp not supported)\n" +
+                " ncontains/attr,string/ - returns only threads which do no contains the string(regexp not supported)\n" +
+                " eliminate/attr/        - Removes a certain attribute e.g. eliminate/stack/\n" +
+                " sort/attr/             - Sorts based on attribute\n" +
+                " sortd/attr/            - Sorts based on attribute (descending order)\n" +
+                " keeptop/int/           - Returns at most n top stack frames of the stack\n" +
+                " keepbot/int/           - Returns at most n bottom stack frames of the stack\n" +
+                " stackelim/string/      - Eliminates stack frames from all stacks which do not contain string\n" +
+                " stackkeep/string/      - Keeps only stack frames from all stacks which contain string\n" +
+                " count                  - counts number of threads\n" +
+                " list                   - lists the possible stack trace attributes\n" +
+                " group/attr/            - group by an attribute\n" +
+                " help                   - Prints this message");
         System.exit(1);
     }
 
@@ -97,7 +112,12 @@ public class MJStack {
         }
         ArrayList<MJStep> mjsteps = new ArrayList<MJStep>();
         for (String s : args[0].split("\\.")) {
-            mjsteps.add(new MJStep(s));
+            MJStep step = new MJStep(s);
+            if (!StepProps.stepValid(step))    {
+                System.out.println("Step " + step + " is invalid\n");
+                printSynopsisAndExit();
+            }
+            mjsteps.add(step);
         }
         return mjsteps;
     }
