@@ -38,12 +38,12 @@ Parameters to building blocks are wrapped with / (instead of () {} or [] which a
 
 Building Blocks
 ===============
-Filters:
+Filters
 -------
 * _**contains**/attr,string/_  - returns only threads which contains the string (regexp not supported)
 * _**ncontains**/attr,string/_  - returns only threads which do no contains the string(regexp not supported)
 
-Mappers:
+Mappers
 -------
 * _**eliminate**/attr/_         - removes a certain property e.g. eliminate/stack/
 * _**sort**/attr/_              - sort based on property
@@ -54,7 +54,7 @@ Mappers:
 * _**elbot**/int/_              -
 * _**stackelim**/string/_       - elminate stackframes from the stack which do not contain string
 
-Terminals:
+Terminals
 ---------
 * _**count**_            - counts number of threads
 * _**list**_             -list the stack trace attributes
@@ -62,8 +62,9 @@ Terminals:
 
 
 Properties
-==========
-Properties may change from stackdump to stack dump
+----------
+Properties may change from one dump to another and the can also be eliminated by **mjstack**.
+Following is the list of usual properties
 * _**status**_          - the status of the thread
 * _**nid**_             - native thread id ( a number)
 * _**name**_            - name of thread
@@ -75,5 +76,5 @@ Properties may change from stackdump to stack dump
 * _**stack**_           - The actual stack trace
 
 
-You can also get the actual list of properties
+You can also get the actual list of properties bu using the list monad.
 _jstack -l pid | ./mjs.sh list_
