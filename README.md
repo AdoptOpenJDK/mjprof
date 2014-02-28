@@ -18,7 +18,7 @@ If you done it enough you will probably know that it is a lot of manual work.
 Build mjstack
 =============
 Build mjstack with the following command line:
-_**mvn install assembly:assembly**_
+`mvn install assembly:assembly`
 This will create a zip file which contains everything you need.
 
 Run mjstack
