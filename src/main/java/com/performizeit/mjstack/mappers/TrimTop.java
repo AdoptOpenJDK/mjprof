@@ -20,7 +20,7 @@ public class TrimTop implements  JStackMapper {
         JStackStack jss = (JStackStack) mtd.get("stack");
         String[] stackFrames = jss.getStackFrames();
         if (count < stackFrames.length)   {
-            String[] partial = Arrays.copyOfRange(stackFrames, 0, count);
+            String[] partial = Arrays.copyOfRange(stackFrames,stackFrames.length-count , stackFrames.length);
             jss.setStackFrames(partial);
         }
 

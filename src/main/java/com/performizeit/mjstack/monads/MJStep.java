@@ -54,21 +54,6 @@ public class MJStep {
         stepArgs.add(arg);
     }
 
-    enum StepType {
-        TERMINAL,
-        FILTER,
-        MAPPER
-    };
-    private class StepProps {
-        String name;
-        StepType stepType;
-        int argNum;
 
-        private StepProps(String name, StepType stepType, int argNum) {
-            this.name = name;
-            this.stepType = stepType;
-            this.argNum = argNum;
-        }
-    }
 
 }

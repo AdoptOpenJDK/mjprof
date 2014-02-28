@@ -6,9 +6,7 @@ import com.performizeit.mjstack.parser.JStackStack;
 import java.util.Arrays;
 import java.util.HashMap;
 
-/**
- * Created by life on 28/2/14.
- */
+
 public class TrimBottom implements  JStackMapper {
     private final int count;
 
@@ -21,11 +19,11 @@ public class TrimBottom implements  JStackMapper {
         HashMap<String,Object> mtd = stck.cloneMetaData();
         JStackStack jss = (JStackStack) mtd.get("stack");
         String[] stackFrames = jss.getStackFrames();
-        String[] partial = {};
         if (count < stackFrames.length)   {
-            partial = Arrays.copyOfRange(stackFrames, count, stackFrames.length-1);
+            String[] partial = Arrays.copyOfRange(stackFrames, 0, count);
+            jss.setStackFrames(partial);
         }
-        jss.setStackFrames(partial);
+
         return      new JStackMetadataStack(mtd);
     }
 }

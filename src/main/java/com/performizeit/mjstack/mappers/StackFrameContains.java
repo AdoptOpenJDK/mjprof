@@ -3,15 +3,18 @@ package com.performizeit.mjstack.mappers;
 import com.performizeit.mjstack.parser.JStackMetadataStack;
 import com.performizeit.mjstack.parser.JStackStack;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
 
 public class StackFrameContains implements  JStackMapper {
-    private final int count;
+    private final String expr;
+    private boolean reverse = false;
 
-    public StackFrameContains(int count) {
-        this.count = count;
+    public StackFrameContains(String expr,boolean reverse) {
+        this.expr = expr;
+        this.reverse = reverse;
     }
 
     @Override
@@ -19,10 +22,15 @@ public class StackFrameContains implements  JStackMapper {
         HashMap<String,Object> mtd = stck.cloneMetaData();
         JStackStack jss = (JStackStack) mtd.get("stack");
         String[] stackFrames = jss.getStackFrames();
-        if (count < stackFrames.length)   {
-            String[] partial = Arrays.copyOfRange(stackFrames, 0, count);
-            jss.setStackFrames(partial);
+        ArrayList<String> partial = new ArrayList<String>();
+        for (String sf:stackFrames) {
+            if (reverse) {
+                if (!sf.contains(expr)  ) partial.add(sf);
+            }else {
+                if (sf.contains(expr)  ) partial.add(sf);
+            }
         }
+        jss.setStackFrames(partial);
 
         return      new JStackMetadataStack(mtd);
     }

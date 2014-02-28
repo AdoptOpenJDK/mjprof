@@ -47,14 +47,13 @@ Filters
 
 Mappers
 -------
-* _**eliminate**/attr/_         - removes a certain property e.g. eliminate/stack/
-* _**sort**/attr/_              - sort based on property
-* _**sortd**/attr/_             - sort based on property descending order
-* _**keeptop**/n/_              - returns at most n top stack frames of the stack
-* _**keepbottom**/n/_           - returns at most n top stack frames of the stack
-* _**eltop**/int/_              -
-* _**elbot**/int/_              -
-* _**stackelim**/string/_       - elminate stackframes from the stack which do not contain string
+* _**eliminate**/attr/_         - Removes a certain attribute e.g. eliminate/stack/
+* _**sort**/attr/_              - Sorts based on attribute
+* _**sortd**/attr/_             - Sorts based on attribute (descending order)
+* _**keeptop**/int/_            - Returns at most n top stack frames of the stack
+* _**keepbot**/int/_            - Returns at most n bottom stack frames of the stack
+* _**stackelim**/string/_       - Elminate stackframes from all stacks which do not contain string
+* _**stackkeep**/string/_       - Keep only stackframes from all stacks which contain string
 
 Terminals
 ---------

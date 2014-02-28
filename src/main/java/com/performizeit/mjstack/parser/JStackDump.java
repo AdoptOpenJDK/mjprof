@@ -71,4 +71,8 @@ public class JStackDump {
         Collections.sort(that.stacks,comp);
         return that;
     }
+
+    public JStackHeader getHeader() {
+        return header;
+    }
 }

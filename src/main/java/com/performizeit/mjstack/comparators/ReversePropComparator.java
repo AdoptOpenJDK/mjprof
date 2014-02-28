@@ -4,15 +4,15 @@ import com.performizeit.mjstack.parser.JStackMetadataStack;
 
 import java.util.Comparator;
 
-public class ReversePropComparator implements Comparator<JStackMetadataStack> {
-    private final String prop;
+public class ReversePropComparator extends PropComparator {
 
     public ReversePropComparator(String prop) {
-        this.prop = prop;
+        super(prop);
     }
+
     @Override
     public int compare(JStackMetadataStack o1, JStackMetadataStack o2) {
-        return ((Comparable)o1.getVal(prop)) .compareTo(o2.getVal(prop));
+        return -super.compare(o1,o2);
 
     }
 }
