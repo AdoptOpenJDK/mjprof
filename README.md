@@ -40,23 +40,26 @@ Parameters to building blocks are wrapped with / (instead of () {} or [] which a
 Building Blocks
 ===============
 Filters:
-contains/attr,string/  - returns only threads which contains the string (regexp not supported)
-ncontains/attr,string/  - returns only threads which do no contains the string(regexp not supported)
+-------
+* contains/attr,string/  - returns only threads which contains the string (regexp not supported)
+* ncontains/attr,string/  - returns only threads which do no contains the string(regexp not supported)
 
 Mappers:
-eliminate/attr/        - removes a certain property e.g. eliminate/stack/
-sort/attr/             - sort based on property
-sortd/attr/            - sort based on property descending order
-keeptop/n/              - returns at most n top stack frames of the stack
-keepbottom/n/           - returns at most n top stack frames of the stack
-eltop/int/        -
-elbot/int/        -
-stackelim/string/        - elminate stackframes from the stack which do not contain string
+-------
+* eliminate/attr/         - removes a certain property e.g. eliminate/stack/
+* sort/attr/              - sort based on property
+* sortd/attr/             - sort based on property descending order
+* keeptop/n/              - returns at most n top stack frames of the stack
+* keepbottom/n/       - returns at most n top stack frames of the stack
+* eltop/int/          -
+* elbot/int/          -
+* stackelim/string/   - elminate stackframes from the stack which do not contain string
 
 Terminals:
-count            - counts number of threads
-list             -list the stack trace attributes
-group/attr/      - group by a certain attribute
+---------
+* count            - counts number of threads
+* list             -list the stack trace attributes
+* group/attr/      - group by a certain attribute
 
 
 Properties
