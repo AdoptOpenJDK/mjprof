@@ -27,7 +27,7 @@ mjstack reads its standard input and writes to standard output so  you can pipe 
 output (or even several) into it.
 The following example will filter out all the threads which are not in RUNNABLE state.
 
-_jstack -l pid | ./mjs.sh contains/state,RUNNABLE/_
+_jstack -l pid | ./mjs.sh **contains**/state,RUNNABLE/_
 
 The commands pass to mjstack are several building blocks concatenated with .
 Parameters to building blocks are wrapped with / (instead of () {} or [] which are special chars in the shell) and seperated by ,
@@ -40,8 +40,8 @@ Building Blocks
 ===============
 Filters:
 -------
-* _contains/attr,string/_  - returns only threads which contains the string (regexp not supported)
-* _ncontains/attr,string/_  - returns only threads which do no contains the string(regexp not supported)
+* _**contains**/attr,string/_  - returns only threads which contains the string (regexp not supported)
+* _**ncontains**/attr,string/_  - returns only threads which do no contains the string(regexp not supported)
 
 Mappers:
 -------
