@@ -5,11 +5,11 @@ import com.performizeit.mjstack.parser.JStackMetadataStack;
 /**
  * Created by life on 22/2/14.
  */
-public class JStackFilterField implements JStackFilter {
+public class JStackFilterFieldContains implements JStackFilter {
     private final String fieldName;
     private final String valContained;
 
-    public JStackFilterField(String fieldName, String valContained) {
+    public JStackFilterFieldContains(String fieldName, String valContained) {
         this.fieldName = fieldName;
         this.valContained = valContained;
     }
