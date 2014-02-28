@@ -45,35 +45,35 @@ Filters:
 
 Mappers:
 -------
-* eliminate/attr/         - removes a certain property e.g. eliminate/stack/
-* sort/attr/              - sort based on property
-* sortd/attr/             - sort based on property descending order
-* keeptop/n/              - returns at most n top stack frames of the stack
-* keepbottom/n/       - returns at most n top stack frames of the stack
-* eltop/int/          -
-* elbot/int/          -
-* stackelim/string/   - elminate stackframes from the stack which do not contain string
+* _**eliminate**/attr/_         - removes a certain property e.g. eliminate/stack/
+* _**sort**/attr/_              - sort based on property
+* _**sortd**/attr/_             - sort based on property descending order
+* _**keeptop**/n/_              - returns at most n top stack frames of the stack
+* _**keepbottom**/n/_           - returns at most n top stack frames of the stack
+* _**eltop**/int/_              -
+* _**elbot**/int/_              -
+* _**stackelim**/string/_       - elminate stackframes from the stack which do not contain string
 
 Terminals:
 ---------
-* count            - counts number of threads
-* list             -list the stack trace attributes
-* group/attr/      - group by a certain attribute
+* _**count**_            - counts number of threads
+* _**list**_             -list the stack trace attributes
+* _**group**/attr/_      - group by a certain attribute
 
 
 Properties
 ==========
 Properties may change from stackdump to stack dump
-* status          - the status of the thread
-* nid             - native thread id ( a number)
-* name            - name of thread
-* state           - state of thread
-* los             - The locked ownable synchronizers part of the stack trace
-* daemon          - Whether the thread is a daemon or not
-* tid             - The thread id (a number)
-* prio            - Priority a number
-* stack           - The actual stack trace
+* _**status**_          - the status of the thread
+* _**nid**_             - native thread id ( a number)
+* _**name**_            - name of thread
+* _**state**_           - state of thread
+* _**los**_            - The locked ownable synchronizers part of the stack trace
+* _**daemon**_          - Whether the thread is a daemon or not
+* _**tid**_             - The thread id (a number)
+* _**prio**_            - Priority a number
+* _**stack**_           - The actual stack trace
 
 
 You can also get the actual list of properties
-jstack -l pid | ./mjs.sh list
+_jstack -l pid | ./mjs.sh list_
