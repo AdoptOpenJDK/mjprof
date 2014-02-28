@@ -18,7 +18,9 @@ If you done it enough you will probably know that it is a lot of manual work.
 Build mjstack
 =============
 Build mjstack with the following command line:
+
 `mvn install assembly:assembly`
+
 This will create a zip file which contains everything you need.
 
 Run mjstack
@@ -27,7 +29,7 @@ mjstack reads its standard input and writes to standard output so  you can pipe 
 output (or even several) into it.
 The following example will filter out all the threads which are not in RUNNABLE state.
 
-_jstack -l pid | ./mjs.sh **contains**/state,RUNNABLE/_
+`jstack -l pid | ./mjs.sh **contains**/state,RUNNABLE/`
 
 The commands pass to mjstack are several building blocks concatenated with .
 Parameters to building blocks are wrapped with / (instead of () {} or [] which are special chars in the shell) and seperated by ,
@@ -77,4 +79,5 @@ Following is the list of usual properties
 
 
 You can also get the actual list of properties bu using the list monad.
-_jstack -l pid | ./mjs.sh list_
+
+`jstack -l pid | ./mjs.sh list`
