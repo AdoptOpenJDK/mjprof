@@ -2,8 +2,12 @@ package com.performizeit.mjstack;
 
 import com.performizeit.mjstack.comparators.PropComparator;
 import com.performizeit.mjstack.filters.JStackFilterField;
+import com.performizeit.mjstack.filters.JStackFilterFieldNotContains;
+import com.performizeit.mjstack.terminals.GroupByProp;
 import com.performizeit.mjstack.mappers.PropEliminator;
 import com.performizeit.mjstack.parser.JStackDump;
+import com.performizeit.mjstack.terminals.ListProps;
+import com.performizeit.mjstack.terminals.TerminalStep;
 
 
 import java.io.BufferedReader;
@@ -18,36 +22,46 @@ public class MJStack {
     public static void main(String[] args) throws IOException {
 
 
-        ArrayList<MJStep> steps  = parseCommandLine(args);
-        System.out.println("steps"+steps.size());
+        ArrayList<MJStep> steps = parseCommandLine(args);
         ArrayList<String> stackStrings = getStackStringsFromStdIn();
 
-        ArrayList<JStackDump> jStackDumps =      buildJstacks (stackStrings);
+        ArrayList<JStackDump> jStackDumps = buildJstacks(stackStrings);
 
-     //   stckDump = stckDump.filterDump(new JStackFilterField(args[0], args[1])).mapDump(new PropEliminator(args[2]));
+        //   stckDump = stckDump.filterDump(new JStackFilterField(args[0], args[1])).mapDump(new PropEliminator(args[2]));
 
         //System.out.println(stackDumps.size());
-        for (MJStep mjstep  : steps) {
+        for (MJStep mjstep : steps) {
             ArrayList<JStackDump> jStackDumpsOrig = jStackDumps;
             jStackDumps = new ArrayList<JStackDump>(jStackDumpsOrig.size());
+            TerminalStep gbp = null;
+            if (mjstep.getStepName().equals("group")) {
+                gbp = new GroupByProp(mjstep.getStepArg(0));
+            } else if (mjstep.getStepName().equals("list")) {
+                gbp = new ListProps();
+            }
+
             for (JStackDump jsd : jStackDumpsOrig) {
-                System.out.println("aaaaaa");
 
                 if (mjstep.getStepName().equals("contains")) {
-                    System.out.println( mjstep.getStepArg(0)+mjstep.getStepArg(1));
-                    jStackDumps.add(jsd.filterDump(new JStackFilterField(mjstep.getStepArg(0),mjstep.getStepArg(1))));
-                } else  if (mjstep.getStepName().equals("sort")) {
-                    System.out.println( mjstep.getStepArg(0));
-                    jStackDumps.add(jsd.sortDump(new PropComparator(mjstep.getStepArg(0))));
-                } else  if (mjstep.getStepName().equals("eliminate")) {
-                    jStackDumps.add(jsd.mapDump(new PropEliminator(mjstep.getStepArg(0))));
+                    jStackDumps.add(jsd.filterDump(new JStackFilterField(mjstep.getStepArg(0), mjstep.getStepArg(1))));
                 }
-
+                if (mjstep.getStepName().equals("!contains")) {
+                    jStackDumps.add(jsd.filterDump(new JStackFilterFieldNotContains(mjstep.getStepArg(0), mjstep.getStepArg(1))));
+                } else if (mjstep.getStepName().equals("sort")) {
+                    jStackDumps.add(jsd.sortDump(new PropComparator(mjstep.getStepArg(0))));
+                } else if (mjstep.getStepName().equals("eliminate")) {
+                    jStackDumps.add(jsd.mapDump(new PropEliminator(mjstep.getStepArg(0))));
+                } else if (mjstep.getStepName().equals("group") || mjstep.getStepName().equals("list")) {
+                    gbp.addStackDump(jsd);
+                }
             }
+            if (mjstep.getStepName().equals("group") || mjstep.getStepName().equals("list")) {
+                System.out.print(gbp.toString());
+                return;
+            }
+
         }
         for (int i = 0; i < jStackDumps.size(); i++) {
-            //System.out.println(jStackDumps.get(i).toString().equals(stackDumps.get(i)));
-
             System.out.println(jStackDumps.get(i));
         }
     }
@@ -58,48 +72,34 @@ public class MJStack {
     }
 
     private static ArrayList<MJStep> parseCommandLine(String[] args) {
-        if (args.length!=1) {
+        if (args.length != 1) {
             printSynopsisAndExit();
         }
         ArrayList<MJStep> mjsteps = new ArrayList<MJStep>();
-        for (String s: args[0].split("\\.") ) {
-            Pattern p = Pattern.compile("(.*)/(.*)/");
-            Matcher m = p.matcher(s);
-            if (m.find()) {
-                MJStep mjStep = new MJStep(m.group(1));
-                System.out.println((m.group(1)));
-                for (String q: m.group(2).split(",")) {
-                    System.out.println(q);
-                    mjStep.addStepArg(q);
-                }
-                mjsteps.add(mjStep);
-            }
-            System.out.println(s);
-
+        for (String s : args[0].split("\\.")) {
+            mjsteps.add(new MJStep(s));
         }
-
-
         return mjsteps;
     }
 
-    public static   ArrayList<String> getStackStringsFromStdIn() {
+    public static ArrayList<String> getStackStringsFromStdIn() {
         BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
         ArrayList<String> stackDumps = new ArrayList<String>();
         StringBuilder linesOfStack = new StringBuilder();
         String line;
         try {
-        while ((line = r.readLine()) != null) {
-            if (line.length() > 0 && Character.isDigit(line.charAt(0))) {   //starting a new stack dump
-                if (linesOfStack.length() > 0) {
-                    stackDumps.add(linesOfStack.toString());
-                }
-                linesOfStack = new StringBuilder();
+            while ((line = r.readLine()) != null) {
+                if (line.length() > 0 && Character.isDigit(line.charAt(0))) {   //starting a new stack dump
+                    if (linesOfStack.length() > 0) {
+                        stackDumps.add(linesOfStack.toString());
+                    }
+                    linesOfStack = new StringBuilder();
 
+                }
+                linesOfStack.append(line).append("\n");
             }
-            linesOfStack.append(line).append("\n");
-        }
-        }catch(IOException e) {
-            System.err.println("Error while parsing stdin"+e);
+        } catch (IOException e) {
+            System.err.println("Error while parsing stdin" + e);
         }
         if (linesOfStack.length() > 0) {
             stackDumps.add(linesOfStack.toString());
@@ -108,7 +108,7 @@ public class MJStack {
 
     }
 
-    public  static ArrayList<JStackDump> buildJstacks ( ArrayList<String> stackStrings) {
+    public static ArrayList<JStackDump> buildJstacks(ArrayList<String> stackStrings) {
         ArrayList<JStackDump> jStackDumps = new ArrayList<JStackDump>(stackStrings.size());
         for (String stackDump : stackStrings) {
             JStackDump stckDump = new JStackDump(stackDump);

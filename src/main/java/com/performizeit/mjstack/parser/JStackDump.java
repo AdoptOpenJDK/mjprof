@@ -26,6 +26,10 @@ public class JStackDump {
 
     }
 
+    public ArrayList<JStackMetadataStack> getStacks() {
+        return stacks;
+    }
+
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder();

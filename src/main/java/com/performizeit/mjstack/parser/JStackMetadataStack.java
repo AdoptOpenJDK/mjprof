@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -69,7 +71,7 @@ public class JStackMetadataStack {
         Matcher m = p.matcher(threadState);
 
         if (m.find()) {
-            metaData.put("threadState", m.group(1));
+            metaData.put("state", m.group(1));
 
         }
 
@@ -83,7 +85,7 @@ public class JStackMetadataStack {
         Matcher m = p.matcher(metaLine);
 
         if (m.find()) {
-            metaData.put("threadName", m.group(1));
+            metaData.put("name", m.group(1));
             metaData.put("prio", Integer.parseInt(m.group(2)));
             metaData.put("tid",  new HexaLong(m.group(3)));
             metaData.put("nid", new HexaLong(m.group(4)));
@@ -101,14 +103,14 @@ public class JStackMetadataStack {
     public String toString() {
         String daemon = "";
         if (metaData.get("daemon") != null) daemon = " daemon";
-        String str = "\"" + metaData.get("threadName") + "\"" + daemon +
+        String str = "\"" + metaData.get("name") + "\"" + daemon +
                 " prio=" + metaData.get("prio")
                 + " tid=" + metaData.get("tid")
                 + " nid=0x" + metaData.get("nid")
                 + " " + metaData.get("status") + "\n";
 
-        if (metaData.get("threadState") != null) {
-            str += "   java.lang.Thread.State:" + metaData.get("threadState") + "\n";
+        if (metaData.get("state") != null) {
+            str += "   java.lang.Thread.State:" + metaData.get("state") + "\n";
         }
         if (metaData.get("stack") != null) {
             str += metaData.get("stack").toString() + "\n";
@@ -119,5 +121,9 @@ public class JStackMetadataStack {
         }
         return str;
 
+    }
+
+    public Set<String> getProps() {
+        return metaData.keySet();
     }
 }
