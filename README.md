@@ -24,8 +24,7 @@ This will create a zip file which contains everything you need
 
 Run mjstack
 ===========
-mjstack reads its standard input and writes to standard output so  you can pipe jstack output to it or
-stream a saved jstack output (or even several) into it
+mjstack reads its standard input and writes to standard output so  you can pipe jstack output to it or stream a saved jstack output (or even several) into it
 
 The following example will filter out all the threads which are not in RUNNABLE state.
 
