@@ -28,7 +28,7 @@ mjstack reads its standard input and writes to standard output so  you can pipe 
 
 The following example will filter out all the threads which are not in RUNNABLE state.
 
-jstack -l <pid> | ./mjs.sh contains/state,RUNNABLE/
+jstack -l pid | ./mjs.sh contains/state,RUNNABLE/
 
 The commands pass to mjstack are several building blocks concatenated with .
 Parameters to building blocks are wrapped with / (instead of () {} or [] which are special chars in the shell) and seperated by ,
@@ -40,13 +40,13 @@ Parameters to building blocks are wrapped with / (instead of () {} or [] which a
 Building Blocks
 ===============
 Filters:
-contains/<attr>,string/  - returns only threads which contains the string (regexp not supported)
-ncontains/<attr>,string/  - returns only threads which do no contains the string(regexp not supported)
+contains/attr,string/  - returns only threads which contains the string (regexp not supported)
+ncontains/attr,string/  - returns only threads which do no contains the string(regexp not supported)
 
 Mappers:
-eliminate/<attr>/        - removes a certain property e.g. eliminate/stack/
-sort/<attr>/             - sort based on property
-sortd/<attr>/            - sort based on property descending order
+eliminate/attr/        - removes a certain property e.g. eliminate/stack/
+sort/attr/             - sort based on property
+sortd/attr/            - sort based on property descending order
 keeptop/n/              - returns at most n top stack frames of the stack
 keepbottom/n/           - returns at most n top stack frames of the stack
 eltop/int/        -
@@ -74,4 +74,4 @@ stack           - The actual stack trace
 
 
 You can also get the actual list of properties
-jstack -l <pid> | ./mjs.sh list
+jstack -l pid | ./mjs.sh list
