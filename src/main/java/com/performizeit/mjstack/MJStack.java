@@ -25,9 +25,10 @@ import java.util.ArrayList;
 
 public class MJStack {
     public static void main(String[] args) throws IOException {
-
-
         ArrayList<MJStep> steps = parseCommandLine(args);
+        if (steps == null) {
+            printSynopsisAndExit();
+        }
         ArrayList<String> stackStrings = getStackStringsFromStdIn();
 
         ArrayList<JStackDump> jStackDumps = buildJstacks(stackStrings);
@@ -103,17 +104,36 @@ public class MJStack {
                 " help                   - Prints this message");
         System.exit(1);
     }
+    static int findNextPeriod(String str)  {
+        boolean insideArgList= false;
+        for (int i=0;i<str.length();i++) {
+            if (str.charAt(i) =='/') insideArgList = !insideArgList;
+            if (str.charAt(i) =='.' && !insideArgList)  return i;
 
-    private static ArrayList<MJStep> parseCommandLine(String[] args) {
-        if (args.length < 1) {
-            printSynopsisAndExit();
         }
+        return -1;
+    }
+    static ArrayList<String> splitCommandLine(String arg) {
+        String argPart = arg;
+        ArrayList<String> argParts = new ArrayList<String>();
+        for (int idx =  findNextPeriod(argPart);idx != -1;idx = findNextPeriod(argPart)) {
+            argParts.add(argPart.substring(0,idx));
+            argPart = argPart.substring(idx+1);
+        }
+        argParts.add(argPart);
+        return argParts;
+    }
+    static ArrayList<MJStep> parseCommandLine(String[] args) {
+        if (args.length < 1) {
+            return null;
+        }
+        ArrayList<String> argParts = splitCommandLine(args[0]);
         ArrayList<MJStep> mjsteps = new ArrayList<MJStep>();
-        for (String s : args[0].split("\\.")) {
+        for (String s : argParts) {
             MJStep step = new MJStep(s);
             if (!StepProps.stepValid(step))    {
                 System.out.println("Step " + step + " is invalid\n");
-                printSynopsisAndExit();
+               return null;
             }
             mjsteps.add(step);
         }
