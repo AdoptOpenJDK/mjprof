@@ -32,9 +32,7 @@ public class MJStack {
 
         ArrayList<JStackDump> jStackDumps = buildJstacks(stackStrings);
 
-        //   stckDump = stckDump.filterDump(new JStackFilterFieldContains(args[0], args[1])).mapDump(new PropEliminator(args[2]));
 
-        //System.out.println(stackDumps.size());
         for (MJStep mjstep : steps) {
             ArrayList<JStackDump> jStackDumpsOrig = jStackDumps;
             jStackDumps = new ArrayList<JStackDump>(jStackDumpsOrig.size());

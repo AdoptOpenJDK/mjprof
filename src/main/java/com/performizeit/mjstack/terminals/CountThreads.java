@@ -1,8 +1,10 @@
 package com.performizeit.mjstack.terminals;
 
 import com.performizeit.mjstack.parser.JStackDump;
+import com.performizeit.mjstack.parser.JStackHeader;
 import com.performizeit.mjstack.parser.JStackMetadataStack;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -10,6 +12,7 @@ import java.util.HashMap;
  */
 public class CountThreads implements TerminalStep{
     int count =0;
+    ArrayList<JStackHeader> stackDumpsHeaders = new ArrayList<JStackHeader>();
 
 
     public void addStackDump(JStackDump jsd) {
