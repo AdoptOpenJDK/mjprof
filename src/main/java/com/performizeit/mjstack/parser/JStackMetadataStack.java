@@ -70,13 +70,9 @@ public class JStackMetadataStack {
         System.out.println(threadState);
         Pattern p = Pattern.compile("^[\\s]*java.lang.Thread.State: (.*)$");
         Matcher m = p.matcher(threadState);
-        System.out.println(111);
         if (m.find()) {
-            System.out.println("kkkk"+m.group(1));
             metaData.put("state", m.group(1));
-
         }
-
     }
     public Object getVal(String key) {
         return metaData.get(key);

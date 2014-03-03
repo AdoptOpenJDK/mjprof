@@ -49,7 +49,6 @@ public class TrimBelowTest {
         JStackMetadataStack js = new JStackMetadataStack(stck+stck2);
         TrimBelow tb = new TrimBelow("com.akkka");
         JStackMetadataStack js2 = tb.map(js);
-        System.out.println(js2.toString());
         assertEquals(stck,js2.toString() );
 
     }
