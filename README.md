@@ -40,15 +40,15 @@ Mappers
 * _**sortd**/attr/_             - Sorts based on attribute (descending order)
 * _**keeptop**/int/_            - Returns at most n top stack frames of the stack
 * _**keepbot**/int/_            - Returns at most n bottom stack frames of the stack
-* _**trimbelow**/int/_          - trim all stack frames below the first occurance of string 
-* _**stackelim**/string/_       - Elminate stackframes from all stacks which do not contain string
+* _**trimbelow**/int/_          - Trim all stack frames below the first occurance of string 
+* _**stackelim**/string/_       - Elminate stackframes from all stacks which contain string
 * _**stackkeep**/string/_       - Keep only stackframes from all stacks which contain string
 
 Terminals
 ---------
-* _**count**_            - counts number of threads
-* _**list**_             -list the stack trace attributes
-* _**group**/attr/_      - group by a certain attribute
+* _**count**_                   - Counts number of threads
+* _**list**_                    - List the stack trace attributes
+* _**group**/attr/_             - Group by a certain attribute
 
 Properties
 ----------
