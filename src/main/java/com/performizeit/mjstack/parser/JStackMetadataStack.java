@@ -67,10 +67,12 @@ public class JStackMetadataStack {
     }
 
     private void parseThreadState(String threadState) {
-        Pattern p = Pattern.compile("^   java.lang.Thread.State:(.*)$");
+        System.out.println(threadState);
+        Pattern p = Pattern.compile("^[\\s]*java.lang.Thread.State: (.*)$");
         Matcher m = p.matcher(threadState);
-
+        System.out.println(111);
         if (m.find()) {
+            System.out.println("kkkk"+m.group(1));
             metaData.put("state", m.group(1));
 
         }
@@ -105,12 +107,12 @@ public class JStackMetadataStack {
         if (metaData.get("daemon") != null) daemon = " daemon";
         String str = "\"" + metaData.get("name") + "\"" + daemon +
                 " prio=" + metaData.get("prio")
-                + " tid=" + metaData.get("tid")
+                + " tid=0x" + metaData.get("tid")
                 + " nid=0x" + metaData.get("nid")
                 + " " + metaData.get("status") + "\n";
 
         if (metaData.get("state") != null) {
-            str += "   java.lang.Thread.State:" + metaData.get("state") + "\n";
+            str += "   java.lang.Thread.State: " + metaData.get("state") + "\n";
         }
         if (metaData.get("stack") != null) {
             str += metaData.get("stack").toString() + "\n";

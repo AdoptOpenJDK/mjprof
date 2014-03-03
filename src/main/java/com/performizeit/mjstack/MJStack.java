@@ -4,17 +4,15 @@ import com.performizeit.mjstack.comparators.PropComparator;
 import com.performizeit.mjstack.comparators.ReversePropComparator;
 import com.performizeit.mjstack.filters.JStackFilterFieldContains;
 import com.performizeit.mjstack.filters.JStackFilterFieldNotContains;
-import com.performizeit.mjstack.mappers.StackFrameContains;
-import com.performizeit.mjstack.mappers.TrimBottom;
-import com.performizeit.mjstack.mappers.TrimTop;
+import com.performizeit.mjstack.mappers.*;
 import com.performizeit.mjstack.monads.MJStep;
 import com.performizeit.mjstack.monads.StepProps;
 import com.performizeit.mjstack.terminals.CountThreads;
 import com.performizeit.mjstack.terminals.GroupByProp;
-import com.performizeit.mjstack.mappers.PropEliminator;
 import com.performizeit.mjstack.parser.JStackDump;
 import com.performizeit.mjstack.terminals.ListProps;
 import com.performizeit.mjstack.terminals.TerminalStep;
+import static com.performizeit.mjstack.monads.StepProps.*;
 
 
 import java.io.BufferedReader;
@@ -38,44 +36,47 @@ public class MJStack {
             ArrayList<JStackDump> jStackDumpsOrig = jStackDumps;
             jStackDumps = new ArrayList<JStackDump>(jStackDumpsOrig.size());
             TerminalStep gbp = null;
-            if (mjstep.getStepName().equals("group")) {
+            if (mjstep.getStepName().equals(GROUP)) {
                 gbp = new GroupByProp(mjstep.getStepArg(0));
-            } else if (mjstep.getStepName().equals("list")) {
+            } else if (mjstep.getStepName().equals(LIST)) {
                 gbp = new ListProps();
-            }    else if (mjstep.getStepName().equals("count")) {
+            }    else if (mjstep.getStepName().equals(COUNT)) {
                 gbp = new CountThreads();
             }
 
             for (JStackDump jsd : jStackDumpsOrig) {
 
-                if (mjstep.getStepName().equals("contains")) {
+                if (mjstep.getStepName().equals(CONTAINS)) {
                     jStackDumps.add(jsd.filterDump(new JStackFilterFieldContains(mjstep.getStepArg(0), mjstep.getStepArg(1))));
                 }
-                if (mjstep.getStepName().equals("ncontains")) {
+                if (mjstep.getStepName().equals(NOT_CONTAINS)) {
                     jStackDumps.add(jsd.filterDump(new JStackFilterFieldNotContains(mjstep.getStepArg(0), mjstep.getStepArg(1))));
-                } else if (mjstep.getStepName().equals("sort")) {
+                } else if (mjstep.getStepName().equals(SORT)) {
                     jStackDumps.add(jsd.sortDump(new PropComparator(mjstep.getStepArg(0))));
-                } else if (mjstep.getStepName().equals("sortd")) {
+                } else if (mjstep.getStepName().equals(SORT_DESC)) {
                         jStackDumps.add(jsd.sortDump(new ReversePropComparator(mjstep.getStepArg(0))));
 
-                } else if (mjstep.getStepName().equals("eliminate")) {
+                } else if (mjstep.getStepName().equals(ELIMINATE)) {
                     jStackDumps.add(jsd.mapDump(new PropEliminator(mjstep.getStepArg(0))));
-                }else if (mjstep.getStepName().equals("keeptop")) {
+                }else if (mjstep.getStepName().equals(KEEP_TOP)) {
                     jStackDumps.add(jsd.mapDump(new TrimBottom(Integer.parseInt(mjstep.getStepArg(0)))));
-                } else if (mjstep.getStepName().equals("keepbottom")) {
+                } else if (mjstep.getStepName().equals(KEEP_BOT)) {
                     jStackDumps.add(jsd.mapDump(new TrimTop(Integer.parseInt(mjstep.getStepArg(0)))));
                 }
-                else if (mjstep.getStepName().equals("stackelim")) {
+                else if (mjstep.getStepName().equals(STACK_ELIM)) {
                     jStackDumps.add(jsd.mapDump(new StackFrameContains(mjstep.getStepArg(0),true)));
-                } else if (mjstep.getStepName().equals("stackkeep")) {
+                } else if (mjstep.getStepName().equals(STACK_KEEP)) {
                     jStackDumps.add(jsd.mapDump(new StackFrameContains(mjstep.getStepArg(0),false)));
                 }
+                else if (mjstep.getStepName().equals(TRIM_BELOW)) {
+                    jStackDumps.add(jsd.mapDump(new TrimBelow(mjstep.getStepArg(0))));
+                }
 
-                else if (mjstep.getStepName().equals("group") || mjstep.getStepName().equals("list") || mjstep.getStepName().equals("count")) {
+                else if (mjstep.getStepName().equals(GROUP) || mjstep.getStepName().equals(LIST) || mjstep.getStepName().equals(COUNT)) {
                     gbp.addStackDump(jsd);
                 }
             }
-            if (mjstep.getStepName().equals("group") || mjstep.getStepName().equals("list") || mjstep.getStepName().equals("count")) {
+            if (mjstep.getStepName().equals(GROUP) || mjstep.getStepName().equals(LIST) || mjstep.getStepName().equals(COUNT)) {
                 System.out.print(gbp.toString());
                 return;
             }
