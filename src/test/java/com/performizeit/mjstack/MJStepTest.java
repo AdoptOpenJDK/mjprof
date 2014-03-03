@@ -6,6 +6,7 @@ import static org.junit.Assert.*;
 import com.performizeit.mjstack.monads.MJStep;
 import org.junit.Test;
 
+import java.util.Arrays;
 
 
 public class MJStepTest  {
@@ -13,25 +14,18 @@ public class MJStepTest  {
     public void twoArgs() throws Exception {
         MJStep step = new MJStep("contains/key,val/");
         assertEquals(step.getStepName(), "contains");
-        assertEquals(step.getStepArg(0), "key");
-        assertEquals(step.getStepArg(1), "val");
-        assertEquals(step.getStepArgs().size(), 2);
-
+        assertEquals(step.getStepArgs(), Arrays.asList("key", "val"));
     }
     @Test
     public void oneArg() throws Exception {
         MJStep step = new MJStep("contains/key/");
         assertEquals(step.getStepName(), "contains");
-        assertEquals(step.getStepArg(0), "key");
-
-        assertEquals(step.getStepArgs().size(), 1);
-
+        assertEquals(step.getStepArgs(), Arrays.asList("key"));
     }
 
     @Test
     public void noArgs() throws Exception {
         MJStep step = new MJStep("contains//");
-
         assertEquals(step.getStepName(), "contains");
         assertEquals(0,step.getStepArgs().size());
 
@@ -39,7 +33,6 @@ public class MJStepTest  {
     @Test
     public void noArgs2() throws Exception {
         MJStep step = new MJStep("contains");
-
         assertEquals(step.getStepName(), "contains");
         assertEquals(step.getStepArgs().size(), 0);
 
@@ -47,22 +40,14 @@ public class MJStepTest  {
     @Test
     public void doubleCommas() throws Exception {
         MJStep step = new MJStep("contains/key,,k,val,,val/");
-
         assertEquals(step.getStepName(), "contains");
-        assertEquals(step.getStepArg(0), "key,k");
-        assertEquals(step.getStepArg(1), "val,val");
-        assertEquals(step.getStepArgs().size(), 2);
-
+        assertEquals(step.getStepArgs(), Arrays.asList("key,k", "val,val"));
     }
 
     @Test
     public void argWhichContainsPeriod() throws Exception {
         MJStep step = new MJStep("contains/key.k,val.val/");
-
         assertEquals(step.getStepName(), "contains");
-        assertEquals(step.getStepArg(0), "key.k");
-        assertEquals(step.getStepArg(1), "val.val");
-        assertEquals(step.getStepArgs().size(), 2);
-
+        assertEquals(step.getStepArgs(), Arrays.asList("key.k", "val.val"));
     }
 }
