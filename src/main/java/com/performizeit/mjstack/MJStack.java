@@ -99,6 +99,7 @@ public class MJStack {
                 " keepbot/int/           - Returns at most n bottom stack frames of the stack\n" +
                 " stackelim/string/      - Eliminates stack frames from all stacks which do not contain string\n" +
                 " stackkeep/string/      - Keeps only stack frames from all stacks which contain string\n" +
+                " trimbelow/string/      - trim all stack frames below the first occurance of string\n" +
                 " count                  - counts number of threads\n" +
                 " list                   - lists the possible stack trace attributes\n" +
                 " group/attr/            - group by an attribute\n" +
