@@ -4,6 +4,7 @@ import com.performizeit.mjstack.monads.MJStep;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -16,10 +17,7 @@ public class MJStackTest {
         ArrayList<MJStep> steps = MJStack.parseCommandLine(args);
         assertNotNull(steps);
         assertEquals(steps.get(0).getStepName(), "contains");
-        assertEquals(steps.get(0).getStepArg(0), "key.k");
-        assertEquals(steps.get(0).getStepArg(1), "val.val");
-        assertEquals(steps.get(0).getStepArgs().size(), 2);
-
+        assertEquals(steps.get(0).getStepArgs(), Arrays.asList("key.k", "val.val"));
     }
     @Test
     public void argWhichContainsPeriodSplit() throws Exception {
@@ -37,13 +35,9 @@ public class MJStackTest {
         assertNotNull(steps);
         assertEquals(steps.size(),2);
         assertEquals(steps.get(0).getStepName(), "contains");
-        assertEquals(steps.get(0).getStepArg(0), "key.k");
-        assertEquals(steps.get(0).getStepArg(1), "val.,val");
-        assertEquals(steps.get(0).getStepArgs().size(), 2);
+        assertEquals(steps.get(0).getStepArgs(), Arrays.asList("key.k", "val.,val"));
         assertEquals(steps.get(1).getStepName(), "contains");
-        assertEquals(steps.get(1).getStepArg(0), "stack");
-        assertEquals(steps.get(1).getStepArg(1), "com.performizeit");
-        assertEquals(steps.get(1).getStepArgs().size(), 2);
+        assertEquals(steps.get(1).getStepArgs(), Arrays.asList("stack", "com.performizeit"));
 
     }
 }
