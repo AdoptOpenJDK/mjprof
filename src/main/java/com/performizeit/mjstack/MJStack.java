@@ -71,6 +71,9 @@ public class MJStack {
                 else if (mjstep.getStepName().equals(TRIM_BELOW)) {
                     jStackDumps.add(jsd.mapDump(new TrimBelow(mjstep.getStepArg(0))));
                 }
+                else if (mjstep.getStepName().equals(NO_OP)) {
+                    jStackDumps.add(jsd); // do nothing
+                }
 
                 else if (mjstep.getStepName().equals(GROUP) || mjstep.getStepName().equals(LIST) || mjstep.getStepName().equals(COUNT)) {
                     gbp.addStackDump(jsd);
@@ -101,6 +104,7 @@ public class MJStack {
                 " stackkeep/string/      - Keeps only stack frames from all stacks which contain string\n" +
                 " trimbelow/string/      - trim all stack frames below the first occurance of string\n" +
                 " count                  - counts number of threads\n" +
+                " nop                    - Does nothing\n" +
                 " list                   - lists the possible stack trace attributes\n" +
                 " group/attr/            - group by an attribute\n" +
                 " help                   - Prints this message");

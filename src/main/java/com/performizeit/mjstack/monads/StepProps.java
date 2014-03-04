@@ -16,6 +16,7 @@ public class StepProps {
     public static String STACK_ELIM = "stackelim";
     public static String STACK_KEEP = "stackkeep";
     public static String TRIM_BELOW = "trimbelow";
+    public static String NO_OP = "nop";
     public static String HELP = "help";
     public static String GROUP = "group";
     public static String COUNT = "count";
@@ -48,6 +49,7 @@ public class StepProps {
         stepRepo.put(STACK_KEEP,new StepProps(STACK_KEEP,StepType.MAPPER,1));
         stepRepo.put(TRIM_BELOW,new StepProps(TRIM_BELOW,StepType.MAPPER,1));
         stepRepo.put(GROUP,new StepProps(GROUP,StepType.MAPPER,1));
+        stepRepo.put(COUNT,new StepProps(NO_OP,StepType.MAPPER,0));
         stepRepo.put(COUNT,new StepProps(COUNT,StepType.TERMINAL,0));
         stepRepo.put(LIST,new StepProps(LIST,StepType.TERMINAL,0));
         stepRepo.put(HELP,new StepProps(HELP,StepType.TERMINAL,0));

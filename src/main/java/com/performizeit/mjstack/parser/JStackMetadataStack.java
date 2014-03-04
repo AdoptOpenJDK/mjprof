@@ -79,14 +79,16 @@ public class JStackMetadataStack {
     }
 
     private void parseMetaLine(String metaLine) {
-        Pattern p = Pattern.compile("^\"(.*)\".* prio=(\\d*) tid=([0-9a-fx]*) nid=0x([0-9a-fx]*) (.*)");
+        Pattern p = Pattern.compile("^\"(.*)\".* prio=(\\d*) tid=([0-9a-fx]*) nid=([0-9a-fx]*) (.*)");
         Matcher m = p.matcher(metaLine);
 
         if (m.find()) {
             metaData.put("name", m.group(1));
             metaData.put("prio", Integer.parseInt(m.group(2)));
             metaData.put("tid",  new HexaLong(m.group(3)));
+            metaData.put("tidstr",  m.group(3));
             metaData.put("nid", new HexaLong(m.group(4)));
+            metaData.put("nidstr", m.group(4));
             metaData.put("status", m.group(5));
         } else {
             System.out.println("not found" + metaLine);
@@ -103,8 +105,8 @@ public class JStackMetadataStack {
         if (metaData.get("daemon") != null) daemon = " daemon";
         String str = "\"" + metaData.get("name") + "\"" + daemon +
                 " prio=" + metaData.get("prio")
-                + " tid=0x" + metaData.get("tid")
-                + " nid=0x" + metaData.get("nid")
+                + " tid=" + metaData.get("tidstr")
+                + " nid=" + metaData.get("nidstr")
                 + " " + metaData.get("status") + "\n";
 
         if (metaData.get("state") != null) {

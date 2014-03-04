@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
  * Created by life on 3/3/14.
  */
 public class TrimBelowTest {
-    String stck = "\"qtp188618231-14\" prio=10 tid=0x7fd8d8d5b000 nid=0xd17 waiting for monitor entry [0x00007fd8ae207000]\n" +
+    String stck = "\"qtp188618231-14\" prio=10 tid=0x0007fd8d8d5b000 nid=0xd17 waiting for monitor entry [0x00007fd8ae207000]\n" +
             "   java.lang.Thread.State: BLOCKED (on object monitor)\n" +
             "       at org.apache.hadoop.hdfs.DFSUtil.<clinit>(DFSUtil.java:128)\n" +
             "       at org.apache.hadoop.hdfs.DFSClient.<init>(DFSClient.java:437)\n" +

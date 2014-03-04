@@ -5,8 +5,8 @@ MJStack is Monadic jstack analysis tool set.
 Introduction
 =============
 MJStack is Monadic jstack analysis tool set. It is a fancy way to say it analyzes jstack output using a series of simple building blocks
-which can be composed together. I have thought for a long time how to analyze stack traces of java processes. Most of the tools like
-thread dump analyzer give a very rigid UI which does not give you what you want. After getting used to thinking with lambda expressions
+which can be composed together. I have thought for a long time how to analyze stack traces of java processes.  
+After getting used to thinking with lambda expressions
 and streams it suddenly occured to me that this may be a nice approach to stack trace analysis as well.
 
 Motivation
@@ -43,6 +43,7 @@ Mappers
 * _**trimbelow**/int/_          - Trim all stack frames below the first occurance of string 
 * _**stackelim**/string/_       - Elminate stackframes from all stacks which contain string
 * _**stackkeep**/string/_       - Keep only stackframes from all stacks which contain string
+* _**nop**_                     - Do nothing.
 
 Terminals
 ---------
@@ -61,7 +62,7 @@ Following is the list of usual properties
 * _**los**_            - The locked ownable synchronizers part of the stack trace
 * _**daemon**_          - Whether the thread is a daemon or not
 * _**tid**_             - The thread id (a number)
-* _**prio**_            - Priority a number
+* _**prio**_            - Thread priority, a number
 * _**stack**_           - The actual stack trace
 
 You can also get the actual list of properties bu using the list monad.  
