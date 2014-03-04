@@ -51,5 +51,16 @@ public class MJStackTest {
         assertEquals(steps.get(1).getStepName(), "contains");
         assertEquals(steps.get(1).getStepArgs(), Arrays.asList("stack", "com performizeit"));
     }
+    @Test
+    public void spaceOutsideAnArgumentIsASeparator() throws Exception {
+        String args =  "contains/key.k,val.,,val/ contains/stack,com performizeit/";
+        ArrayList<MJStep> steps = MJStack.parseCommandLine(args);
+        assertNotNull(steps);
+        assertEquals(steps.size(),2);
+        assertEquals(steps.get(0).getStepName(), "contains");
+        assertEquals(steps.get(0).getStepArgs(), Arrays.asList("key.k", "val.,val"));
+        assertEquals(steps.get(1).getStepName(), "contains");
+        assertEquals(steps.get(1).getStepArgs(), Arrays.asList("stack", "com performizeit"));
+    }
 
 }

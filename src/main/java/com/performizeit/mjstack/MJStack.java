@@ -112,11 +112,12 @@ public class MJStack {
                 " help                   - Prints this message");
         System.exit(1);
     }
-    static int findNextPeriod(String str)  {
+    // a separator between steps can be either a period of a space if  part of argument list (inside // it is ignored)
+    static int findNextSeperator(String str)  {
         boolean insideArgList= false;
         for (int i=0;i<str.length();i++) {
             if (str.charAt(i) =='/') insideArgList = !insideArgList;
-            if (str.charAt(i) =='.' && !insideArgList)  return i;
+            if ((str.charAt(i) =='.' || str.charAt(i) ==' ') && !insideArgList)  return i;
 
         }
         return -1;
@@ -124,7 +125,7 @@ public class MJStack {
     static ArrayList<String> splitCommandLine(String arg) {
         String argPart = arg;
         ArrayList<String> argParts = new ArrayList<String>();
-        for (int idx =  findNextPeriod(argPart);idx != -1;idx = findNextPeriod(argPart)) {
+        for (int idx =  findNextSeperator(argPart);idx != -1;idx = findNextSeperator(argPart)) {
             argParts.add(argPart.substring(0,idx));
             argPart = argPart.substring(idx+1);
         }
