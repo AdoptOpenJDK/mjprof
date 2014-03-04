@@ -1,65 +1,55 @@
 package com.performizeit.mjstack.monads;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 
 /**
  * Created by life on 28/2/14.
  */
-public class StepProps {
-    public static String CONTAINS = "contains";
-    public static String NOT_CONTAINS = "ncontains";
-    public static String ELIMINATE = "eliminate";
-    public static String SORT = "sort";
-    public static String SORT_DESC = "sortd";
-    public static String KEEP_TOP = "keeptop";
-    public static String KEEP_BOT = "keepbot";
-    public static String STACK_ELIM = "stackelim";
-    public static String STACK_KEEP = "stackkeep";
-    public static String TRIM_BELOW = "trimbelow";
-    public static String NO_OP = "nop";
-    public static String HELP = "help";
-    public static String GROUP = "group";
-    public static String COUNT = "count";
-    public static String LIST = "list";
+public enum StepProps {
+    CONTAINS(StepType.FILTER, 2),
+    NOT_CONTAINS(StepType.FILTER, 2),
+    ELIMINATE(StepType.MAPPER, 1),
+    SORT(StepType.MAPPER, 1),
+    SORT_DESC("sortd", StepType.MAPPER, 1),
+    KEEP_TOP("keeptop", StepType.MAPPER, 1),
+    KEEP_BOT("keepbot", StepType.MAPPER, 1),
+    STACK_ELIM("stackelim", StepType.MAPPER, 1),
+    STACK_KEEP("stackkeep", StepType.MAPPER, 1),
+    TRIM_BELOW("trimbelow", StepType.MAPPER, 1),
+    GROUP(StepType.MAPPER, 1),
+    NO_OP("nop", StepType.MAPPER, 0),
+    HELP(StepType.TERMINAL, 0),
+    COUNT(StepType.TERMINAL, 0),
+    LIST(StepType.TERMINAL, 0);
     static enum StepType {
-        TERMINAL ,
+        TERMINAL,
         FILTER,
         MAPPER
-    };
-        String name;
-        StepType stepType;
-        int argNum;
-
-        private StepProps(String name, StepType stepType, int argNum) {
-            this.name = name;
-            this.stepType = stepType;
-            this.argNum = argNum;
-        }
-
-    private static HashMap<String,StepProps> stepRepo = new HashMap<String, StepProps>();
-    static {
-        stepRepo.put(CONTAINS,new StepProps(CONTAINS,StepType.FILTER,2));
-        stepRepo.put(NOT_CONTAINS,new StepProps(NOT_CONTAINS,StepType.FILTER,2));
-        stepRepo.put(ELIMINATE,new StepProps(ELIMINATE,StepType.MAPPER,1));
-        stepRepo.put(SORT,new StepProps(SORT,StepType.MAPPER,1));
-        stepRepo.put(SORT_DESC,new StepProps(SORT_DESC,StepType.MAPPER,1));
-        stepRepo.put(KEEP_BOT,new StepProps(KEEP_BOT,StepType.MAPPER,1));
-        stepRepo.put(KEEP_TOP,new StepProps(KEEP_TOP,StepType.MAPPER,1));
-        stepRepo.put(STACK_ELIM,new StepProps(STACK_ELIM,StepType.MAPPER,1));
-        stepRepo.put(STACK_KEEP,new StepProps(STACK_KEEP,StepType.MAPPER,1));
-        stepRepo.put(TRIM_BELOW,new StepProps(TRIM_BELOW,StepType.MAPPER,1));
-        stepRepo.put(GROUP,new StepProps(GROUP,StepType.MAPPER,1));
-        stepRepo.put(COUNT,new StepProps(NO_OP,StepType.MAPPER,0));
-        stepRepo.put(COUNT,new StepProps(COUNT,StepType.TERMINAL,0));
-        stepRepo.put(LIST,new StepProps(LIST,StepType.TERMINAL,0));
-        stepRepo.put(HELP,new StepProps(HELP,StepType.TERMINAL,0));
     }
 
     public static boolean stepValid(MJStep a) {
         StepProps pr = stepRepo.get(a.getStepName());
-        if (pr==null) return false;
-        if (a.stepArgs.size() != pr.argNum) return false;
-        return true;
+        return pr != null && a.stepArgs.size() == pr.argNum;
+    }
 
+    private String token;
+    private StepType stepType;
+    private int argNum;
+
+    private static HashMap<String,StepProps> stepRepo = new HashMap<String, StepProps>();
+    StepProps(String name, StepType type, int argNum) {
+        this.token = name == null ? toString().toLowerCase() : name;
+        this.stepType = type;
+        this.argNum = argNum;
+    }
+    StepProps(StepType type, int argNum) {
+        this(null, type, argNum);
+    }
+    public String getToken() { return token; }
+    static {
+        for (StepProps stepProps : EnumSet.allOf(StepProps.class)) {
+            stepRepo.put(stepProps.token, stepProps);
+        }
     }
 }
