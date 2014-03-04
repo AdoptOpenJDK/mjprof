@@ -1,6 +1,6 @@
 mjstack
 =======
-MJStack is Monadic jstack analysis tool set.
+MJStack is a monadic jstack analysis tool set.
 
 Introduction
 =============
