@@ -86,5 +86,5 @@ Count threads
 Build mjstack
 =============
 Build mjstack with the following command line:  
-`mvn install assembly:assembly`  
-This will create a zip file which contains everything you need.
+`mvn clean package`
+This will create a zip file in `target/dist/mjstack1.0-bin.zip` which contains everything you need.
