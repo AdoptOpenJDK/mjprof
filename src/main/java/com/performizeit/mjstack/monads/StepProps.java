@@ -58,6 +58,7 @@ public class StepProps {
     public static boolean stepValid(MJStep a) {
         StepProps pr = stepRepo.get(a.getStepName());
         if (pr==null) return false;
+        if (a.stepArgs.size() != pr.argNum) return false;
         return true;
 
     }

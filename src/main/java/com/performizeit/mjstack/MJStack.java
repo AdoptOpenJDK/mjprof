@@ -13,8 +13,6 @@ import com.performizeit.mjstack.parser.JStackDump;
 import com.performizeit.mjstack.terminals.ListProps;
 import com.performizeit.mjstack.terminals.TerminalStep;
 import static com.performizeit.mjstack.monads.StepProps.*;
-
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -23,7 +21,11 @@ import java.util.ArrayList;
 
 public class MJStack {
     public static void main(String[] args) throws IOException {
-        ArrayList<MJStep> steps = parseCommandLine(args);
+        if (args.length <1) {
+            printSynopsisAndExit();
+        }
+
+        ArrayList<MJStep> steps = parseCommandLine(join(args, " ").trim());
         if (steps == null) {
             printSynopsisAndExit();
         }
@@ -129,11 +131,9 @@ public class MJStack {
         argParts.add(argPart);
         return argParts;
     }
-    static ArrayList<MJStep> parseCommandLine(String[] args) {
-        if (args.length < 1) {
-            return null;
-        }
-        ArrayList<String> argParts = splitCommandLine(args[0]);
+    static ArrayList<MJStep> parseCommandLine(String concatArgs) {
+
+        ArrayList<String> argParts = splitCommandLine(concatArgs);
         ArrayList<MJStep> mjsteps = new ArrayList<MJStep>();
         for (String s : argParts) {
             MJStep step = new MJStep(s);
@@ -170,6 +170,14 @@ public class MJStack {
         }
         return stackDumps;
 
+    }
+    public static String join(String[] strs,String delim) {
+        StringBuilder b = new StringBuilder();
+        for (int i =0;i<strs.length;i++ ) {
+            b.append(strs[i]);
+            if (i<strs.length-1) b.append(delim); 
+        }
+        return b.toString();
     }
 
     public static ArrayList<JStackDump> buildJstacks(ArrayList<String> stackStrings) {

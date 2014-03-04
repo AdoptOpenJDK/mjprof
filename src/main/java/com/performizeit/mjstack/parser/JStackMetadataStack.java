@@ -67,7 +67,6 @@ public class JStackMetadataStack {
     }
 
     private void parseThreadState(String threadState) {
-        System.out.println(threadState);
         Pattern p = Pattern.compile("^[\\s]*java.lang.Thread.State: (.*)$");
         Matcher m = p.matcher(threadState);
         if (m.find()) {
