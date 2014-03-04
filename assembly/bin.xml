@@ -13,22 +13,12 @@
         </fileSet>
         <fileSet>
             <directory>target</directory>
-            <outputDirectory></outputDirectory>
             <includes>
                 <include>*.jar</include>
             </includes>
         </fileSet>
         <fileSet>
-            <directory>target/libs</directory>
-            <outputDirectory>libs</outputDirectory>
-            <includes>
-                <include>jew*.jar</include>
-                
-            </includes>
-        </fileSet>
-                <fileSet>
             <directory>src/main/scripts</directory>
-            <outputDirectory></outputDirectory>
             <includes>
                 <include>*</include>
             </includes>            
