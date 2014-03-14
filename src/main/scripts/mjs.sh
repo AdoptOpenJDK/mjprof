@@ -1,2 +1,3 @@
 #!/bin/sh
-java -cp mjstack-1.0.jar com.performizeit.mjstack.MJStack $*
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+java -cp "$DIR/mjstack-1.0.jar:$DIR/plugins/*" com.performizeit.mjstack.MJStack $*
