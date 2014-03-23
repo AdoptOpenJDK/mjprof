@@ -16,12 +16,28 @@
             <includes>
                 <include>*.jar</include>
             </includes>
+            <outputDirectory>
+                    /
+            </outputDirectory>
+
         </fileSet>
         <fileSet>
             <directory>src/main/scripts</directory>
             <includes>
                 <include>*</include>
-            </includes>            
-        </fileSet> 
+            </includes>
+            <outputDirectory>
+                /
+            </outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/scripts</directory>
+            <includes>
+                <include></include>
+            </includes>
+            <outputDirectory>
+                /plugins
+            </outputDirectory>
+        </fileSet>
     </fileSets>
 </assembly>
