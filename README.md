@@ -26,6 +26,7 @@ The following example will filter out all the threads which are not in RUNNABLE 
 The commands pass to mjstack are several building blocks concatenated with . (comma)
 Parameters to building blocks are wrapped with / (instead of () {} or [] which are special chars in the shell) and seperated by ,
 
+
 Building Blocks
 ===============
 Filters
