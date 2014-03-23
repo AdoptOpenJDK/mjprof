@@ -1,4 +1,4 @@
-package com.performizeit.mjstack.annotation;
+package com.performizeit.mjstack.plugin;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -8,6 +8,8 @@ import java.util.Set;
 
 import org.reflections.Reflections;
 
+import com.performizeit.mjstack.mappers.JStackMapper;
+import com.performizeit.mjstack.filters.JStackFilter;
 import com.performizeit.mjstack.parser.JStackMetadataStack;
 
 
@@ -18,35 +20,35 @@ public class PluginUtils {
 
 	/*
 	 *  @param clazz - class to invoke
-	 *  @param js - the arg to the excute method
+	 *  @param js - the arg to the execute method
 	 *  @param conParameter - parameter to pass to the class constructor 
 	 */
 	public static Object runPlugin(Class<?> clazz,JStackMetadataStack js,String conParameter) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, ClassNotFoundException{
-		String methodName = getMethodName(clazz);
-		if (conParameter==null){
-			Constructor<?> constructor = clazz.getConstructor();
-			Object obj = constructor.newInstance();
-			Method excuteMethod = clazz.getMethod(methodName, JStackMetadataStack.class);
-			return excuteMethod.invoke(obj,js);
-		}
-		//	}else {
-		Constructor<?> constructor = clazz.getConstructor(conParameter.getClass());
-		Object obj = constructor.newInstance(conParameter);
-		Method excuteMethod = clazz.getMethod(methodName, JStackMetadataStack.class);
-		return excuteMethod.invoke(obj,js);
+		Object obj = initObj(clazz, conParameter);
 
-	}
-
-	private static String getMethodName(Class<?> clazz) {
 		if(isImplementsMapper(clazz)){
-			 return "map";
-		}else if(isImplementsFilter(clazz)){
-			return "filter";
-		}else {
-			System.out.println(clazz.getName() + "isn't implementing Mapper or Filter interface");
+			return ((JStackMapper) obj).map(js);
+		} else  if(isImplementsFilter(clazz)){
+			return ((JStackFilter) obj).filter(js);
 		}
+		System.out.println(clazz.getName() + "isn't implementing Mapper or Filter interface");
 		return null;
 	}
+
+	private static Object initObj(Class<?> clazz, String conParameter)
+			throws NoSuchMethodException, InstantiationException,
+			IllegalAccessException, InvocationTargetException {
+		Object obj;
+		if (conParameter==null){
+			Constructor<?> constructor = clazz.getConstructor();
+			obj = constructor.newInstance();
+		}else {
+			Constructor<?> constructor = clazz.getConstructor(conParameter.getClass());
+			obj = constructor.newInstance(conParameter);
+		}
+		return obj;
+	}
+
 
 	//conParameter - constructor parameters
 	public static HashMap<String,Class> getAllPlugins() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, ClassNotFoundException{
@@ -72,8 +74,8 @@ public class PluginUtils {
 			con = cla.getConstructor(String.class);
 			obj = con.newInstance(" ");
 		}
-		Method excuteMethod = cla.getMethod("getHelpLine");
-		return (String) excuteMethod.invoke(obj);
+		Method executeMethod = cla.getMethod("getHelpLine");
+		return (String) executeMethod.invoke(obj);
 	}
 
 	private static boolean isImplementsPlugin(Class<?> cla,String pluginType) {

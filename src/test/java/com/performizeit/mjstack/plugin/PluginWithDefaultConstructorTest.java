@@ -1,22 +1,19 @@
-package com.performizeit.mjstack.annotation;
+package com.performizeit.mjstack.plugin;
 
-import com.performizeit.mjstack.annotation.Plugin;
 import com.performizeit.mjstack.mappers.JStackMapper;
 import com.performizeit.mjstack.parser.JStackMetadataStack;
 import com.performizeit.mjstack.parser.JStackStack;
+import com.performizeit.mjstack.plugin.Plugin;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 /*
  * Only for TEST! need to be in another project
  */
-@Plugin(getHelpLine = "TrimBelowhelp")
-public class PluginWithParameterConstructorTest implements JStackMapper {
-    private final String expr;
+@Plugin(getHelpLine = "Belowhelp")
+public class PluginWithDefaultConstructorTest implements JStackMapper {
+    private final String expr="kk";
 
-    public PluginWithParameterConstructorTest(String expr) {
-        this.expr = expr;
-    }
 
     public JStackMetadataStack map(JStackMetadataStack stck) {
         HashMap<String,Object> mtd = stck.cloneMetaData();
@@ -36,8 +33,9 @@ public class PluginWithParameterConstructorTest implements JStackMapper {
 	public JStackMetadataStack execute(JStackMetadataStack stck) {
 		return map(stck);
 	}
-
+	
 	public String getHelpLine() {
-		return "TrimBelowhelp";
+		return "Trim";
 	}
+
 }

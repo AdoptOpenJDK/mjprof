@@ -1,12 +1,14 @@
-package com.performizeit.mjstack.annotation;
+package com.performizeit.mjstack.plugin;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.HashMap;
+
 import org.junit.Test;
 
-import com.performizeit.mjstack.annotation.PluginUtils;
 import com.performizeit.mjstack.mappers.TrimBelow;
 import com.performizeit.mjstack.parser.JStackMetadataStack;
+import com.performizeit.mjstack.plugin.PluginUtils;
 
 public class PluginTest {
 	   String stck = "\"qtp188618231-14\" prio=10 tid=0x0007fd8d8d5b000 nid=0xd17 waiting for monitor entry [0x00007fd8ae207000]\n" +
@@ -39,8 +41,10 @@ public class PluginTest {
     
     @Test
     public void testPlugin() throws Exception {
-       System.out.println("This is the map of string to class: ");
-       System.out.println(PluginUtils.getAllPlugins());
+       HashMap<String, Class<?>> map =new HashMap<String, Class<?>>();
+       map.put("TrimBelowhelp", PluginWithParameterConstructorTest.class);
+       map.put("Trim", PluginWithDefaultConstructorTest.class);
+       assertEquals(map, PluginUtils.getAllPlugins());
     }
     
     @Test
