@@ -1,10 +1,13 @@
-package com.performizeit.annotation;
+package com.performizeit.mjstack.annotation;
 
-import com.performizeit.mjstack.parser.JStackMetadataStack;
-//TODO: change the interface (or the mapper and filter base classes) to include both filter and mapper
-public interface Plugin {
-	
-	public JStackMetadataStack excute(JStackMetadataStack stck);
+import java.lang.annotation.*;
+
+/*
+ * Annotation for marking the class as Plugin : @Plugin
+ */
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Plugin {
 	
 	public String getHelpLine();
 	

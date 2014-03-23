@@ -1,14 +1,15 @@
-package com.performizeit.annotation;
+package com.performizeit.mjstack.annotation;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.performizeit.annotation.AnnotaionUtils;
+import com.performizeit.mjstack.annotation.PluginUtils;
+import com.performizeit.mjstack.mappers.TrimBelow;
 import com.performizeit.mjstack.parser.JStackMetadataStack;
 
 public class PluginTest {
-	  String stck = "\"qtp188618231-14\" prio=10 tid=0x0007fd8d8d5b000 nid=0xd17 waiting for monitor entry [0x00007fd8ae207000]\n" +
+	   String stck = "\"qtp188618231-14\" prio=10 tid=0x0007fd8d8d5b000 nid=0xd17 waiting for monitor entry [0x00007fd8ae207000]\n" +
 	            "   java.lang.Thread.State: BLOCKED (on object monitor)\n" +
 	            "       at org.apache.hadoop.hdfs.DFSUtil.<clinit>(DFSUtil.java:128)\n" +
 	            "       at org.apache.hadoop.hdfs.DFSClient.<init>(DFSClient.java:437)\n" +
@@ -20,7 +21,8 @@ public class PluginTest {
 	            "       at org.apache.hadoop.fs.FileSystem$Cache.get(FileSystem.java:2289)\n" +
 	            "       at org.apache.hadoop.fs.FileSystem.get(FileSystem.java:316)\n" +
 	            "       at com.akkka.aaa.bbbb.rest.FileSystemFactory.provide(FileSystemFactory.java:32)\n" +
-	            "       at com.akkka.aaa.bbb.rest.FileSystemFactory.provide(FlsFactory.java:44)\n"+
+	            "       at com.akkka.aaa.bbb.rest.FileSystemFactory.provide(FlsFactory.java:44)\n";
+	    String stck2 =
 	            "       at org.jvnet.hk2.internal.FactoryCreator.create(FactoryCreator.java:56)\n" +
 	            "       at org.jvnet.hk2.internal.SystemDescriptor.create(SystemDescriptor.java:456)\n" +
 	            "       at org.jvnet.hk2.internal.PerLookupContext.findOrCreate(PerLookupContext.java:69)\n" +
@@ -37,9 +39,18 @@ public class PluginTest {
     
     @Test
     public void testPlugin() throws Exception {
-        JStackMetadataStack js = new JStackMetadataStack(stck);
        System.out.println("This is the map of string to class: ");
-       System.out.println(AnnotaionUtils.getAllPlugins(js, "com.akkka"));
-
+       System.out.println(PluginUtils.getAllPlugins());
     }
+    
+    @Test
+    public void testRunPlugin() throws Exception{
+    	JStackMetadataStack js = new JStackMetadataStack(stck+stck2);
+    	Object js2 = PluginUtils.runPlugin(TrimBelow.class,js,"com.akkka");
+    	assertEquals(stck,js2.toString() );
+    	Object js3 = PluginUtils.runPlugin(PluginWithDefaultConstructorTest.class,js,null);
+    	assertEquals(stck,js3.toString() );
+    	
+    }
+    
 }
