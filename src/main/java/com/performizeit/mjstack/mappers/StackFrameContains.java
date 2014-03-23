@@ -26,7 +26,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-@Plugin(name="stackkeep",paramTypes = {String.class})
+@Plugin(name="stackkeep",paramTypes = {String.class},
+        description = "Eliminates stack frames from all stacks which do not contain string.")
 public class StackFrameContains implements  JStackMapper {
     private final String expr;
     private boolean reverse = false;
@@ -53,10 +54,4 @@ public class StackFrameContains implements  JStackMapper {
 
         return      new JStackMetadataStack(mtd);
     }
-
-	@Override
-	public String getHelpLine() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

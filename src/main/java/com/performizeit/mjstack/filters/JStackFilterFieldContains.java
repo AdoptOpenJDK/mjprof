@@ -18,11 +18,14 @@
 package com.performizeit.mjstack.filters;
 
 import com.performizeit.mjstack.api.JStackFilter;
+import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.parser.JStackMetadataStack;
 
 /**
  * Created by life on 22/2/14.
  */
+@Plugin(name="contains", paramTypes={String.class,String.class},
+        description = "Returns only threads which contain the string (regexp not supported)")
 public class JStackFilterFieldContains implements JStackFilter {
     private final String fieldName;
     private final String valContained;
@@ -39,10 +42,4 @@ public class JStackFilterFieldContains implements JStackFilter {
         return o.toString().contains(valContained);
 
     }
-//TODO
-	@Override
-	public String getHelpLine() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

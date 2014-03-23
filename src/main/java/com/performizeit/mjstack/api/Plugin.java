@@ -27,5 +27,5 @@ import java.lang.annotation.*;
 public @interface Plugin {
     public String name();
     public Class[] paramTypes();
-
+    public String description() default "";
 }

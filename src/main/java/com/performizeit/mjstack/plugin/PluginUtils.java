@@ -87,23 +87,9 @@ public class PluginUtils {
 		return map;
 	}
 
-	private static String invokeGetHelpLine(Class<?> cla) throws SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
-		Constructor<?> con;
-		Object obj;
-		try {
-			con = cla.getConstructor();
-			obj = con.newInstance();
-		} catch (NoSuchMethodException e) {
-			try{
-				con = cla.getConstructor(String.class);
-				obj = con.newInstance(" ");
-			} catch (NoSuchMethodException e1) {
-				con = cla.getConstructor(String.class,boolean.class);
-				obj = con.newInstance(" ",true);
-			}
-		}
-		Method executeMethod = cla.getMethod("getHelpLine");
-		return (String) executeMethod.invoke(obj);
+	private static String invokeGetHelpLine(Class<?> cla)  {
+	    Plugin pluginAnnotation = cla.getAnnotation(Plugin.class);
+        return pluginAnnotation.description();
 	}
 
 	private static boolean isImplementsPlugin(Class<?> cla,String pluginType) {

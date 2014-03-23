@@ -25,7 +25,8 @@ import com.performizeit.mjstack.parser.JStackStack;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-@Plugin(name="trimbelow",paramTypes = {String.class})
+@Plugin(name="trimbelow",paramTypes = {String.class},
+        description = "Trim all stack frames below the first occurance of string")
 public class TrimBelow implements  JStackMapper {
     private final String expr;
 
@@ -50,10 +51,4 @@ public class TrimBelow implements  JStackMapper {
 
         return      new JStackMetadataStack(mtd);
     }
-
-	@Override
-	public String getHelpLine() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }
