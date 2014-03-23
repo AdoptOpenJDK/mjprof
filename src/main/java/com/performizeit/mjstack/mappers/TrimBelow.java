@@ -1,13 +1,14 @@
 package com.performizeit.mjstack.mappers;
 
 import com.performizeit.mjstack.api.JStackMapper;
+import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.parser.JStackMetadataStack;
 import com.performizeit.mjstack.parser.JStackStack;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-
+@Plugin
 public class TrimBelow implements  JStackMapper {
     private final String expr;
 
@@ -32,4 +33,10 @@ public class TrimBelow implements  JStackMapper {
 
         return      new JStackMetadataStack(mtd);
     }
+
+	@Override
+	public String getHelpLine() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
