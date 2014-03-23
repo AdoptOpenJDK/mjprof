@@ -1,5 +1,6 @@
 package com.performizeit.mjstack.mappers;
 
+import com.performizeit.mjstack.api.JStackMapper;
 import com.performizeit.mjstack.parser.JStackMetadataStack;
 import com.performizeit.mjstack.parser.JStackStack;
 

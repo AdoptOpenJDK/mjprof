@@ -1,4 +1,4 @@
-package com.performizeit.mjstack.filters;
+package com.performizeit.mjstack.api;
 
 import com.performizeit.mjstack.parser.JStackMetadataStack;
 

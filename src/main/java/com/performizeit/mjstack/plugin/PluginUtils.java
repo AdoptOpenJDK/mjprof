@@ -8,15 +8,16 @@ import java.util.Set;
 
 import org.reflections.Reflections;
 
-import com.performizeit.mjstack.mappers.JStackMapper;
-import com.performizeit.mjstack.filters.JStackFilter;
+import com.performizeit.mjstack.api.JStackFilter;
+import com.performizeit.mjstack.api.JStackMapper;
+import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.parser.JStackMetadataStack;
 
 
 public class PluginUtils {
 
-	private static final String MAPPER_INTERFACE = "com.performizeit.mjstack.mappers.JStackMapper";
-	private static final String FILTER_INTERFACE = "com.performizeit.mjstack.filters.JStackFilter";
+	private static final String MAPPER_INTERFACE = "com.performizeit.mjstack.api.JStackMapper";
+	private static final String FILTER_INTERFACE = "com.performizeit.mjstack.api.JStackFilter";
 
 	/*
 	 *  @param clazz - class to invoke
@@ -31,7 +32,7 @@ public class PluginUtils {
 		} else  if(isImplementsFilter(clazz)){
 			return ((JStackFilter) obj).filter(js);
 		}
-		System.out.println(clazz.getName() + "isn't implementing Mapper or Filter interface");
+		System.out.println(clazz.getName() + " isn't implementing Mapper or Filter interface");
 		return null;
 	}
 

@@ -1,4 +1,4 @@
-package com.performizeit.mjstack.plugin;
+package com.performizeit.mjstack.api;
 
 import java.lang.annotation.*;
 
