@@ -17,12 +17,11 @@
 
 package com.performizeit.mjstack.api;
 
-import com.performizeit.mjstack.monads.Step;
 import com.performizeit.mjstack.parser.JStackDump;
 
 /**
  * Created by life on 28/2/14.
  */
-public interface JStackTerminal extends Step {
-
+public interface JStackTerminal extends BasePlugin {
+    public void addStackDump(JStackDump jsd);
 }
