@@ -25,7 +25,7 @@ import java.util.HashMap;
 /**
  * Created by life on 23/2/14.
  */
-@Plugin
+@Plugin(name="elimprop", paramTypes={String.class})
 public class PropEliminator implements JStackMapper {
     private final String prop;
 

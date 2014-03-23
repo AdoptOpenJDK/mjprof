@@ -25,7 +25,7 @@ import com.performizeit.mjstack.parser.JStackStack;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-@Plugin
+@Plugin(name="trimbelow",paramTypes = {String.class})
 public class TrimBelow implements  JStackMapper {
     private final String expr;
 

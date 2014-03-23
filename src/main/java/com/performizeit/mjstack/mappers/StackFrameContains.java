@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-@Plugin
+@Plugin(name="stackkeep",paramTypes = {String.class})
 public class StackFrameContains implements  JStackMapper {
     private final String expr;
     private boolean reverse = false;
