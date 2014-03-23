@@ -17,17 +17,19 @@
 
 package com.performizeit.mjstack.terminals;
 
+import com.performizeit.mjstack.api.JStackTerminal;
+import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.parser.JStackDump;
 import com.performizeit.mjstack.parser.JStackHeader;
 import com.performizeit.mjstack.parser.JStackMetadataStack;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created by life on 28/2/14.
  */
-public class CountThreads implements TerminalStep{
+@Plugin(name="count", paramTypes={})
+public class CountThreads implements JStackTerminal {
     int count =0;
     ArrayList<JStackHeader> stackDumpsHeaders = new ArrayList<JStackHeader>();
 

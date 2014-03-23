@@ -17,6 +17,8 @@
 
 package com.performizeit.mjstack.terminals;
 
+import com.performizeit.mjstack.api.JStackTerminal;
+import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.parser.JStackDump;
 import com.performizeit.mjstack.parser.JStackHeader;
 import com.performizeit.mjstack.parser.JStackMetadataStack;
@@ -27,7 +29,8 @@ import java.util.HashMap;
 /**
  * Created by life on 28/2/14.
  */
-public class GroupByProp implements TerminalStep{
+@Plugin(name="group", paramTypes={String.class})
+public class GroupByProp implements JStackTerminal {
     private final String prop;
     HashMap<String,Integer> propsHash = new HashMap<String, Integer>();
     ArrayList<JStackHeader> stackDumpsHeaders = new ArrayList<JStackHeader>();

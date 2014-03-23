@@ -17,16 +17,18 @@
 
 package com.performizeit.mjstack.terminals;
 
+import com.performizeit.mjstack.api.JStackTerminal;
+import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.parser.JStackDump;
 import com.performizeit.mjstack.parser.JStackMetadataStack;
 
-import java.util.HashMap;
 import java.util.HashSet;
 
 /**
  * Created by life on 28/2/14.
  */
-public class ListProps implements TerminalStep {
+@Plugin(name="list", paramTypes={})
+public class ListProps implements JStackTerminal {
     HashSet<String> propsHash = new HashSet<String>();
 
     public void addStackDump(JStackDump jsd) {

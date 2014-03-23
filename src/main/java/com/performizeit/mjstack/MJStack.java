@@ -17,6 +17,7 @@
 
 package com.performizeit.mjstack;
 
+import com.performizeit.mjstack.api.JStackTerminal;
 import com.performizeit.mjstack.comparators.PropComparator;
 import com.performizeit.mjstack.comparators.ReversePropComparator;
 import com.performizeit.mjstack.filters.JStackFilterFieldContains;
@@ -28,7 +29,7 @@ import com.performizeit.mjstack.terminals.CountThreads;
 import com.performizeit.mjstack.terminals.GroupByProp;
 import com.performizeit.mjstack.parser.JStackDump;
 import com.performizeit.mjstack.terminals.ListProps;
-import com.performizeit.mjstack.terminals.TerminalStep;
+
 import static com.performizeit.mjstack.monads.StepProps.*;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -54,7 +55,7 @@ public class MJStack {
         for (MJStep mjstep : steps) {
             ArrayList<JStackDump> jStackDumpsOrig = jStackDumps;
             jStackDumps = new ArrayList<JStackDump>(jStackDumpsOrig.size());
-            TerminalStep gbp = null;
+            JStackTerminal gbp = null;
             if (mjstep.getStepName().equals(GROUP.getToken())) {
                 gbp = new GroupByProp(mjstep.getStepArg(0));
             } else if (mjstep.getStepName().equals(LIST.getToken())) {

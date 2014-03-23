@@ -25,6 +25,7 @@ import com.performizeit.mjstack.parser.JStackStack;
 import java.util.Arrays;
 import java.util.HashMap;
 
+@Plugin(name="trimbottom",paramTypes = {Integer.class})
 public class TrimBottom implements  JStackMapper {
     private final int count;
 

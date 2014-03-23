@@ -25,7 +25,7 @@ import com.performizeit.mjstack.parser.JStackStack;
 import java.util.Arrays;
 import java.util.HashMap;
 
-
+@Plugin(name="trimtop",paramTypes = {Integer.class})
 public class TrimTop implements  JStackMapper {
     private final int count;
 
