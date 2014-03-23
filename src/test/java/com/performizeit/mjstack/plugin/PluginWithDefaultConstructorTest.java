@@ -10,7 +10,7 @@ import java.util.HashMap;
 /*
  * Only for TEST! need to be in another project
  */
-@Plugin(getHelpLine = "Belowhelp")
+@Plugin
 public class PluginWithDefaultConstructorTest implements JStackMapper {
     private final String expr="kk";
 

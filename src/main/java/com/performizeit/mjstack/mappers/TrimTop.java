@@ -1,6 +1,7 @@
 package com.performizeit.mjstack.mappers;
 
 import com.performizeit.mjstack.api.JStackMapper;
+import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.parser.JStackMetadataStack;
 import com.performizeit.mjstack.parser.JStackStack;
 
@@ -27,4 +28,10 @@ public class TrimTop implements  JStackMapper {
 
         return      new JStackMetadataStack(mtd);
     }
+
+	@Override
+	public String getHelpLine() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

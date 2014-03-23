@@ -1,6 +1,7 @@
 package com.performizeit.mjstack.mappers;
 
 import com.performizeit.mjstack.api.JStackMapper;
+import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.parser.JStackMetadataStack;
 
 import java.util.HashMap;
@@ -8,7 +9,8 @@ import java.util.HashMap;
 /**
  * Created by life on 23/2/14.
  */
-public class PropEliminator implements  JStackMapper {
+@Plugin
+public class PropEliminator implements JStackMapper {
     private final String prop;
 
     public PropEliminator(String prop) {
@@ -21,5 +23,9 @@ public class PropEliminator implements  JStackMapper {
         mtd.remove(prop);
         return      new JStackMetadataStack(mtd);
 
+    }
+    
+   public String getHelpLine(){
+    	return "prop";
     }
 }

@@ -22,4 +22,10 @@ public class JStackFilterFieldContains implements JStackFilter {
         return o.toString().contains(valContained);
 
     }
+//TODO
+	@Override
+	public String getHelpLine() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

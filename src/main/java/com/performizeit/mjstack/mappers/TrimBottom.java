@@ -1,12 +1,12 @@
 package com.performizeit.mjstack.mappers;
 
 import com.performizeit.mjstack.api.JStackMapper;
+import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.parser.JStackMetadataStack;
 import com.performizeit.mjstack.parser.JStackStack;
 
 import java.util.Arrays;
 import java.util.HashMap;
-
 
 public class TrimBottom implements  JStackMapper {
     private final int count;
@@ -27,4 +27,10 @@ public class TrimBottom implements  JStackMapper {
 
         return      new JStackMetadataStack(mtd);
     }
+
+	@Override
+	public String getHelpLine() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

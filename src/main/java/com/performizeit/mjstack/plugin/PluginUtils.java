@@ -18,6 +18,7 @@ public class PluginUtils {
 
 	private static final String MAPPER_INTERFACE = "com.performizeit.mjstack.api.JStackMapper";
 	private static final String FILTER_INTERFACE = "com.performizeit.mjstack.api.JStackFilter";
+	private static final String BASE_PLUGIN_INTERFACE = "com.performizeit.mjstack.api.BasePlugin";
 
 	/*
 	 *  @param clazz - class to invoke
@@ -59,8 +60,12 @@ public class PluginUtils {
 		Set<Class<?>> annotatedPlugin = reflections.getTypesAnnotatedWith(Plugin.class);
 
 		for(Class cla :annotatedPlugin){
-			String helpLine=invokeGetHelpLine(cla);	
-			map.put(helpLine, cla);
+			if(isImplementsMapper(cla) ||isImplementsFilter(cla) ){
+				String helpLine=invokeGetHelpLine(cla);	
+				map.put(helpLine, cla);
+			}else{
+				System.out.println("class " + cla.getName() + " needs to implements BasePlugin");
+			}
 		}
 		return map;
 	}
@@ -72,8 +77,13 @@ public class PluginUtils {
 			con = cla.getConstructor();
 			obj = con.newInstance();
 		} catch (NoSuchMethodException e) {
-			con = cla.getConstructor(String.class);
-			obj = con.newInstance(" ");
+			try{
+				con = cla.getConstructor(String.class);
+				obj = con.newInstance(" ");
+			} catch (NoSuchMethodException e1) {
+				con = cla.getConstructor(String.class,boolean.class);
+				obj = con.newInstance(" ",true);
+			}
 		}
 		Method executeMethod = cla.getMethod("getHelpLine");
 		return (String) executeMethod.invoke(obj);
@@ -92,6 +102,10 @@ public class PluginUtils {
 	}
 	private static boolean isImplementsFilter(Class<?> cla) {
 		return isImplementsPlugin(cla,FILTER_INTERFACE);
+	}
+
+	private static boolean isImplementsBasePlugin(Class cla) {
+		return isImplementsPlugin(cla,BASE_PLUGIN_INTERFACE);
 	}
 
 }
