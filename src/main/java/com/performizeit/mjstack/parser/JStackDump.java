@@ -1,7 +1,7 @@
 package com.performizeit.mjstack.parser;
 
-import com.performizeit.mjstack.filters.JStackFilter;
-import com.performizeit.mjstack.mappers.JStackMapper;
+import com.performizeit.mjstack.api.JStackFilter;
+import com.performizeit.mjstack.api.JStackMapper;
 
 import java.util.ArrayList;
 import java.util.Collections;

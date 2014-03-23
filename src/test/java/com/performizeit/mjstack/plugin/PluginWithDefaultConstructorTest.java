@@ -1,9 +1,9 @@
 package com.performizeit.mjstack.plugin;
 
-import com.performizeit.mjstack.mappers.JStackMapper;
+import com.performizeit.mjstack.api.JStackMapper;
+import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.parser.JStackMetadataStack;
 import com.performizeit.mjstack.parser.JStackStack;
-import com.performizeit.mjstack.plugin.Plugin;
 
 import java.util.ArrayList;
 import java.util.HashMap;

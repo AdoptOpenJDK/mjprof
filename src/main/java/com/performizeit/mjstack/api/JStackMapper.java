@@ -1,4 +1,4 @@
-package com.performizeit.mjstack.mappers;
+package com.performizeit.mjstack.api;
 
 import com.performizeit.mjstack.parser.JStackMetadataStack;
 

@@ -1,5 +1,6 @@
 package com.performizeit.mjstack.filters;
 
+import com.performizeit.mjstack.api.JStackFilter;
 import com.performizeit.mjstack.parser.JStackMetadataStack;
 
 /**
