@@ -50,6 +50,7 @@ public enum StepProps {
     static {
         for (StepProps stepProps : EnumSet.allOf(StepProps.class)) {
             stepRepo.put(stepProps.token, stepProps);
-        }
+            System.out.println(stepProps.token + "**" + stepProps);
+        } //TODO: 
     }
 }
