@@ -15,19 +15,13 @@
         along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.performizeit.mjstack.parser;
+package com.performizeit.mjstack.api;
+
+import com.performizeit.mjstack.parser.JStackDump;
 
 /**
- * Created by life on 23/2/14.
+ * Created by life on 28/2/14.
  */
-public class JStackHeader {
-    String header;
-    public JStackHeader(String header) {
-                  this.header = header;
-    }
-
-    @Override
-    public String toString() {
-        return header;
-    }
+public interface JStackTerminal extends BasePlugin {
+    public void addStackDump(JStackDump jsd);
 }

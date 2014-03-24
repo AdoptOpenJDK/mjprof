@@ -1,3 +1,20 @@
+/*
+       This file is part of mjstack.
+
+        mjstack is free software: you can redistribute it and/or modify
+        it under the terms of the GNU General Public License as published by
+        the Free Software Foundation, either version 3 of the License, or
+        (at your option) any later version.
+
+        mjstack is distributed in the hope that it will be useful,
+        but WITHOUT ANY WARRANTY; without even the implied warranty of
+        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        GNU General Public License for more details.
+
+        You should have received a copy of the GNU General Public License
+        along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 package com.performizeit.mjstack.plugin;
 
 import java.lang.reflect.Constructor;
@@ -70,23 +87,9 @@ public class PluginUtils {
 		return map;
 	}
 
-	private static String invokeGetHelpLine(Class<?> cla) throws SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
-		Constructor<?> con;
-		Object obj;
-		try {
-			con = cla.getConstructor();
-			obj = con.newInstance();
-		} catch (NoSuchMethodException e) {
-			try{
-				con = cla.getConstructor(String.class);
-				obj = con.newInstance(" ");
-			} catch (NoSuchMethodException e1) {
-				con = cla.getConstructor(String.class,boolean.class);
-				obj = con.newInstance(" ",true);
-			}
-		}
-		Method executeMethod = cla.getMethod("getHelpLine");
-		return (String) executeMethod.invoke(obj);
+	private static String invokeGetHelpLine(Class<?> cla)  {
+	    Plugin pluginAnnotation = cla.getAnnotation(Plugin.class);
+        return pluginAnnotation.description();
 	}
 
 	private static boolean isImplementsPlugin(Class<?> cla,String pluginType) {

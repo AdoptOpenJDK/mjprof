@@ -1,5 +1,23 @@
+/*
+       This file is part of mjstack.
+
+        mjstack is free software: you can redistribute it and/or modify
+        it under the terms of the GNU General Public License as published by
+        the Free Software Foundation, either version 3 of the License, or
+        (at your option) any later version.
+
+        mjstack is distributed in the hope that it will be useful,
+        but WITHOUT ANY WARRANTY; without even the implied warranty of
+        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        GNU General Public License for more details.
+
+        You should have received a copy of the GNU General Public License
+        along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 package com.performizeit.mjstack;
 
+import com.performizeit.mjstack.api.JStackTerminal;
 import com.performizeit.mjstack.comparators.PropComparator;
 import com.performizeit.mjstack.comparators.ReversePropComparator;
 import com.performizeit.mjstack.filters.JStackFilterFieldContains;
@@ -11,7 +29,7 @@ import com.performizeit.mjstack.terminals.CountThreads;
 import com.performizeit.mjstack.terminals.GroupByProp;
 import com.performizeit.mjstack.parser.JStackDump;
 import com.performizeit.mjstack.terminals.ListProps;
-import com.performizeit.mjstack.terminals.TerminalStep;
+
 import static com.performizeit.mjstack.monads.StepProps.*;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -37,7 +55,7 @@ public class MJStack {
         for (MJStep mjstep : steps) {
             ArrayList<JStackDump> jStackDumpsOrig = jStackDumps;
             jStackDumps = new ArrayList<JStackDump>(jStackDumpsOrig.size());
-            TerminalStep gbp = null;
+            JStackTerminal gbp = null;
             if (mjstep.getStepName().equals(GROUP.getToken())) {
                 gbp = new GroupByProp(mjstep.getStepArg(0));
             } else if (mjstep.getStepName().equals(LIST.getToken())) {

@@ -10,7 +10,7 @@ import java.util.HashMap;
 /*
  * Only for TEST! need to be in another project
  */
-@Plugin
+@Plugin(name="test2",paramTypes = {String.class})
 public class PluginWithParameterConstructorTest implements JStackMapper {
     private final String expr;
 
