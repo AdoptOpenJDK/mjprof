@@ -26,10 +26,17 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Created by life on 23/2/14.
- */
+
 public class JStackMetadataStack {
+    public static final String NAME = "name";
+    public static final String PRIO = "prio";
+    public static final String TID = "tid";
+    public static final String NID = "nid";
+    public static final String STACK = "stack";
+    public static final String STATUS = "status";
+    public static final String STATE = "state";
+    public static final String LOS = "los";
+    public static final String DAEMON = "daemon";
     HashMap<String, Object> metaData = new HashMap<String, Object>();
 
 
@@ -50,32 +57,23 @@ public class JStackMetadataStack {
                     if (s.trim().length() == 0) break;
                     linesOfStack += s + "\n";
                 }
-                metaData.put("stack", new JStackStack(linesOfStack));
-
-
+                metaData.put(STACK, new JStackStack(linesOfStack));
                 while ((s = reader.readLine()) != null) {
                    if (s.contains("Locked ownable synchronizers"))     break;
-
                 }
-
                 String linesOfLOS = "";
                 while ((s = reader.readLine()) != null) {
                     if (s.trim().length() == 0) break;
                     linesOfLOS += s + "\n";
                 }
                 if (linesOfLOS.trim().length() > 0)
-                    metaData.put("los", new JstackLockedOwbnableSynchronizers(linesOfLOS));
-
-            }
-
+                    metaData.put(LOS, new JstackLockedOwbnableSynchronizers(linesOfLOS));
+           }
         } catch (IOException e) {
             e.printStackTrace();
         }
-//        System.out.println(this.toString());
-  //      System.out.println(stackTrace);
-
-
     }
+
     public JStackMetadataStack(HashMap <String,Object> mtd) {
         metaData =mtd;
     }
@@ -87,7 +85,7 @@ public class JStackMetadataStack {
         Pattern p = Pattern.compile("^[\\s]*java.lang.Thread.State: (.*)$");
         Matcher m = p.matcher(threadState);
         if (m.find()) {
-            metaData.put("state", m.group(1));
+            metaData.put(STATE, m.group(1));
         }
     }
 
@@ -106,30 +104,32 @@ public class JStackMetadataStack {
         }
         return null;
     }
+    protected void metadataKeyValProperties(String metaLine){
+        Pattern p = Pattern.compile("(\\S+)=(\\S+)");    // a nonspace string then = and then a non space string
+        Matcher m = p.matcher(metaLine);
+        while (m.find()) {
+            metaData.put( m.group(1),m.group(2));
+        }
+        if (metaData.get(TID) != null) {
+            metaData.put(TID+"Long", new HexaLong((String)metaData.get(TID)));
+        }
+        if (metaData.get(NID) != null) {
+            metaData.put(NID+"Long", new HexaLong((String) metaData.get(NID)));
+        }
+    }
     private void parseMetaLine(String metaLine) {
         Pattern p = Pattern.compile("^\"(.*)\".*");
         Matcher m = p.matcher(metaLine);
 
         if (m.find()) {
-            metaData.put("name", m.group(1));
+            metaData.put(NAME, m.group(1));
         }
 
         extractStatus(metaLine);
-        String prio = metadataProperty(metaLine,"prio");
-        if (prio != null)
-            metaData.put("prio", Integer.parseInt(prio));
-        String tid = metadataProperty(metaLine,"tid");
-        if (tid != null) {
-            metaData.put("tid", new HexaLong(tid));
-            metaData.put("tidstr", tid);
-        }
-        String nid = metadataProperty(metaLine,"nid");
-        if (nid != null) {
-            metaData.put("nid", new HexaLong(nid));
-            metaData.put("nidstr", nid);
-        }
-        if (metaLine.contains("\" daemon ")) {
-            metaData.put("daemon", true);
+           metadataKeyValProperties(metaLine);
+
+        if (metaLine.contains("\" "+DAEMON+" ")) {
+            metaData.put(DAEMON, true);
         }
 
     }
@@ -144,7 +144,7 @@ public class JStackMetadataStack {
                 lastParam = lastParam.substring(idx+1);
 
                 if (lastParam.length() > 0) {
-                    metaData.put("status", lastParam.trim());
+                    metaData.put(STATUS, lastParam.trim());
                 }
             }
         }
@@ -153,35 +153,35 @@ public class JStackMetadataStack {
     @Override
     public String toString() {
         StringBuilder mdStr = new StringBuilder();
-        if (metaData.get("name") != null) {
-            mdStr.append("\"" + metaData.get("name") + "\"");
+        if (metaData.get(NAME) != null) {
+            mdStr.append("\"" + metaData.get(NAME) + "\"");
         }
-        if (metaData.get("daemon") != null) {
-            mdStr.append(" daemon");
+        if (metaData.get(DAEMON) != null) {
+            mdStr.append(" "+DAEMON);
         }
-        if (metaData.get("prio") != null) {
-            mdStr.append(" prio=" + metaData.get("prio"));
+        if (metaData.get(PRIO) != null) {
+            mdStr.append(" "+PRIO+"=" + metaData.get(PRIO));
         }
-        if (metaData.get("tidstr") != null) {
-            mdStr.append(" tid=" + metaData.get("tidstr"));
+        if (metaData.get(TID) != null) {
+            mdStr.append(" "+TID+"=" + metaData.get(TID));
         }
-        if (metaData.get("nidstr") != null) {
-            mdStr.append(" nid=" + metaData.get("nidstr"));
+        if (metaData.get(NID) != null) {
+            mdStr.append(" "+NID+"=" + metaData.get(NID));
         }
-        if (metaData.get("status") != null) {
-            mdStr.append(" " + metaData.get("status"));
+        if (metaData.get(STATUS) != null) {
+            mdStr.append(" " + metaData.get(STATUS));
         }
 
 
-        if (metaData.get("state") != null) {
-            mdStr.append("\n   java.lang.Thread.State: ").append( metaData.get("state"));
+        if (metaData.get(STATE) != null) {
+            mdStr.append("\n   java.lang.Thread.State: ").append( metaData.get(STATE));
         }
-        if (metaData.get("stack") != null) {
-            mdStr.append("\n").append(metaData.get("stack").toString()).append("\n");
+        if (metaData.get(STACK) != null) {
+            mdStr.append("\n").append(metaData.get(STACK).toString()).append("\n");
         }
-        if (metaData.get("los") != null) {
+        if (metaData.get(LOS) != null) {
             mdStr.append("   Locked ownable synchronizers:\n").append(
-            metaData.get("los").toString());
+                    metaData.get(LOS).toString());
         }
         return mdStr.toString();
 

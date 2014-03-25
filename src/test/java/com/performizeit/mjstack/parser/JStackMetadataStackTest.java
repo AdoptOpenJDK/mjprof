@@ -37,9 +37,9 @@ public class JStackMetadataStackTest {
     public void testMetadata() throws Exception {
         JStackMetadataStack s = new JStackMetadataStack(metaLine+stck);
 
-        assertEquals(10,s.getVal("prio"));
-        assertEquals(0x0007fd8d8d5b000l,((HexaLong)s.getVal("tid")).getValue());
-        assertEquals(0xd17,((HexaLong)s.getVal("nid")).getValue());
+        assertEquals("10",s.getVal("prio"));
+        assertEquals(0x0007fd8d8d5b000l,((HexaLong)s.getVal("tidLong")).getValue());
+        assertEquals(0xd17,((HexaLong)s.getVal("nidLong")).getValue());
         assertEquals("qtp188618231-14",s.getVal("name"));
         assertEquals("waiting for monitor entry [0x00007fd8ae207000]",s.getVal("status"));
 
@@ -49,9 +49,9 @@ public class JStackMetadataStackTest {
     public void testMetadataMixed() throws Exception {
         JStackMetadataStack s = new JStackMetadataStack(metaLineWithMixedOrder+stck);
 
-        assertEquals(10,s.getVal("prio"));
-        assertEquals(0x0007fd8d8d5b000l,((HexaLong)s.getVal("tid")).getValue());
-        assertEquals(0xd17,((HexaLong)s.getVal("nid")).getValue());
+        assertEquals("10",s.getVal("prio"));
+        assertEquals(0x0007fd8d8d5b000l,((HexaLong)s.getVal("tidLong")).getValue());
+        assertEquals(0xd17,((HexaLong)s.getVal("nidLong")).getValue());
         assertEquals("qtp188618231-14",s.getVal("name"));
         assertEquals("waiting for monitor entry [0x00007fd8ae207000]",s.getVal("status"));
 
@@ -61,8 +61,8 @@ public class JStackMetadataStackTest {
         JStackMetadataStack s = new JStackMetadataStack(metaLineMissingFields+stck);
 
         assertNull(s.getVal("prio"));
-        assertNull(s.getVal("tid"));
-        assertEquals(0xd17,((HexaLong)s.getVal("nid")).getValue());
+        assertNull(s.getVal("tidLong"));
+        assertEquals(0xd17,((HexaLong)s.getVal("nidLong")).getValue());
         assertEquals("qtp188618231-14",s.getVal("name"));
         assertEquals("waiting for monitor entry [0x00007fd8ae207000]",s.getVal("status"));
 
