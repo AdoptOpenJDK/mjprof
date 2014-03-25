@@ -152,25 +152,38 @@ public class JStackMetadataStack {
 
     @Override
     public String toString() {
-        String daemon = "";
-        if (metaData.get("daemon") != null) daemon = " daemon";
-        String str = "\"" + metaData.get("name") + "\"" + daemon +
-                " prio=" + metaData.get("prio")
-                + " tid=" + metaData.get("tidstr")
-                + " nid=" + metaData.get("nidstr")
-                + " " + metaData.get("status") + "\n";
+        StringBuilder mdStr = new StringBuilder();
+        if (metaData.get("name") != null) {
+            mdStr.append("\"" + metaData.get("name") + "\"");
+        }
+        if (metaData.get("daemon") != null) {
+            mdStr.append(" daemon");
+        }
+        if (metaData.get("prio") != null) {
+            mdStr.append(" prio=" + metaData.get("prio"));
+        }
+        if (metaData.get("tidstr") != null) {
+            mdStr.append(" tid=" + metaData.get("tidstr"));
+        }
+        if (metaData.get("nidstr") != null) {
+            mdStr.append(" nid=" + metaData.get("nidstr"));
+        }
+        if (metaData.get("status") != null) {
+            mdStr.append(" " + metaData.get("status"));
+        }
+
 
         if (metaData.get("state") != null) {
-            str += "   java.lang.Thread.State: " + metaData.get("state") + "\n";
+            mdStr.append("\n   java.lang.Thread.State: ").append( metaData.get("state"));
         }
         if (metaData.get("stack") != null) {
-            str += metaData.get("stack").toString() + "\n";
+            mdStr.append("\n").append(metaData.get("stack").toString()).append("\n");
         }
         if (metaData.get("los") != null) {
-            str += "   Locked ownable synchronizers:\n";
-            str += metaData.get("los").toString();
+            mdStr.append("   Locked ownable synchronizers:\n").append(
+            metaData.get("los").toString());
         }
-        return str;
+        return mdStr.toString();
 
     }
 
