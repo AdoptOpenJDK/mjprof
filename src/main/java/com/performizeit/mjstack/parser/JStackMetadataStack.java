@@ -90,29 +90,64 @@ public class JStackMetadataStack {
             metaData.put("state", m.group(1));
         }
     }
+
+
     public Object getVal(String key) {
         return metaData.get(key);
     }
 
+    protected String metadataProperty(String metaLine,String propertyName){
+        Pattern p = Pattern.compile(".* "+propertyName+"=([0-9a-fx]*) .*");
+        Matcher m = p.matcher(metaLine);
+
+        if (m.find()) {
+            return  m.group(1);
+
+        }
+        return null;
+    }
     private void parseMetaLine(String metaLine) {
-        Pattern p = Pattern.compile("^\"(.*)\".* prio=(\\d*) tid=([0-9a-fx]*) nid=([0-9a-fx]*) (.*)");
+        Pattern p = Pattern.compile("^\"(.*)\".*");
         Matcher m = p.matcher(metaLine);
 
         if (m.find()) {
             metaData.put("name", m.group(1));
-            metaData.put("prio", Integer.parseInt(m.group(2)));
-            metaData.put("tid",  new HexaLong(m.group(3)));
-            metaData.put("tidstr",  m.group(3));
-            metaData.put("nid", new HexaLong(m.group(4)));
-            metaData.put("nidstr", m.group(4));
-            metaData.put("status", m.group(5));
-        } else {
-            System.out.println("not found" + metaLine);
+        }
+
+        extractStatus(metaLine);
+        String prio = metadataProperty(metaLine,"prio");
+        if (prio != null)
+            metaData.put("prio", Integer.parseInt(prio));
+        String tid = metadataProperty(metaLine,"tid");
+        if (tid != null) {
+            metaData.put("tid", new HexaLong(tid));
+            metaData.put("tidstr", tid);
+        }
+        String nid = metadataProperty(metaLine,"nid");
+        if (nid != null) {
+            metaData.put("nid", new HexaLong(nid));
+            metaData.put("nidstr", nid);
         }
         if (metaLine.contains("\" daemon ")) {
             metaData.put("daemon", true);
         }
 
+    }
+
+    private void extractStatus(String metaLine) {
+        int idx = metaLine.lastIndexOf('=');
+        if (idx != -1) {
+            String lastParam = metaLine.substring(idx);
+            idx =         lastParam.indexOf(' ') ;
+            if (idx != -1 ) {
+
+                lastParam = lastParam.substring(idx+1);
+
+                if (lastParam.length() > 0) {
+                    metaData.put("status", lastParam.trim());
+                }
+            }
+        }
     }
 
     @Override

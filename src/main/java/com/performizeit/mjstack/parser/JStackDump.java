@@ -31,7 +31,7 @@ public class JStackDump {
     JStackHeader header;
     ArrayList<JStackMetadataStack> stacks;
     public JStackDump(String stringRep) {
-        String[] splitTraces = stringRep.split("\n\"");
+        String[] splitTraces = stringRep.split("\n\"");  // Assuming that thread stack trace starts with a new line followed by "
 
         header = new JStackHeader(splitTraces[0]);
         stacks = new ArrayList<JStackMetadataStack>();
