@@ -21,22 +21,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashMap;
-import java.util.HashSet;
+
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import  static com.performizeit.mjstack.parser.JStackProps.*;
 
 
 public class JStackMetadataStack {
-    public static final String NAME = "name";
-    public static final String PRIO = "prio";
-    public static final String TID = "tid";
-    public static final String NID = "nid";
-    public static final String STACK = "stack";
-    public static final String STATUS = "status";
-    public static final String STATE = "state";
-    public static final String LOS = "los";
-    public static final String DAEMON = "daemon";
+
+
     HashMap<String, Object> metaData = new HashMap<String, Object>();
 
 
@@ -153,6 +147,7 @@ public class JStackMetadataStack {
     @Override
     public String toString() {
         StringBuilder mdStr = new StringBuilder();
+
         if (metaData.get(NAME) != null) {
             mdStr.append("\"" + metaData.get(NAME) + "\"");
         }
