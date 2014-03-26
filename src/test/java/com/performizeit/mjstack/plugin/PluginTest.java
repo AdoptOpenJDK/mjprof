@@ -2,11 +2,14 @@ package com.performizeit.mjstack.plugin;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.HashMap;
+import java.util.*;
 
 import org.junit.Test;
 
+import com.performizeit.mjstack.MJStack;
+import com.performizeit.mjstack.mappers.StackFrameContains;
 import com.performizeit.mjstack.mappers.TrimBelow;
+import com.performizeit.mjstack.mappers.TrimTop;
 import com.performizeit.mjstack.parser.JStackMetadataStack;
 import com.performizeit.mjstack.plugin.PluginUtils;
 
@@ -55,7 +58,22 @@ public class PluginTest {
     	assertEquals(stck,js2.toString() );
     	Object js3 = PluginUtils.runPlugin(PluginWithDefaultConstructorTest.class,js,null);
     	assertEquals(stck,js3.toString() );
-    	
     }
-    
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testInitObject()  throws Exception{
+    	List<String> list = new ArrayList<String>();
+    	list.add("1");
+    	Object obj = PluginUtils.initObj(TrimTop.class, new Class[]{int.class},list);
+    	assertEquals(TrimTop.class ,obj.getClass());
+    //	obj = PluginUtils.initObj(TrimTop.class, new Class[]{int.class},new Object[]{1,2});
+    	list.add("true");
+    	 obj = PluginUtils.initObj(StackFrameContains.class, new Class[]{String.class,boolean.class},list);
+    	 assertEquals(StackFrameContains.class ,obj.getClass());
+    }
+
+    @Test
+    public void testSynopsis() throws Exception{
+    	System.out.println(MJStack.getSynopsisString());
+    }
 }

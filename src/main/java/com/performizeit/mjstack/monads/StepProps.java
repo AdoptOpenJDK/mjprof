@@ -1,20 +1,3 @@
-/*
-       This file is part of mjstack.
-
-        mjstack is free software: you can redistribute it and/or modify
-        it under the terms of the GNU General Public License as published by
-        the Free Software Foundation, either version 3 of the License, or
-        (at your option) any later version.
-
-        mjstack is distributed in the hope that it will be useful,
-        but WITHOUT ANY WARRANTY; without even the implied warranty of
-        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-        GNU General Public License for more details.
-
-        You should have received a copy of the GNU General Public License
-        along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
 package com.performizeit.mjstack.monads;
 
 import java.util.EnumSet;
@@ -67,7 +50,9 @@ public enum StepProps {
     static {
         for (StepProps stepProps : EnumSet.allOf(StepProps.class)) {
             stepRepo.put(stepProps.token, stepProps);
-            System.out.println(stepProps.token + "**" + stepProps);
+            //stepProps.token - name
+         //   System.out.println(stepProps.token + "**" + stepProps);
+       
         } //TODO: 
-    }
+     }
 }
