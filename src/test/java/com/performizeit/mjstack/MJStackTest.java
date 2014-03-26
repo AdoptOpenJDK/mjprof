@@ -1,6 +1,7 @@
 package com.performizeit.mjstack;
 
 import com.performizeit.mjstack.monads.MJStep;
+
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 
 public class MJStackTest {
@@ -62,5 +64,13 @@ public class MJStackTest {
         assertEquals(steps.get(1).getStepName(), "contains");
         assertEquals(steps.get(1).getStepArgs(), Arrays.asList("stack", "com performizeit"));
     }
+    
+    @Test
+    public void notValidStep() throws Exception {
+    	String args ="notValid";
+    	ArrayList<MJStep> steps = MJStack.parseCommandLine(args);
+    	assertNull(steps);
+    }
+ 
 
 }

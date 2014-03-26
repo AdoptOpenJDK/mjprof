@@ -21,6 +21,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 import org.reflections.Reflections;
@@ -36,6 +37,7 @@ public class PluginUtils {
 	private static final String MAPPER_INTERFACE = "com.performizeit.mjstack.api.JStackMapper";
 	private static final String FILTER_INTERFACE = "com.performizeit.mjstack.api.JStackFilter";
 	private static final String BASE_PLUGIN_INTERFACE = "com.performizeit.mjstack.api.BasePlugin";
+	private static final String TERMINAL_INTERFACE = "com.performizeit.mjstack.api.JStackTerminal";
 
 	/*
 	 *  @param clazz - class to invoke
@@ -54,6 +56,7 @@ public class PluginUtils {
 		return null;
 	}
 
+	//TODO - FIX
 	private static Object initObj(Class<?> clazz, String conParameter)
 			throws NoSuchMethodException, InstantiationException,
 			IllegalAccessException, InvocationTargetException {
@@ -66,6 +69,12 @@ public class PluginUtils {
 			obj = constructor.newInstance(conParameter);
 		}
 		return obj;
+	}
+	//TODO: try to convet each param 
+	public static Object initObj(Class<?> clazz, Class[] paramTypes,List<String> params) throws NoSuchMethodException, InstantiationException,	IllegalAccessException, InvocationTargetException {
+
+		Constructor<?> constructor = clazz.getConstructor(paramTypes);
+		return constructor.newInstance(params);
 	}
 
 
@@ -100,10 +109,10 @@ public class PluginUtils {
 		}
 		return false;
 	}
-	private static boolean isImplementsMapper(Class<?> cla) {
+	public static boolean isImplementsMapper(Class<?> cla) {
 		return isImplementsPlugin(cla,MAPPER_INTERFACE);
 	}
-	private static boolean isImplementsFilter(Class<?> cla) {
+	public static boolean isImplementsFilter(Class<?> cla) {
 		return isImplementsPlugin(cla,FILTER_INTERFACE);
 	}
 
@@ -111,4 +120,10 @@ public class PluginUtils {
 		return isImplementsPlugin(cla,BASE_PLUGIN_INTERFACE);
 	}
 
+	public static boolean isImplementsTerminal(Class<?> cla) {
+		return isImplementsPlugin(cla,TERMINAL_INTERFACE);
+	}
+	
+	
+	
 }
