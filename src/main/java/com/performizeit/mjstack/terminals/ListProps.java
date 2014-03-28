@@ -27,7 +27,7 @@ import java.util.HashSet;
 /**
  * Created by life on 28/2/14.
  */
-@Plugin(name="list", paramTypes={})
+@Plugin(name="list", paramTypes={},description="lists the possible stack trace attributes")
 public class ListProps implements JStackTerminal {
     HashSet<String> propsHash = new HashSet<String>();
 

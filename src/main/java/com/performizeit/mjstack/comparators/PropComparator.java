@@ -16,11 +16,14 @@
 */
 package com.performizeit.mjstack.comparators;
 
+import com.performizeit.mjstack.api.JStackComparator;
+import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.parser.JStackMetadataStack;
 
 import java.util.Comparator;
 
-public class PropComparator implements Comparator<JStackMetadataStack> {
+@Plugin(name = "sort", paramTypes = {String.class },description="Sorts based on attribute") 
+public class PropComparator implements JStackComparator {
     private final String prop;
 
     public PropComparator(String prop) {

@@ -28,7 +28,7 @@ import java.util.ArrayList;
 /**
  * Created by life on 28/2/14.
  */
-@Plugin(name="count", paramTypes={})
+@Plugin(name="count", paramTypes={}, description="counts number of threads")
 public class CountThreads implements JStackTerminal {
     int count =0;
     ArrayList<JStackHeader> stackDumpsHeaders = new ArrayList<JStackHeader>();

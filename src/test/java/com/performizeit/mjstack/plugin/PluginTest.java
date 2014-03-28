@@ -74,6 +74,6 @@ public class PluginTest {
 
     @Test
     public void testSynopsis() throws Exception{
-    	System.out.println(MJStack.getSynopsisString());
+  //  	System.out.println(MJStack.getSynopsisString());
     }
 }

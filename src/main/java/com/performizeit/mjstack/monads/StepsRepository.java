@@ -1,6 +1,10 @@
 package com.performizeit.mjstack.monads;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 import org.reflections.Reflections;
@@ -20,7 +24,7 @@ public class StepsRepository {
 			StepInfo stepInit = new StepInfo(cla, pluginAnnotation.paramTypes(),pluginAnnotation.description());
 			repo.put(pluginAnnotation.name(), stepInit);
 		}
-	}
+		}
 	
 	   public static boolean stepValid(MJStep a) {
 	        StepInfo pr = repo.get(a.getStepName());
