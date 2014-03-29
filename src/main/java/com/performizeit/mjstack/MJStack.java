@@ -17,33 +17,45 @@
 
 package com.performizeit.mjstack;
 
-import com.performizeit.mjstack.api.JStackFilter;
-import com.performizeit.mjstack.api.JStackMapper;
+import static com.performizeit.mjstack.monads.StepProps.CONTAINS;
+import static com.performizeit.mjstack.monads.StepProps.COUNT;
+import static com.performizeit.mjstack.monads.StepProps.ELIMINATE;
+import static com.performizeit.mjstack.monads.StepProps.GROUP;
+import static com.performizeit.mjstack.monads.StepProps.KEEP_BOT;
+import static com.performizeit.mjstack.monads.StepProps.KEEP_TOP;
+import static com.performizeit.mjstack.monads.StepProps.LIST;
+import static com.performizeit.mjstack.monads.StepProps.NOT_CONTAINS;
+import static com.performizeit.mjstack.monads.StepProps.NO_OP;
+import static com.performizeit.mjstack.monads.StepProps.SORT;
+import static com.performizeit.mjstack.monads.StepProps.SORT_DESC;
+import static com.performizeit.mjstack.monads.StepProps.STACK_ELIM;
+import static com.performizeit.mjstack.monads.StepProps.STACK_KEEP;
+import static com.performizeit.mjstack.monads.StepProps.TRIM_BELOW;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import com.performizeit.mjstack.api.JStackTerminal;
 import com.performizeit.mjstack.comparators.PropComparator;
 import com.performizeit.mjstack.comparators.ReversePropComparator;
 import com.performizeit.mjstack.filters.JStackFilterFieldContains;
 import com.performizeit.mjstack.filters.JStackFilterFieldNotContains;
-import com.performizeit.mjstack.mappers.*;
+import com.performizeit.mjstack.mappers.PropEliminator;
+import com.performizeit.mjstack.mappers.StackFrameContains;
+import com.performizeit.mjstack.mappers.TrimBelow;
+import com.performizeit.mjstack.mappers.TrimBottom;
+import com.performizeit.mjstack.mappers.TrimTop;
 import com.performizeit.mjstack.monads.MJStep;
 import com.performizeit.mjstack.monads.StepInfo;
 import com.performizeit.mjstack.monads.StepsRepository;
+import com.performizeit.mjstack.parser.JStackDump;
 import com.performizeit.mjstack.terminals.CountThreads;
 import com.performizeit.mjstack.terminals.GroupByProp;
-import com.performizeit.mjstack.parser.JStackDump;
-import com.performizeit.mjstack.parser.JStackMetadataStack;
-import com.performizeit.mjstack.plugin.PluginUtils;
 import com.performizeit.mjstack.terminals.ListProps;
-
-import static com.performizeit.mjstack.monads.StepProps.*;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 
 public class MJStack {
@@ -165,29 +177,34 @@ public class MJStack {
 	}
 	private static void getSynopsisContent(StringBuilder sb, List<String> keys) {
 		StringBuilder command;
+		int lineLength=0;
 		for (String stepName : keys) {
-			command=new StringBuilder();//	stepString.delete?
+			lineLength=0;
 			StepInfo stepInfo = StepsRepository.getStep(stepName);
-			command.append(stepName);
+			lineLength += appendAndCount(sb,stepName);
 			if(stepInfo.getArgNum()>0){
-				command.append("/");
+				lineLength += appendAndCount(sb,"/");
 				for(int i=0;i<stepInfo.getArgNum();i++){
-					command.append(stepInfo.getParamTypes()[i].getSimpleName());
+					lineLength += appendAndCount(sb,stepInfo.getParamTypes()[i].getSimpleName());
 					if(i==stepInfo.getArgNum()-2){
-						command.append(",");
+						lineLength += appendAndCount(sb,",");
 					}
 				}
-				command.append("/");
+				lineLength += appendAndCount(sb,"/");
 			}
-			int commandLength=command.length();
-			for(int j=0;j<(40-commandLength);j++){
-				command.append(" ");
+			for(int j=0;j<(40-lineLength);j++){
+				sb.append(" ");
 			}
-			command.append("-");
-			command.append(stepInfo.getDescription());
-			command.append("\n");
-			sb.append(command.toString());
+			sb.append("-");
+			sb.append(stepInfo.getDescription());
+			sb.append("\n");
 		}
+	}
+
+
+	private static int appendAndCount(StringBuilder command, String str) {
+		command.append(str);
+		return str.length();
 	}
 
 	// a separator between steps can be either a period of a space if  part of argument list (inside // it is ignored)

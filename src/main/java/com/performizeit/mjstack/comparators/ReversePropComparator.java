@@ -21,7 +21,7 @@ import com.performizeit.mjstack.parser.JStackMetadataStack;
 
 import java.util.Comparator;
 
-@Plugin(name = "sortd", paramTypes = {String.class },description="Sorts based on attribute (descending order)") 
+@Plugin(name = "sortd", paramTypes = {String.class },description="Sorts based on an attribute (descending order)") 
 public class ReversePropComparator extends PropComparator {
 
     public ReversePropComparator(String prop) {
