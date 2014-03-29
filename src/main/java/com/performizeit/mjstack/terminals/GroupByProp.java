@@ -29,7 +29,7 @@ import java.util.HashMap;
 /**
  * Created by life on 28/2/14.
  */
-@Plugin(name="group", paramTypes={String.class})
+@Plugin(name="group", paramTypes={String.class},description="group by an attribute")
 public class GroupByProp implements JStackTerminal {
     private final String prop;
     HashMap<String,Integer> propsHash = new HashMap<String, Integer>();

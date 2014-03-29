@@ -38,6 +38,7 @@ public class PluginUtils {
 	private static final String FILTER_INTERFACE = "com.performizeit.mjstack.api.JStackFilter";
 	private static final String BASE_PLUGIN_INTERFACE = "com.performizeit.mjstack.api.BasePlugin";
 	private static final String TERMINAL_INTERFACE = "com.performizeit.mjstack.api.JStackTerminal";
+	private static final String COMPARATORS_INTERFACE = "com.performizeit.mjstack.api.JStackComparator";
 
 	/*
 	 *  @param clazz - class to invoke
@@ -86,11 +87,11 @@ public class PluginUtils {
 		Set<Class<?>> annotatedPlugin = reflections.getTypesAnnotatedWith(Plugin.class);
 
 		for(Class cla :annotatedPlugin){
-			if(isImplementsMapper(cla) ||isImplementsFilter(cla) ){
+			if(isImplementsMapper(cla) ||isImplementsFilter(cla) ||isImplementsTerminal(cla) || isImplementsComparators(cla) ){
 				String helpLine=invokeGetHelpLine(cla);	
 				map.put(helpLine, cla);
 			}else{
-				System.out.println("class " + cla.getName() + " needs to implements BasePlugin");
+				System.out.println("class " + cla.getName() + " needs to extends BasePlugin child");
 			}
 		}
 		return map;
@@ -113,7 +114,7 @@ public class PluginUtils {
 		return isImplementsPlugin(cla,MAPPER_INTERFACE);
 	}
 	public static boolean isImplementsFilter(Class<?> cla) {
-		return isImplementsPlugin(cla,FILTER_INTERFACE);
+		return isImplementsPlugin(cla,FILTER_INTERFACE)|| isImplementsPlugin(cla.getSuperclass(), FILTER_INTERFACE);
 	}
 
 	private static boolean isImplementsBasePlugin(Class cla) {
@@ -121,7 +122,11 @@ public class PluginUtils {
 	}
 
 	public static boolean isImplementsTerminal(Class<?> cla) {
-		return isImplementsPlugin(cla,TERMINAL_INTERFACE);
+		return isImplementsPlugin(cla,TERMINAL_INTERFACE) || isImplementsPlugin(cla.getSuperclass(), TERMINAL_INTERFACE);
+	}
+
+	private static boolean isImplementsComparators(Class cla) {
+		return isImplementsPlugin(cla, COMPARATORS_INTERFACE) || isImplementsPlugin(cla.getSuperclass(), COMPARATORS_INTERFACE);
 	}
 	
 	

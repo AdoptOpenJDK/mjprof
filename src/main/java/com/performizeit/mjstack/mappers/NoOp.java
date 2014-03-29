@@ -15,33 +15,22 @@
         along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.performizeit.mjstack.terminals;
+package com.performizeit.mjstack.mappers;
 
-import com.performizeit.mjstack.api.JStackTerminal;
+import com.performizeit.mjstack.api.JStackMapper;
 import com.performizeit.mjstack.api.Plugin;
-import com.performizeit.mjstack.parser.JStackDump;
-import com.performizeit.mjstack.parser.JStackHeader;
 import com.performizeit.mjstack.parser.JStackMetadataStack;
+import com.performizeit.mjstack.parser.JStackStack;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 
-/**
- * Created by life on 28/2/14.
- */
-@Plugin(name="count", paramTypes={}, description="counts number of threads")
-public class CountThreads implements JStackTerminal {
-    int count =0;
-    ArrayList<JStackHeader> stackDumpsHeaders = new ArrayList<JStackHeader>();
-
-
-    public void addStackDump(JStackDump jsd) {
-        for (JStackMetadataStack mss : jsd.getStacks()  ) {
-                count++;
-        }
-    }
-
+@Plugin(name="nop",paramTypes = {},
+        description = "Does nothing")
+public class NoOp implements  JStackMapper {
     @Override
-    public String toString() {
-        return "Total number of threads is "+ count + "\n";
+    public JStackMetadataStack map(JStackMetadataStack stck) {
+      return stck;
     }
+
 }

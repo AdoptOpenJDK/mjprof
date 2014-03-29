@@ -42,6 +42,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 
 public class MJStack {
@@ -144,28 +146,8 @@ public class MJStack {
 		}
 	}
 
-	private static void printSynopsisAndExit() {
-		System.out.println("synopsis");
-		System.out.println("Building Blocks\n" +
-				" contains/attr,string/  - returns only threads which contains the string (regexp not supported)\n" +
-				" ncontains/attr,string/ - returns only threads which do no contains the string(regexp not supported)\n" +
-				" eliminate/attr/        - Removes a certain attribute e.g. eliminate/stack/\n" +
-				" sort/attr/             - Sorts based on attribute\n" +
-				" sortd/attr/            - Sorts based on attribute (descending order)\n" +
-				" keeptop/int/           - Returns at most n top stack frames of the stack\n" +
-				" keepbot/int/           - Returns at most n bottom stack frames of the stack\n" +
-				" stackelim/string/      - Eliminates stack frames from all stacks which do not contain string\n" +
-				" stackkeep/string/      - Keeps only stack frames from all stacks which contain string\n" +
-				" trimbelow/string/      - trim all stack frames below the first occurance of string\n" +
-				" count                  - counts number of threads\n" +
-				" nop                    - Does nothing\n" +
-				" list                   - lists the possible stack trace attributes\n" +
-				" group/attr/            - group by an attribute\n" +
-				" help                   - Prints this message");
-		System.exit(1);
-	}
-	//instead of printSynopsisAndExit()
-	private static void printSynopsisAndExitReplace(){
+	
+	private static void printSynopsisAndExit(){
 		System.out.println(getSynopsisString());
 		System.exit(1);
 	}
@@ -175,7 +157,15 @@ public class MJStack {
 		StringBuilder command;
 		sb.append("synopsis\n");
 		sb.append("Building Blocks*\n");
-		for (String stepName : StepsRepository.getRepository().keySet()) {
+		List<String> keys = new ArrayList<String>(StepsRepository.getRepository().keySet());
+		Collections.sort(keys);
+		getSynopsisContent(sb, keys);
+		sb.append("help                                    -Prints this message");
+		return sb.toString();
+	}
+	private static void getSynopsisContent(StringBuilder sb, List<String> keys) {
+		StringBuilder command;
+		for (String stepName : keys) {
 			command=new StringBuilder();//	stepString.delete?
 			StepInfo stepInfo = StepsRepository.getStep(stepName);
 			command.append(stepName);
@@ -198,7 +188,6 @@ public class MJStack {
 			command.append("\n");
 			sb.append(command.toString());
 		}
-		return sb.toString();
 	}
 
 	// a separator between steps can be either a period of a space if  part of argument list (inside // it is ignored)
