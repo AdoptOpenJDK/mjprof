@@ -91,7 +91,7 @@ public class PluginUtils {
 				String helpLine=invokeGetHelpLine(cla);	
 				map.put(helpLine, cla);
 			}else{
-				System.out.println("class " + cla.getName() + " needs to extends BasePlugin child");
+				System.out.println("class " + cla.getName() + " needs to extend BasePlugin child");
 			}
 		}
 		return map;

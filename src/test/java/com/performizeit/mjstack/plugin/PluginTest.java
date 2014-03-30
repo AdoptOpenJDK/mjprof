@@ -1,6 +1,7 @@
 package com.performizeit.mjstack.plugin;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.*;
 
@@ -74,6 +75,7 @@ public class PluginTest {
 
     @Test
     public void testSynopsis() throws Exception{
-  //  	System.out.println(MJStack.getSynopsisString());
+    	assertTrue(MJStack.getSynopsisString().contains("synopsis"));
+    	assertTrue(MJStack.getSynopsisString().contains("list                                    -lists the possible stack trace attributes"));
     }
 }

@@ -22,7 +22,7 @@ import com.performizeit.mjstack.parser.JStackMetadataStack;
 
 import java.util.Comparator;
 
-@Plugin(name = "sort", paramTypes = {String.class },description="Sorts based on attribute") 
+@Plugin(name = "sort", paramTypes = {String.class },description="Sorts based on an attribute") 
 public class PropComparator implements JStackComparator {
     private final String prop;
 
