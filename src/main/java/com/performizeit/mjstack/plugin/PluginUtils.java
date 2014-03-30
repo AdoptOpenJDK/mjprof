@@ -40,42 +40,10 @@ public class PluginUtils {
 	private static final String TERMINAL_INTERFACE = "com.performizeit.mjstack.api.JStackTerminal";
 	private static final String COMPARATORS_INTERFACE = "com.performizeit.mjstack.api.JStackComparator";
 
-	/*
-	 *  @param clazz - class to invoke
-	 *  @param js - the arg to the execute method
-	 *  @param conParameter - parameter to pass to the class constructor 
-	 */
-	public static Object runPlugin(Class<?> clazz,JStackMetadataStack js,String conParameter) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, ClassNotFoundException{
-		Object obj = initObj(clazz, conParameter);
 
-		if(isImplementsMapper(clazz)){
-			return ((JStackMapper) obj).map(js);
-		} else  if(isImplementsFilter(clazz)){
-			return ((JStackFilter) obj).filter(js);
-		}
-		System.out.println(clazz.getName() + " isn't implementing Mapper or Filter interface");
-		return null;
-	}
-
-	//TODO - FIX
-	private static Object initObj(Class<?> clazz, String conParameter)
-			throws NoSuchMethodException, InstantiationException,
-			IllegalAccessException, InvocationTargetException {
-		Object obj;
-		if (conParameter==null){
-			Constructor<?> constructor = clazz.getConstructor();
-			obj = constructor.newInstance();
-		}else {
-			Constructor<?> constructor = clazz.getConstructor(conParameter.getClass());
-			obj = constructor.newInstance(conParameter);
-		}
-		return obj;
-	}
-	//TODO: try to convet each param 
 	public static Object initObj(Class<?> clazz, Class[] paramTypes,List<String> params) throws NoSuchMethodException, InstantiationException,	IllegalAccessException, InvocationTargetException {
-
 		Constructor<?> constructor = clazz.getConstructor(paramTypes);
-		return constructor.newInstance(params);
+		return constructor.newInstance(params.toArray());
 	}
 
 
@@ -117,15 +85,11 @@ public class PluginUtils {
 		return isImplementsPlugin(cla,FILTER_INTERFACE)|| isImplementsPlugin(cla.getSuperclass(), FILTER_INTERFACE);
 	}
 
-	private static boolean isImplementsBasePlugin(Class cla) {
-		return isImplementsPlugin(cla,BASE_PLUGIN_INTERFACE);
-	}
-
 	public static boolean isImplementsTerminal(Class<?> cla) {
 		return isImplementsPlugin(cla,TERMINAL_INTERFACE) || isImplementsPlugin(cla.getSuperclass(), TERMINAL_INTERFACE);
 	}
 
-	private static boolean isImplementsComparators(Class cla) {
+	public static boolean isImplementsComparators(Class cla) {
 		return isImplementsPlugin(cla, COMPARATORS_INTERFACE) || isImplementsPlugin(cla.getSuperclass(), COMPARATORS_INTERFACE);
 	}
 	
