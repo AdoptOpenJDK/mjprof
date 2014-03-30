@@ -25,7 +25,7 @@ import java.util.HashMap;
 /**
  * Created by life on 23/2/14.
  */
-@Plugin(name="elimprop", paramTypes={String.class},
+@Plugin(name="eliminate", paramTypes={String.class},
         description = "Removes a certain attribute e.g. eliminate/stack/")
 public class PropEliminator implements JStackMapper {
     private final String prop;
