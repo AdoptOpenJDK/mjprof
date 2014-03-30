@@ -12,7 +12,6 @@ import com.performizeit.mjstack.mappers.StackFrameContains;
 import com.performizeit.mjstack.mappers.TrimBelow;
 import com.performizeit.mjstack.mappers.TrimTop;
 import com.performizeit.mjstack.parser.JStackMetadataStack;
-import com.performizeit.mjstack.plugin.PluginUtils;
 
 public class PluginTest {
 	   String stck = "\"qtp188618231-14\" prio=10 tid=0x0007fd8d8d5b000 nid=0xd17 waiting for monitor entry [0x00007fd8ae207000]\n" +
@@ -49,17 +48,8 @@ public class PluginTest {
        map.put("TrimBelowhelp", PluginWithParameterConstructorTest.class);
        map.put("Trim", PluginWithDefaultConstructorTest.class);
        System.out.println(PluginUtils.getAllPlugins());
-  //     assertEquals(map, PluginUtils.getAllPlugins());
     }
     
-    @Test
-    public void testRunPlugin() throws Exception{
-    	JStackMetadataStack js = new JStackMetadataStack(stck+stck2);
-    	Object js2 = PluginUtils.runPlugin(TrimBelow.class,js,"com.akkka");
-    	assertEquals(stck,js2.toString() );
-    	Object js3 = PluginUtils.runPlugin(PluginWithDefaultConstructorTest.class,js,null);
-    	assertEquals(stck,js3.toString() );
-    }
 
     @Test(expected=IllegalArgumentException.class)
     public void testInitObject()  throws Exception{
@@ -67,7 +57,6 @@ public class PluginTest {
     	list.add("1");
     	Object obj = PluginUtils.initObj(TrimTop.class, new Class[]{int.class},list);
     	assertEquals(TrimTop.class ,obj.getClass());
-    //	obj = PluginUtils.initObj(TrimTop.class, new Class[]{int.class},new Object[]{1,2});
     	list.add("true");
     	 obj = PluginUtils.initObj(StackFrameContains.class, new Class[]{String.class,boolean.class},list);
     	 assertEquals(StackFrameContains.class ,obj.getClass());

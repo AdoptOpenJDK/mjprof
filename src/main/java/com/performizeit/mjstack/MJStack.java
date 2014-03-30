@@ -17,45 +17,23 @@
 
 package com.performizeit.mjstack;
 
-import static com.performizeit.mjstack.monads.StepProps.CONTAINS;
-import static com.performizeit.mjstack.monads.StepProps.COUNT;
-import static com.performizeit.mjstack.monads.StepProps.ELIMINATE;
-import static com.performizeit.mjstack.monads.StepProps.GROUP;
-import static com.performizeit.mjstack.monads.StepProps.KEEP_BOT;
-import static com.performizeit.mjstack.monads.StepProps.KEEP_TOP;
-import static com.performizeit.mjstack.monads.StepProps.LIST;
-import static com.performizeit.mjstack.monads.StepProps.NOT_CONTAINS;
-import static com.performizeit.mjstack.monads.StepProps.NO_OP;
-import static com.performizeit.mjstack.monads.StepProps.SORT;
-import static com.performizeit.mjstack.monads.StepProps.SORT_DESC;
-import static com.performizeit.mjstack.monads.StepProps.STACK_ELIM;
-import static com.performizeit.mjstack.monads.StepProps.STACK_KEEP;
-import static com.performizeit.mjstack.monads.StepProps.TRIM_BELOW;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.performizeit.mjstack.api.JStackComparator;
+import com.performizeit.mjstack.api.JStackFilter;
+import com.performizeit.mjstack.api.JStackMapper;
 import com.performizeit.mjstack.api.JStackTerminal;
-import com.performizeit.mjstack.comparators.PropComparator;
-import com.performizeit.mjstack.comparators.ReversePropComparator;
-import com.performizeit.mjstack.filters.JStackFilterFieldContains;
-import com.performizeit.mjstack.filters.JStackFilterFieldNotContains;
-import com.performizeit.mjstack.mappers.PropEliminator;
-import com.performizeit.mjstack.mappers.StackFrameContains;
-import com.performizeit.mjstack.mappers.TrimBelow;
-import com.performizeit.mjstack.mappers.TrimBottom;
-import com.performizeit.mjstack.mappers.TrimTop;
 import com.performizeit.mjstack.monads.MJStep;
 import com.performizeit.mjstack.monads.StepInfo;
 import com.performizeit.mjstack.monads.StepsRepository;
 import com.performizeit.mjstack.parser.JStackDump;
-import com.performizeit.mjstack.terminals.CountThreads;
-import com.performizeit.mjstack.terminals.GroupByProp;
-import com.performizeit.mjstack.terminals.ListProps;
+import com.performizeit.mjstack.plugin.PluginUtils;
 
 
 public class MJStack {
@@ -72,98 +50,51 @@ public class MJStack {
 
 		ArrayList<JStackDump> jStackDumps = buildJstacks(stackStrings);
 
-
 		for (MJStep mjstep : steps) {
 			ArrayList<JStackDump> jStackDumpsOrig = jStackDumps;
 			jStackDumps = new ArrayList<JStackDump>(jStackDumpsOrig.size());
 			JStackTerminal gbp = null;
 			StepInfo step = StepsRepository.getStep(mjstep.getStepName());
-
-			//			try {
-			//				for (JStackDump jsd : jStackDumpsOrig) {
-			//					Object obj=PluginUtils.initObj(step.getClazz(), step.getParamTypes(), mjstep.getStepArgs());
-			//					if(PluginUtils.isImplementsMapper(obj.getClass())){
-			//						jStackDumps.add(jsd.mapDump((JStackMapper) obj));
-			//					}else if(PluginUtils.isImplementsFilter(obj.getClass())){
-			//						jStackDumps.add(jsd.filterDump((JStackFilter)obj));
-			//					}else if(PluginUtils.isImplementsTerminal(obj.getClass())){
-			//						gbp=(JStackTerminal) obj;
-			//					}//TODO comprator
-			//				}
-			//			} catch (NoSuchMethodException e) {
-			//				// TODO Auto-generated catch block
-			//				e.printStackTrace();
-			//			} catch (InstantiationException e) {
-			//				// TODO Auto-generated catch block
-			//				e.printStackTrace();
-			//			} catch (IllegalAccessException e) {
-			//				// TODO Auto-generated catch block
-			//				e.printStackTrace();
-			//			} catch (InvocationTargetException e) {
-			//				// TODO Auto-generated catch block
-			//				e.printStackTrace();
-			//			}
-
-			if (mjstep.getStepName().equals(GROUP.getToken())) {
-				gbp = new GroupByProp(mjstep.getStepArg(0));
-			} else if (mjstep.getStepName().equals(LIST.getToken())) {
-				gbp = new ListProps();
-			}    else if (mjstep.getStepName().equals(COUNT.getToken())) {
-				gbp = new CountThreads();
+	
+			try {
+				for (JStackDump jsd : jStackDumpsOrig) {
+					Object obj=PluginUtils.initObj(step.getClazz(), step.getParamTypes(), mjstep.getStepArgs());
+					if(PluginUtils.isImplementsMapper(obj.getClass())){
+						jStackDumps.add(jsd.mapDump((JStackMapper) obj));
+					}else if(PluginUtils.isImplementsFilter(obj.getClass())){
+						jStackDumps.add(jsd.filterDump((JStackFilter)obj));
+					}else if(PluginUtils.isImplementsTerminal(obj.getClass())){
+						gbp=(JStackTerminal) obj;
+					}else if(PluginUtils.isImplementsComparators(obj.getClass())){
+						jsd.sortDump((JStackComparator)obj);
+					}
+				}
+			} catch (NoSuchMethodException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-
-			for (JStackDump jsd : jStackDumpsOrig) {
-
-				if (mjstep.getStepName().equals(CONTAINS.getToken())) {
-					jStackDumps.add(jsd.filterDump(new JStackFilterFieldContains(mjstep.getStepArg(0), mjstep.getStepArg(1))));
-				}
-				if (mjstep.getStepName().equals(NOT_CONTAINS.getToken())) {
-					jStackDumps.add(jsd.filterDump(new JStackFilterFieldNotContains(mjstep.getStepArg(0), mjstep.getStepArg(1))));
-				} else if (mjstep.getStepName().equals(SORT.getToken())) {
-					jStackDumps.add(jsd.sortDump(new PropComparator(mjstep.getStepArg(0))));
-				} else if (mjstep.getStepName().equals(SORT_DESC.getToken())) {
-					jStackDumps.add(jsd.sortDump(new ReversePropComparator(mjstep.getStepArg(0))));
-
-				} else if (mjstep.getStepName().equals(ELIMINATE.getToken())) {
-					jStackDumps.add(jsd.mapDump(new PropEliminator(mjstep.getStepArg(0))));
-				}else if (mjstep.getStepName().equals(KEEP_TOP.getToken())) {
-					jStackDumps.add(jsd.mapDump(new TrimBottom(Integer.parseInt(mjstep.getStepArg(0)))));
-				} else if (mjstep.getStepName().equals(KEEP_BOT.getToken())) {
-					jStackDumps.add(jsd.mapDump(new TrimTop(Integer.parseInt(mjstep.getStepArg(0)))));
-				}
-				else if (mjstep.getStepName().equals(STACK_ELIM.getToken())) {
-					jStackDumps.add(jsd.mapDump(new StackFrameContains(mjstep.getStepArg(0),true)));
-				} else if (mjstep.getStepName().equals(STACK_KEEP.getToken())) {
-					jStackDumps.add(jsd.mapDump(new StackFrameContains(mjstep.getStepArg(0),false)));
-				}
-				else if (mjstep.getStepName().equals(TRIM_BELOW.getToken())) {
-					jStackDumps.add(jsd.mapDump(new TrimBelow(mjstep.getStepArg(0))));
-				}
-				else if (mjstep.getStepName().equals(NO_OP.getToken())) {
-					jStackDumps.add(jsd); // do nothing
-				}
-
-				else if (mjstep.getStepName().equals(GROUP.getToken()) || mjstep.getStepName().equals(LIST.getToken()) || mjstep.getStepName().equals(COUNT.getToken())) {
-					gbp.addStackDump(jsd);
-				}
-			}
-			if (mjstep.getStepName().equals(GROUP.getToken()) || mjstep.getStepName().equals(LIST.getToken()) || mjstep.getStepName().equals(COUNT.getToken())) {
-				System.out.print(gbp.toString());
-				return;
-			}
-
 		}
+
 		for (int i = 0; i < jStackDumps.size(); i++) {
 			System.out.println(jStackDumps.get(i));
 		}
 	}
 
-	
+
 	private static void printSynopsisAndExit(){
 		System.out.println(getSynopsisString());
 		System.exit(1);
 	}
-	
+
 	public static String getSynopsisString(){
 		StringBuilder sb= new StringBuilder();
 		StringBuilder command;
@@ -176,11 +107,11 @@ public class MJStack {
 		return sb.toString();
 	}
 	private static void getSynopsisContent(StringBuilder sb, List<String> keys) {
-		StringBuilder command;
 		int lineLength=0;
+		StepInfo stepInfo;
 		for (String stepName : keys) {
 			lineLength=0;
-			StepInfo stepInfo = StepsRepository.getStep(stepName);
+			stepInfo = StepsRepository.getStep(stepName);
 			lineLength += appendAndCount(sb,stepName);
 			if(stepInfo.getArgNum()>0){
 				lineLength += appendAndCount(sb,"/");
@@ -232,6 +163,9 @@ public class MJStack {
 		ArrayList<String> argParts = splitCommandLine(concatArgs);
 		ArrayList<MJStep> mjsteps = new ArrayList<MJStep>();
 		for (String s : argParts) {
+			if(s.equalsIgnoreCase("help")){
+				printSynopsisAndExit();
+			}
 			MJStep step = new MJStep(s);
 			if(!StepsRepository.stepValid(step)){
 				System.out.println("Step " + step + " is invalid\n");
