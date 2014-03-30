@@ -13,12 +13,19 @@
         </fileSet>
         <fileSet>
             <directory>target</directory>
+            <outputDirectory></outputDirectory>
             <includes>
                 <include>*.jar</include>
             </includes>
-            <outputDirectory>
-                    /
-            </outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>target/libs</directory>
+            <outputDirectory>libs</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+
+            </includes>
+
 
         </fileSet>
         <fileSet>
