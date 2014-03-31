@@ -33,6 +33,7 @@ import com.performizeit.mjstack.monads.MJStep;
 import com.performizeit.mjstack.monads.StepInfo;
 import com.performizeit.mjstack.monads.StepsRepository;
 import com.performizeit.mjstack.parser.JStackDump;
+import com.performizeit.mjstack.parser.JStackDumpBase;
 import com.performizeit.mjstack.plugin.PluginUtils;
 
 
@@ -48,23 +49,22 @@ public class MJStack {
 		}
 		ArrayList<String> stackStrings = getStackStringsFromStdIn();
 
-		ArrayList<JStackDump> jStackDumps = buildJstacks(stackStrings);
+		ArrayList<JStackDumpBase> jStackDumps = buildJstacks(stackStrings);
 
 		for (MJStep mjstep : steps) {
-			ArrayList<JStackDump> jStackDumpsOrig = jStackDumps;
-			jStackDumps = new ArrayList<JStackDump>(jStackDumpsOrig.size());
-			JStackTerminal gbp = null;
+			ArrayList<JStackDumpBase> jStackDumpsOrig = jStackDumps;
+			jStackDumps = new ArrayList<JStackDumpBase>(jStackDumpsOrig.size());
 			StepInfo step = StepsRepository.getStep(mjstep.getStepName());
 	
 			try {
-				for (JStackDump jsd : jStackDumpsOrig) {
+				for (JStackDumpBase jsd : jStackDumpsOrig) {
 					Object obj=PluginUtils.initObj(step.getClazz(), step.getParamTypes(), mjstep.getStepArgs());
 					if(PluginUtils.isImplementsMapper(obj.getClass())){
 						jStackDumps.add(jsd.mapDump((JStackMapper) obj));
 					}else if(PluginUtils.isImplementsFilter(obj.getClass())){
 						jStackDumps.add(jsd.filterDump((JStackFilter)obj));
 					}else if(PluginUtils.isImplementsTerminal(obj.getClass())){
-						gbp=(JStackTerminal) obj;
+                        jStackDumps.add(jsd.terminateDump((JStackTerminal) obj));
 					}else if(PluginUtils.isImplementsComparators(obj.getClass())){
 						jsd.sortDump((JStackComparator)obj);
 					}
@@ -210,8 +210,8 @@ public class MJStack {
 		return b.toString();
 	}
 
-	public static ArrayList<JStackDump> buildJstacks(ArrayList<String> stackStrings) {
-		ArrayList<JStackDump> jStackDumps = new ArrayList<JStackDump>(stackStrings.size());
+	public static ArrayList<JStackDumpBase> buildJstacks(ArrayList<String> stackStrings) {
+		ArrayList<JStackDumpBase> jStackDumps = new ArrayList<JStackDumpBase>(stackStrings.size());
 		for (String stackDump : stackStrings) {
 			JStackDump stckDump = new JStackDump(stackDump);
 			jStackDumps.add(stckDump);

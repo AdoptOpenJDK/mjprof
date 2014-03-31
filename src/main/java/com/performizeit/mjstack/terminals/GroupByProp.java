@@ -33,13 +33,13 @@ import java.util.HashMap;
 public class GroupByProp implements JStackTerminal {
     private final String prop;
     HashMap<String,Integer> propsHash = new HashMap<String, Integer>();
-    ArrayList<JStackHeader> stackDumpsHeaders = new ArrayList<JStackHeader>();
+
 
     public GroupByProp(String prop) {
         this.prop = prop;
     }
     public void addStackDump(JStackDump jsd) {
-        stackDumpsHeaders.add(jsd.getHeader());
+
         for (JStackMetadataStack mss : jsd.getStacks()  ) {
            // System.out.println();
             Object o = mss.getVal(prop);
@@ -58,9 +58,6 @@ public class GroupByProp implements JStackTerminal {
     public String toString() {
 
         StringBuilder sb = new StringBuilder();
-        for (JStackHeader h : stackDumpsHeaders) {
-             sb.append(h.toString()).append("\n");
-        }
         for (String key: propsHash.keySet()) {
             sb.append(propsHash.get(key)+ " [" + key+"]\n");
 

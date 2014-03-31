@@ -19,6 +19,7 @@ package com.performizeit.mjstack.parser;
 
 import com.performizeit.mjstack.api.JStackFilter;
 import com.performizeit.mjstack.api.JStackMapper;
+import com.performizeit.mjstack.api.JStackTerminal;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,11 +28,11 @@ import java.util.Comparator;
 /**
  * Created by life on 23/2/14.
  */
-public class JStackDump {
-    JStackHeader header;
+public class JStackDump extends JStackDumpBase{
+
     ArrayList<JStackMetadataStack> stacks;
     public JStackDump(String stringRep) {
-        String[] splitTraces = stringRep.split("\n\"");
+        String[] splitTraces = stringRep.split("\n\"");  // Assuming that thread stack trace starts with a new line followed by "
 
         header = new JStackHeader(splitTraces[0]);
         stacks = new ArrayList<JStackMetadataStack>();
@@ -39,8 +40,8 @@ public class JStackDump {
             stacks.add(new JStackMetadataStack("\""+splitTraces[i]));
         }
     }
-    private JStackDump() {
-
+    protected JStackDump() {
+      super();
     }
 
     public ArrayList<JStackMetadataStack> getStacks() {
@@ -69,7 +70,7 @@ public class JStackDump {
         }
         return that;
     }
-    public JStackDump mapDump(JStackMapper mapper) {
+    public JStackDumpBase mapDump(JStackMapper mapper) {
         JStackDump that = new JStackDump();
         that.header = header;
         that.stacks = new ArrayList<JStackMetadataStack>();
@@ -78,7 +79,7 @@ public class JStackDump {
         }
         return that;
     }
-    public JStackDump sortDump(Comparator<JStackMetadataStack> comp) {
+    public JStackDumpBase sortDump(Comparator<JStackMetadataStack> comp) {
         JStackDump that = new JStackDump();
         that.header = header;
         that.stacks = new ArrayList<JStackMetadataStack>();
@@ -89,7 +90,13 @@ public class JStackDump {
         return that;
     }
 
-    public JStackHeader getHeader() {
-        return header;
+    public JStackDumpBase terminateDump(JStackTerminal terminal) {
+        JStackDumpTerminal that = new JStackDumpTerminal();
+        that.header = header;
+       terminal.addStackDump(this);
+        that.data = terminal.toString();
+        return that;
     }
+
+
 }
