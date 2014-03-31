@@ -20,6 +20,7 @@ package com.performizeit.mjstack.plugin;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -42,8 +43,20 @@ public class PluginUtils {
 
 
 	public static Object initObj(Class<?> clazz, Class[] paramTypes,List<String> params) throws NoSuchMethodException, InstantiationException,	IllegalAccessException, InvocationTargetException {
+        Object[] paramsTrans = new Object[paramTypes.length];
+
+        for (int i=0;i<paramTypes.length;i++) {
+            if (paramTypes[i].equals(Integer.class) || paramTypes[i].equals(int.class)) {
+                paramsTrans[i] = Integer.parseInt(params.get(i));
+            } else
+            if (paramTypes[i].equals(Long.class) || paramTypes[i].equals(long.class)) {
+                paramsTrans[i] = Long.parseLong(params.get(i));
+            }else {
+                paramsTrans[i] =   params.get(i);
+            }
+        }
 		Constructor<?> constructor = clazz.getConstructor(paramTypes);
-		return constructor.newInstance(params.toArray());
+		return constructor.newInstance(paramsTrans);
 	}
 
 
