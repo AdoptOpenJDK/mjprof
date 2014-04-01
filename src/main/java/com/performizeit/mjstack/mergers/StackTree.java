@@ -1,14 +1,18 @@
 package com.performizeit.mjstack.mergers;
 
+import com.performizeit.mjstack.api.JStackTerminal;
+import com.performizeit.mjstack.api.Plugin;
+import com.performizeit.mjstack.parser.JStackDump;
+import com.performizeit.mjstack.parser.JStackMetadataStack;
+import com.performizeit.mjstack.parser.JStackProps;
 import com.performizeit.mjstack.parser.JStackStack;
 
 
 import java.util.HashMap;
+import java.util.HashSet;
 
-/**
- * Created by life on 25/3/14.
- */
-public class StackTree {
+@Plugin(name="tree", paramTypes={},description="combine all stack traces ")
+public class StackTree implements JStackTerminal {
     class SFNode {
         int count;
         String sf;
@@ -16,19 +20,34 @@ public class StackTree {
 
         @Override
         public String toString() {
-            return toString(0);
+            return toString(0,new HashSet<Integer>());
         }
 
-        public String toString(int lvl) {
+        public String toString(int lvl,HashSet<Integer> brkPts) {
 
             String a = "";
             for (int i=0;i<lvl;i++) {
+                if (brkPts.contains(i))  {
+                    a += "|";
+                }            else
                 a += " ";
             }
-            a = count+a+" "+ sf;
+            String ch = "\\";
+            if (children.size() >1) {
+                ch = "X";
+                brkPts.add(lvl);
+            }
+            if (children.size()==0) {
+                ch = "V";
+            }
+            a = String.format( "%4d ", count)+a+ch +" "+ sf;
             a += "\n";
             for(SFNode n: children.values())  {
-                a  += n.toString(lvl+1);
+                a  += n.toString(lvl+1,brkPts);
+            }
+            if (children.size() >1) {
+
+                brkPts.remove(lvl);
             }
             return a;
         }
@@ -36,10 +55,13 @@ public class StackTree {
     }
     HashMap<String,SFNode> roots =     new HashMap<String,SFNode>();
     void transformStack(JStackStack stackTrace) {
+
         String[] sf = stackTrace.getStackFrames();
         HashMap<String,SFNode> c = roots;
         for (int i=sf.length-1;i>=0;i--) {
-            SFNode node = c.get(sf[i]);
+            String sfi = sf[i].trim();
+            if (sfi.isEmpty()) continue;
+            SFNode node = c.get(sfi);
             if (node != null) {
                 node.count++;
 
@@ -48,11 +70,11 @@ public class StackTree {
             }  else {
                 node = new SFNode();
                 node.count++;
-                node.sf = sf[i];
-                c.put(sf[i],node);
+                node.sf = sfi;
+                c.put(sfi,node);
             }
             c = node.children;
-            System.out.println(sf[i]);
+           // System.out.println(sf[i]);
         }
 
 
@@ -68,38 +90,15 @@ public class StackTree {
         return a;
     }
 
-    static String stck =
 
-                    "       at org.apache.hadoop.hdfs.DFSUtil.<clinit>(DFSUtil.java:128)\n" +
-                    "       at org.apache.hadoop.hdfs.DFSClient.<init>(DFSClient.java:437)\n" +
-                    "       at org.apache.hadoop.hdfs.DFSClient.<init>(DFSClient.java:410)\n" +
-                    "       at org.apache.hadoop.hdfs.DistributedFileSystem.initialize(DistributedFileSystem.java:127)\n" +
-                    "       at org.apache.hadoop.fs.FileSystem.createFileSystem(FileSystem.java:2273)\n" +
-                    "       at org.apache.hadoop.fs.FileSystem.access$200(FileSystem.java:86)\n" +
-                    "       at org.apache.hadoop.fs.FileSystem$Cache.getInternal(FileSystem.java:2307)\n" +
-                    "       at org.apache.hadoop.fs.FileSystem$Cache.get(FileSystem.java:2289)\n" +
-                    "       at org.apache.hadoop.fs.FileSystem.get(FileSystem.java:316)\n" +
-                    "       at com.akkka.aaa.bbbb.rest.FileSystemFactory.provide(FileSystemFactory.java:32)\n" +
-                    "       at com.akkka.aaa.bbb.rest.FileSystemFactory.provide(FlsFactory.java:44)\n";
-    static String stck2 =
 
-            "       at org.apache.hadoop.hdfs.DFSUtil.<clinit>(DFSUtil.java:128)\n" +
-                    "       at org.apache.hadoop.hdfs.DFSClient.<init>(DFSClient.java:437)\n" +
-                    "       at org.apache.hadoop.hdfs.DFSClient.<init>(DFSClient.java:410)\n" +
-                    "       at org.apache.hadoop.hdfs.DistributedFileSystem.initialize(DistributedFileSystem.java:127)\n" +
-                    "       at org.apache.hadoop.fs.FileSystem.createFileSystem(FileSystem.java:2273)\n" +
-                    "       at org.apache.hadoop.fs.FileSystem.access$200(FileSystem.java:87)\n" +
-                    "       at org.apache.hadoop.fs.FileSystem$Cache.getInternal(FileSystem.java:2307)\n" +
-                    "       at org.apache.hadoop.fs.FileSystem$Cache.get(FileSystem.java:2289)\n" +
-                    "       at org.apache.hadoop.fs.FileSystem.get(FileSystem.java:316)\n" +
-                    "       at com.akkka.aaa.bbbb.rest.FileSystemFactory.provide(FileSystemFactory.java:32)\n" +
-                    "       at com.akkka.aaa.bbb.rest.FileSystemFactory.provide(FlsFactory.java:44)\n";
 
-    public static void main(String[] args) {
-        StackTree st = new StackTree();
-        st.transformStack(new JStackStack(stck));
-        st.transformStack(new JStackStack(stck));
-        st.transformStack(new JStackStack(stck2));
-        System.out.println(st.toString());
+
+    public void addStackDump(JStackDump jsd) {
+
+        for (JStackMetadataStack mss : jsd.getStacks()  ) {
+            transformStack((JStackStack) mss.getVal(JStackProps.STACK));      // System.out.println();
+
+        }
     }
 }
