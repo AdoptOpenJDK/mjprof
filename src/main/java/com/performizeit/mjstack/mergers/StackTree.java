@@ -13,6 +13,7 @@ import java.util.HashSet;
 
 @Plugin(name="tree", paramTypes={},description="combine all stack traces ")
 public class StackTree implements JStackTerminal {
+    protected boolean color = false;
     class SFNode {
         int count;
         String sf;
@@ -20,15 +21,30 @@ public class StackTree implements JStackTerminal {
 
         @Override
         public String toString() {
+
             return toString(0,new HashSet<Integer>());
         }
+        private String CSI()
+        {
+            return (char)0x1b +"[";
+        }
+        private String GREEN() {
+            if (!color) return "";
+            return  CSI()+ "1;32m";
+        }
+        private String NC() {
+            if (!color) return "";
+            return CSI() + "0m";
+        }
+
 
         public String toString(int lvl,HashSet<Integer> brkPts) {
 
             String a = "";
             for (int i=0;i<lvl;i++) {
                 if (brkPts.contains(i))  {
-                    a += "|";
+
+                    a += GREEN()+"|"+NC();
                 }            else
                 a += " ";
             }
@@ -40,15 +56,18 @@ public class StackTree implements JStackTerminal {
             if (children.size()==0) {
                 ch = "V";
             }
-            a = String.format( "%4d ", count)+a+ch +" "+ sf;
+            a = String.format( "%4d ", count)+a+GREEN()+ch+NC() +" "+ sf;
             a += "\n";
+            int t = 0;
             for(SFNode n: children.values())  {
+                if (t == children.size()-1) {
+                    brkPts.remove(lvl);
+                }
+                t++;
                 a  += n.toString(lvl+1,brkPts);
+                if (lvl ==0) a+= "\n";
             }
-            if (children.size() >1) {
 
-                brkPts.remove(lvl);
-            }
             return a;
         }
 

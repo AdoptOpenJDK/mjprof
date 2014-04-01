@@ -40,6 +40,7 @@ import com.performizeit.mjstack.plugin.PluginUtils;
 
 public class MJStack {
 	public static void main(String[] args) throws IOException {
+      //  System.setProperty("java.awt.headless","true"); // when using lanterna we suffer when there we do not disable GUI
 		if (args.length <1) {
 			printSynopsisAndExit();
 		}
