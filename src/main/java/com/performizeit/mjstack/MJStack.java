@@ -56,7 +56,7 @@ public class MJStack {
 			jStackDumps = new ArrayList<JStackDumpBase>(jStackDumpsOrig.size());
 			StepInfo step = StepsRepository.getStep(mjstep.getStepName());
 	
-			try {
+
 				for (JStackDumpBase jsd : jStackDumpsOrig) {
 					Object obj=PluginUtils.initObj(step.getClazz(), step.getParamTypes(), mjstep.getStepArgs());
 					if(PluginUtils.isImplementsMapper(obj.getClass())){
@@ -69,20 +69,8 @@ public class MJStack {
 						jsd.sortDump((JStackComparator)obj);
 					}
 				}
-			} catch (NoSuchMethodException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InstantiationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		}
+		
 
 		for (int i = 0; i < jStackDumps.size(); i++) {
 			System.out.println(jStackDumps.get(i));
