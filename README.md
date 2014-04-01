@@ -44,11 +44,14 @@ Mappers
 * _**trimbelow**/int/_          - Trim all stack frames below the first occurance of string 
 * _**stackelim**/string/_       - Elminate stackframes from all stacks which contain string
 * _**stackkeep**/string/_       - Keep only stackframes from all stacks which contain string
+* _**pkgelim**_                 - Eliminates package name from stack frames
+* _**ifnelim**_                 - Eliminates file name and line number  from stack frames
 * _**nop**_                     - Do nothing.
 
 Terminals
 ---------
 * _**count**_                   - Counts number of threads
+* _**tree**_                    - Creates a profiling tree based on all stack traces
 * _**list**_                    - List the stack trace attributes
 * _**group**/attr/_             - Group by a certain attribute
 
