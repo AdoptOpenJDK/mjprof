@@ -27,19 +27,15 @@ import java.util.Set;
 
 import org.reflections.Reflections;
 
+import com.performizeit.mjstack.api.JStackComparator;
 import com.performizeit.mjstack.api.JStackFilter;
 import com.performizeit.mjstack.api.JStackMapper;
+import com.performizeit.mjstack.api.JStackTerminal;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.parser.JStackMetadataStack;
 
 
 public class PluginUtils {
-
-	private static final String MAPPER_INTERFACE = "com.performizeit.mjstack.api.JStackMapper";
-	private static final String FILTER_INTERFACE = "com.performizeit.mjstack.api.JStackFilter";
-	private static final String BASE_PLUGIN_INTERFACE = "com.performizeit.mjstack.api.BasePlugin";
-	private static final String TERMINAL_INTERFACE = "com.performizeit.mjstack.api.JStackTerminal";
-	private static final String COMPARATORS_INTERFACE = "com.performizeit.mjstack.api.JStackComparator";
 
 
 	public static Object initObj(Class<?> clazz, Class[] paramTypes,List<String> params) throws NoSuchMethodException, InstantiationException,	IllegalAccessException, InvocationTargetException {
@@ -83,29 +79,19 @@ public class PluginUtils {
         return pluginAnnotation.description();
 	}
 
-	private static boolean isImplementsPlugin(Class<?> cla,String pluginType) {
-		Class[] k = cla.getInterfaces();
-		for(int i=0;i<k.length;i++){
-			if(k[i].getName().equals(pluginType))
-				return true;
-		}
-		return false;
-	}
 	public static boolean isImplementsMapper(Class<?> cla) {
-		return isImplementsPlugin(cla,MAPPER_INTERFACE);
+		return JStackMapper.class.isAssignableFrom(cla);
 	}
 	public static boolean isImplementsFilter(Class<?> cla) {
-		return isImplementsPlugin(cla,FILTER_INTERFACE)|| isImplementsPlugin(cla.getSuperclass(), FILTER_INTERFACE);
+		return JStackFilter.class.isAssignableFrom(cla);
 	}
 
 	public static boolean isImplementsTerminal(Class<?> cla) {
-		return isImplementsPlugin(cla,TERMINAL_INTERFACE) || isImplementsPlugin(cla.getSuperclass(), TERMINAL_INTERFACE);
+		return JStackTerminal.class.isAssignableFrom(cla);
 	}
 
 	public static boolean isImplementsComparators(Class cla) {
-		return isImplementsPlugin(cla, COMPARATORS_INTERFACE) || isImplementsPlugin(cla.getSuperclass(), COMPARATORS_INTERFACE);
+		return JStackComparator.class.isAssignableFrom(cla);
 	}
-	
-	
 	
 }
