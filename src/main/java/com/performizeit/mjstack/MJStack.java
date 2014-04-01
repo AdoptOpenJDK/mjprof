@@ -24,6 +24,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import com.performizeit.mjstack.api.JStackComparator;
 import com.performizeit.mjstack.api.JStackFilter;
@@ -55,20 +56,19 @@ public class MJStack {
 			ArrayList<JStackDumpBase> jStackDumpsOrig = jStackDumps;
 			jStackDumps = new ArrayList<JStackDumpBase>(jStackDumpsOrig.size());
 			StepInfo step = StepsRepository.getStep(mjstep.getStepName());
-	
-
-				for (JStackDumpBase jsd : jStackDumpsOrig) {
-					Object obj=PluginUtils.initObj(step.getClazz(), step.getParamTypes(), mjstep.getStepArgs());
-					if(PluginUtils.isImplementsMapper(obj.getClass())){
-						jStackDumps.add(jsd.mapDump((JStackMapper) obj));
-					}else if(PluginUtils.isImplementsFilter(obj.getClass())){
-						jStackDumps.add(jsd.filterDump((JStackFilter)obj));
-					}else if(PluginUtils.isImplementsTerminal(obj.getClass())){
-                        jStackDumps.add(jsd.terminateDump((JStackTerminal) obj));
-					}else if(PluginUtils.isImplementsComparators(obj.getClass())){
-						jsd.sortDump((JStackComparator)obj);
-					}
+			Object[] paramArgs = buildArgsArray(step.getParamTypes(),mjstep.getStepArgs());		
+			for (JStackDumpBase jsd : jStackDumpsOrig) {
+				Object obj=PluginUtils.initObj(step.getClazz(), step.getParamTypes(), paramArgs);
+				if(PluginUtils.isImplementsMapper(obj.getClass())){
+					jStackDumps.add(jsd.mapDump((JStackMapper) obj));
+				}else if(PluginUtils.isImplementsFilter(obj.getClass())){
+					jStackDumps.add(jsd.filterDump((JStackFilter)obj));
+				}else if(PluginUtils.isImplementsTerminal(obj.getClass())){
+					jStackDumps.add(jsd.terminateDump((JStackTerminal) obj));
+				}else if(PluginUtils.isImplementsComparators(obj.getClass())){
+					jsd.sortDump((JStackComparator)obj);
 				}
+			}
 		}
 		
 
@@ -205,5 +205,25 @@ public class MJStack {
 			jStackDumps.add(stckDump);
 		}
 		return jStackDumps;
+	}
+	
+	public static Object[] buildArgsArray(Class[] paramTypes, List<String> params) {
+		Object[] paramsTrans = new Object[paramTypes.length];
+
+        for (int i=0;i<paramTypes.length;i++) {
+        	try{
+            if (paramTypes[i].equals(Integer.class) || paramTypes[i].equals(int.class)) {
+                paramsTrans[i] = Integer.parseInt(params.get(i));
+            } else
+            if (paramTypes[i].equals(Long.class) || paramTypes[i].equals(long.class)) {
+                paramsTrans[i] = Long.parseLong(params.get(i));
+            }else {
+                paramsTrans[i] =   params.get(i);
+            }
+        	}catch (NumberFormatException e){
+        		System.out.println("Please re-enter - wrong parameter format.");
+        	}
+        }
+		return paramsTrans;
 	}
 }

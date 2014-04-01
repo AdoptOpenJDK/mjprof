@@ -38,36 +38,16 @@ import com.performizeit.mjstack.parser.JStackMetadataStack;
 public class PluginUtils {
 
 
-	public static Object initObj(Class<?> clazz, Class[] paramTypes,List<String> params) {
-        Object[] paramsTrans = new Object[paramTypes.length];
-
-        for (int i=0;i<paramTypes.length;i++) {
-            if (paramTypes[i].equals(Integer.class) || paramTypes[i].equals(int.class)) {
-                paramsTrans[i] = Integer.parseInt(params.get(i));
-            } else
-            if (paramTypes[i].equals(Long.class) || paramTypes[i].equals(long.class)) {
-                paramsTrans[i] = Long.parseLong(params.get(i));
-            }else {
-                paramsTrans[i] =   params.get(i);
-            }
-        }
+	public static Object initObj(Class<?> clazz, Class[] paramTypes,Object[] paramArgs) {
         try {
         	Constructor<?>  constructor = clazz.getConstructor(paramTypes);
-        	return constructor.newInstance(paramsTrans);
-        } catch (NoSuchMethodException e) {
-        	return new RuntimeException(e.getMessage());
-        } catch (SecurityException e) {
-        	return new RuntimeException(e.getMessage());
-        } catch (InstantiationException e) {
-        	return new RuntimeException(e.getMessage());
-        } catch (IllegalAccessException e) {
-        	return new RuntimeException(e.getMessage());
-        } catch (IllegalArgumentException e) {
-        	return new RuntimeException(e.getMessage());
-        } catch (InvocationTargetException e) {
-        	return new RuntimeException(e.getMessage());
+        	return constructor.newInstance(paramArgs);
+        } catch (Exception e) {
+       	return new RuntimeException(e.getMessage());
         }
 	}
+
+
 
 
 	//conParameter - constructor parameters
