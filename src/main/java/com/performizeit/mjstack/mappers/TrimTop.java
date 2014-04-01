@@ -25,7 +25,7 @@ import com.performizeit.mjstack.parser.JStackStack;
 import java.util.Arrays;
 import java.util.HashMap;
 
-@Plugin(name="keepbot",paramTypes = {Integer.class},
+@Plugin(name="keepbot",paramTypes = {int.class},
         description = "Returns at most n bottom stack frames of the stack")
 public class TrimTop implements  JStackMapper {
     private final int count;
