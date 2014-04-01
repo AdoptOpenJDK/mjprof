@@ -3,15 +3,15 @@ package com.performizeit.mjstack.plugin;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import org.junit.Test;
 
 import com.performizeit.mjstack.MJStack;
 import com.performizeit.mjstack.mappers.StackFrameContains;
-import com.performizeit.mjstack.mappers.TrimBelow;
 import com.performizeit.mjstack.mappers.TrimTop;
-import com.performizeit.mjstack.parser.JStackMetadataStack;
 
 public class PluginTest {
 	   String stck = "\"qtp188618231-14\" prio=10 tid=0x0007fd8d8d5b000 nid=0xd17 waiting for monitor entry [0x00007fd8ae207000]\n" +
@@ -45,8 +45,8 @@ public class PluginTest {
     @Test
     public void testPlugin() throws Exception {
        HashMap<String, Class<?>> map =new HashMap<String, Class<?>>();
-       map.put("TrimBelowhelp", PluginWithParameterConstructorTest.class);
-       map.put("Trim", PluginWithDefaultConstructorTest.class);
+//       map.put("TrimBelowhelp", PluginWithParameterConstructorTest.class);
+//       map.put("Trim", PluginWithDefaultConstructorTest.class);
        System.out.println(PluginUtils.getAllPlugins());
     }
     
@@ -66,5 +66,6 @@ public class PluginTest {
     public void testSynopsis() throws Exception{
     	assertTrue(MJStack.getSynopsisString().contains("synopsis"));
     	assertTrue(MJStack.getSynopsisString().contains("list                                    -lists the possible stack trace attributes"));
+    	
     }
 }
