@@ -20,7 +20,7 @@ package com.performizeit.mjstack.terminals;
 import com.performizeit.mjstack.api.JStackTerminal;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.parser.JStackDump;
-import com.performizeit.mjstack.parser.JStackMetadataStack;
+import com.performizeit.mjstack.parser.ThreadInfo;
 
 import java.util.HashSet;
 
@@ -32,7 +32,7 @@ public class ListProps implements JStackTerminal {
     HashSet<String> propsHash = new HashSet<String>();
 
     public void addStackDump(JStackDump jsd) {
-        for (JStackMetadataStack mss : jsd.getStacks()  ) {
+        for (ThreadInfo mss : jsd.getStacks()  ) {
             for (String prop : mss.getProps()) {
                propsHash.add(prop);
             }

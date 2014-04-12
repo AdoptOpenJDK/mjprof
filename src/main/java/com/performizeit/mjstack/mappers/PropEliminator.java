@@ -18,7 +18,7 @@
 package com.performizeit.mjstack.mappers;
 import com.performizeit.mjstack.api.JStackMapper;
 import com.performizeit.mjstack.api.Plugin;
-import com.performizeit.mjstack.parser.JStackMetadataStack;
+import com.performizeit.mjstack.parser.ThreadInfo;
 
 import java.util.HashMap;
 
@@ -34,11 +34,11 @@ public class PropEliminator implements JStackMapper {
         this.prop = prop;
     }
     @Override
-    public JStackMetadataStack map(JStackMetadataStack stck) {
+    public ThreadInfo map(ThreadInfo stck) {
 
         HashMap<String,Object> mtd = stck.cloneMetaData();
         mtd.remove(prop);
-        return      new JStackMetadataStack(mtd);
+        return      new ThreadInfo(mtd);
 
     }
 }

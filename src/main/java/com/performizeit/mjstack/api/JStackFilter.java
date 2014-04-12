@@ -17,11 +17,11 @@
 
 package com.performizeit.mjstack.api;
 
-import com.performizeit.mjstack.parser.JStackMetadataStack;
+import com.performizeit.mjstack.parser.ThreadInfo;
 
 /**
  * Created by life on 22/2/14.
  */
 public interface JStackFilter extends BasePlugin{
-	boolean filter(JStackMetadataStack stck);
+	boolean filter(ThreadInfo stck);
 }

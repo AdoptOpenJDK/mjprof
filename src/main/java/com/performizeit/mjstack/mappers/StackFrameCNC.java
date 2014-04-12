@@ -1,8 +1,8 @@
 package com.performizeit.mjstack.mappers;
 
 import com.performizeit.mjstack.api.JStackMapper;
-import com.performizeit.mjstack.parser.JStackMetadataStack;
-import com.performizeit.mjstack.parser.JStackStack;
+import com.performizeit.mjstack.parser.ThreadInfo;
+import com.performizeit.mjstack.parser.StackTrace;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,9 +17,9 @@ public abstract class StackFrameCNC implements JStackMapper {
     }
 
     @Override
-    public JStackMetadataStack map(JStackMetadataStack stck) {
+    public ThreadInfo map(ThreadInfo stck) {
         HashMap<String,Object> mtd = stck.cloneMetaData();
-        JStackStack jss = (JStackStack) mtd.get("stack");
+        StackTrace jss = (StackTrace) mtd.get("stack");
         String[] stackFrames = jss.getStackFrames();
         ArrayList<String> partial = new ArrayList<String>();
         for (String sf:stackFrames) {
@@ -31,6 +31,6 @@ public abstract class StackFrameCNC implements JStackMapper {
         }
         jss.setStackFrames(partial);
 
-        return      new JStackMetadataStack(mtd);
+        return      new ThreadInfo(mtd);
     }
 }

@@ -16,9 +16,9 @@
 */
 package com.performizeit.mjstack.api;
 
-import com.performizeit.mjstack.parser.JStackMetadataStack;
+import com.performizeit.mjstack.parser.ThreadInfo;
 
 
 public interface JStackMapper extends BasePlugin{
-	JStackMetadataStack map(JStackMetadataStack stck);
+	ThreadInfo map(ThreadInfo stck);
 }

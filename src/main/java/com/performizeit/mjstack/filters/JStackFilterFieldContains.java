@@ -19,7 +19,7 @@ package com.performizeit.mjstack.filters;
 
 import com.performizeit.mjstack.api.JStackFilter;
 import com.performizeit.mjstack.api.Plugin;
-import com.performizeit.mjstack.parser.JStackMetadataStack;
+import com.performizeit.mjstack.parser.ThreadInfo;
 
 /**
  * Created by life on 22/2/14.
@@ -36,7 +36,7 @@ public class JStackFilterFieldContains implements JStackFilter {
     }
 
     @Override
-    public boolean filter(JStackMetadataStack stck) {
+    public boolean filter(ThreadInfo stck) {
         Object o = stck.getVal(fieldName);
         if (o == null) return false;
         return o.toString().contains(valContained);

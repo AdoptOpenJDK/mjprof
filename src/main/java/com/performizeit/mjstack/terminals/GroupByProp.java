@@ -20,10 +20,8 @@ package com.performizeit.mjstack.terminals;
 import com.performizeit.mjstack.api.JStackTerminal;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.parser.JStackDump;
-import com.performizeit.mjstack.parser.JStackHeader;
-import com.performizeit.mjstack.parser.JStackMetadataStack;
+import com.performizeit.mjstack.parser.ThreadInfo;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -40,7 +38,7 @@ public class GroupByProp implements JStackTerminal {
     }
     public void addStackDump(JStackDump jsd) {
 
-        for (JStackMetadataStack mss : jsd.getStacks()  ) {
+        for (ThreadInfo mss : jsd.getStacks()  ) {
            // System.out.println();
             Object o = mss.getVal(prop);
             if (o != null && o.toString().trim().length()>0) {

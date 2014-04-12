@@ -18,9 +18,7 @@ package com.performizeit.mjstack.comparators;
 
 import com.performizeit.mjstack.api.JStackComparator;
 import com.performizeit.mjstack.api.Plugin;
-import com.performizeit.mjstack.parser.JStackMetadataStack;
-
-import java.util.Comparator;
+import com.performizeit.mjstack.parser.ThreadInfo;
 
 @Plugin(name = "sort", paramTypes = {String.class },description="Sorts based on an attribute") 
 public class PropComparator implements JStackComparator {
@@ -30,7 +28,7 @@ public class PropComparator implements JStackComparator {
         this.prop = prop;
     }
     @Override
-    public int compare(JStackMetadataStack o1, JStackMetadataStack o2) {
+    public int compare(ThreadInfo o1, ThreadInfo o2) {
         return ((Comparable)o1.getVal(prop)) .compareTo(o2.getVal(prop));
 
     }

@@ -17,9 +17,7 @@
 package com.performizeit.mjstack.comparators;
 
 import com.performizeit.mjstack.api.Plugin;
-import com.performizeit.mjstack.parser.JStackMetadataStack;
-
-import java.util.Comparator;
+import com.performizeit.mjstack.parser.ThreadInfo;
 
 @Plugin(name = "sortd", paramTypes = {String.class },description="Sorts based on an attribute (descending order)") 
 public class ReversePropComparator extends PropComparator {
@@ -29,7 +27,7 @@ public class ReversePropComparator extends PropComparator {
     }
 
     @Override
-    public int compare(JStackMetadataStack o1, JStackMetadataStack o2) {
+    public int compare(ThreadInfo o1, ThreadInfo o2) {
         return -super.compare(o1,o2);
 
     }

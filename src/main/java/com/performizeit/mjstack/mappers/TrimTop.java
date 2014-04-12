@@ -19,8 +19,8 @@ package com.performizeit.mjstack.mappers;
 
 import com.performizeit.mjstack.api.JStackMapper;
 import com.performizeit.mjstack.api.Plugin;
-import com.performizeit.mjstack.parser.JStackMetadataStack;
-import com.performizeit.mjstack.parser.JStackStack;
+import com.performizeit.mjstack.parser.ThreadInfo;
+import com.performizeit.mjstack.parser.StackTrace;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -35,16 +35,16 @@ public class TrimTop implements  JStackMapper {
     }
 
     @Override
-    public JStackMetadataStack map(JStackMetadataStack stck) {
+    public ThreadInfo map(ThreadInfo stck) {
         HashMap<String,Object> mtd = stck.cloneMetaData();
-        JStackStack jss = (JStackStack) mtd.get("stack");
+        StackTrace jss = (StackTrace) mtd.get("stack");
         String[] stackFrames = jss.getStackFrames();
         if (count < stackFrames.length)   {
             String[] partial = Arrays.copyOfRange(stackFrames,stackFrames.length-count , stackFrames.length);
             jss.setStackFrames(partial);
         }
 
-        return      new JStackMetadataStack(mtd);
+        return      new ThreadInfo(mtd);
     }
 
 }

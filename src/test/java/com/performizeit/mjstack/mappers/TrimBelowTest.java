@@ -1,9 +1,7 @@
 package com.performizeit.mjstack.mappers;
 
-import com.performizeit.mjstack.parser.JStackMetadataStack;
+import com.performizeit.mjstack.parser.ThreadInfo;
 import org.junit.Test;
-
-import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 
@@ -40,15 +38,15 @@ public class TrimBelowTest {
             "       at org.jvnet.hk2.internal.ServiceLocatorImpl.getService(ServiceLocatorImpl.java:612)\n\n";
     @Test
     public void testStack() throws Exception {
-        JStackMetadataStack js = new JStackMetadataStack(stck+stck2);
+        ThreadInfo js = new ThreadInfo(stck+stck2);
 
         assertEquals(stck+stck2,js.toString() );
 
     }
     public void testMap() throws Exception {
-        JStackMetadataStack js = new JStackMetadataStack(stck+stck2);
+        ThreadInfo js = new ThreadInfo(stck+stck2);
         TrimBelow tb = new TrimBelow("com.akkka");
-        JStackMetadataStack js2 = tb.map(js);
+        ThreadInfo js2 = tb.map(js);
         assertEquals(stck,js2.toString() );
 
     }

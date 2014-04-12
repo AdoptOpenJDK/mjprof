@@ -1,6 +1,6 @@
 package com.performizeit.mjstack.mappers;
 
-import com.performizeit.mjstack.parser.JStackMetadataStack;
+import com.performizeit.mjstack.parser.ThreadInfo;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -41,24 +41,24 @@ public class StackElimTest {
             "       at org.jvnet.hk2.internal.ServiceLocatorImpl.getService(ServiceLocatorImpl.java:612)\n\n";
     @Test
     public void testStack() throws Exception {
-        JStackMetadataStack js = new JStackMetadataStack(strt+stck+akkka+stck2);
+        ThreadInfo js = new ThreadInfo(strt+stck+akkka+stck2);
 
         assertEquals(strt+stck+akkka+stck2,js.toString() );
 
     }
     @Test
     public void testKeep() throws Exception {
-        JStackMetadataStack js = new JStackMetadataStack(strt + stck+akkka+stck2);
+        ThreadInfo js = new ThreadInfo(strt + stck+akkka+stck2);
         StackFrameContains tb = new StackFrameContains("com.akkka");
-        JStackMetadataStack js2 = tb.map(js);
+        ThreadInfo js2 = tb.map(js);
         assertEquals(strt+akkka,js2.toString() );
 
     }
     @Test
     public void testElim() throws Exception {
-        JStackMetadataStack js = new JStackMetadataStack(strt + stck+akkka+stck2);
+        ThreadInfo js = new ThreadInfo(strt + stck+akkka+stck2);
         StackFrameNotContains tb = new StackFrameNotContains("com.akkka");
-        JStackMetadataStack js2 = tb.map(js);
+        ThreadInfo js2 = tb.map(js);
         assertEquals(strt+stck+stck2,js2.toString() +"\n");
 
     }

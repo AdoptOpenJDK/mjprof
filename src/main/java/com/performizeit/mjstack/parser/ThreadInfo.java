@@ -28,13 +28,13 @@ import java.util.regex.Pattern;
 import  static com.performizeit.mjstack.parser.JStackProps.*;
 
 
-public class JStackMetadataStack {
+public class ThreadInfo extends Props{
 
 
-    HashMap<String, Object> metaData = new HashMap<String, Object>();
 
 
-    public JStackMetadataStack(String stackTrace) {
+
+    public ThreadInfo(String stackTrace) {
         BufferedReader reader = new BufferedReader(new StringReader(stackTrace));
         try {
             String metaLine = reader.readLine();
@@ -51,7 +51,7 @@ public class JStackMetadataStack {
                     if (s.trim().length() == 0) break;
                     linesOfStack += s + "\n";
                 }
-                metaData.put(STACK, new JStackStack(linesOfStack));
+                props.put(STACK, new StackTrace(linesOfStack));
                 while ((s = reader.readLine()) != null) {
                    if (s.contains("Locked ownable synchronizers"))     break;
                 }
@@ -61,32 +61,28 @@ public class JStackMetadataStack {
                     linesOfLOS += s + "\n";
                 }
                 if (linesOfLOS.trim().length() > 0)
-                    metaData.put(LOS, new JstackLockedOwbnableSynchronizers(linesOfLOS));
+                    props.put(LOS, new JstackLockedOwbnableSynchronizers(linesOfLOS));
            }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+    public ThreadInfo(HashMap<String, Object> mtd) {
+        super(mtd);
+    }
 
-    public JStackMetadataStack(HashMap <String,Object> mtd) {
-        metaData =mtd;
-    }
-    public HashMap<String, Object> cloneMetaData() {
-        return (HashMap<String, Object>) metaData.clone();
-    }
+
 
     private void parseThreadState(String threadState) {
         Pattern p = Pattern.compile("^[\\s]*java.lang.Thread.State: (.*)$");
         Matcher m = p.matcher(threadState);
         if (m.find()) {
-            metaData.put(STATE, m.group(1));
+            props.put(STATE, m.group(1));
         }
     }
 
 
-    public Object getVal(String key) {
-        return metaData.get(key);
-    }
+
 
     protected String metadataProperty(String metaLine,String propertyName){
         Pattern p = Pattern.compile(".* "+propertyName+"=([0-9a-fx]*) .*");
@@ -102,13 +98,13 @@ public class JStackMetadataStack {
         Pattern p = Pattern.compile("(\\S+)=(\\S+)");    // a nonspace string then = and then a non space string
         Matcher m = p.matcher(metaLine);
         while (m.find()) {
-            metaData.put( m.group(1),m.group(2));
+            props.put( m.group(1),m.group(2));
         }
-        if (metaData.get(TID) != null) {
-            metaData.put(TID+"Long", new HexaLong((String)metaData.get(TID)));
+        if (props.get(TID) != null) {
+            props.put(TID+"Long", new HexaLong((String)props.get(TID)));
         }
-        if (metaData.get(NID) != null) {
-            metaData.put(NID+"Long", new HexaLong((String) metaData.get(NID)));
+        if (props.get(NID) != null) {
+            props.put(NID+"Long", new HexaLong((String) props.get(NID)));
         }
     }
     private void parseMetaLine(String metaLine) {
@@ -116,14 +112,14 @@ public class JStackMetadataStack {
         Matcher m = p.matcher(metaLine);
 
         if (m.find()) {
-            metaData.put(NAME, m.group(1));
+            props.put(NAME, m.group(1));
         }
 
         extractStatus(metaLine);
            metadataKeyValProperties(metaLine);
 
         if (metaLine.contains("\" "+DAEMON+" ")) {
-            metaData.put(DAEMON, true);
+            props.put(DAEMON, true);
         }
 
     }
@@ -138,7 +134,7 @@ public class JStackMetadataStack {
                 lastParam = lastParam.substring(idx+1);
 
                 if (lastParam.length() > 0) {
-                    metaData.put(STATUS, lastParam.trim());
+                    props.put(STATUS, lastParam.trim());
                 }
             }
         }
@@ -148,41 +144,38 @@ public class JStackMetadataStack {
     public String toString() {
         StringBuilder mdStr = new StringBuilder();
 
-        if (metaData.get(NAME) != null) {
-            mdStr.append("\"" + metaData.get(NAME) + "\"");
+        if (props.get(NAME) != null) {
+            mdStr.append("\"" + props.get(NAME) + "\"");
         }
-        if (metaData.get(DAEMON) != null) {
+        if (props.get(DAEMON) != null) {
             mdStr.append(" "+DAEMON);
         }
-        if (metaData.get(PRIO) != null) {
-            mdStr.append(" "+PRIO+"=" + metaData.get(PRIO));
+        if (props.get(PRIO) != null) {
+            mdStr.append(" "+PRIO+"=" + props.get(PRIO));
         }
-        if (metaData.get(TID) != null) {
-            mdStr.append(" "+TID+"=" + metaData.get(TID));
+        if (props.get(TID) != null) {
+            mdStr.append(" "+TID+"=" + props.get(TID));
         }
-        if (metaData.get(NID) != null) {
-            mdStr.append(" "+NID+"=" + metaData.get(NID));
+        if (props.get(NID) != null) {
+            mdStr.append(" "+NID+"=" + props.get(NID));
         }
-        if (metaData.get(STATUS) != null) {
-            mdStr.append(" " + metaData.get(STATUS));
+        if (props.get(STATUS) != null) {
+            mdStr.append(" " + props.get(STATUS));
         }
 
 
-        if (metaData.get(STATE) != null) {
-            mdStr.append("\n   java.lang.Thread.State: ").append( metaData.get(STATE));
+        if (props.get(STATE) != null) {
+            mdStr.append("\n   java.lang.Thread.State: ").append( props.get(STATE));
         }
-        if (metaData.get(STACK) != null) {
-            mdStr.append("\n").append(metaData.get(STACK).toString()).append("\n");
+        if (props.get(STACK) != null) {
+            mdStr.append("\n").append(props.get(STACK).toString()).append("\n");
         }
-        if (metaData.get(LOS) != null) {
+        if (props.get(LOS) != null) {
             mdStr.append("   Locked ownable synchronizers:\n").append(
-                    metaData.get(LOS).toString());
+                    props.get(LOS).toString());
         }
         return mdStr.toString();
 
     }
 
-    public Set<String> getProps() {
-        return metaData.keySet();
-    }
 }

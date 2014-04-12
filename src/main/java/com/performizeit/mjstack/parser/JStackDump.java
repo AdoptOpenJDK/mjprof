@@ -29,22 +29,32 @@ import java.util.Comparator;
  * Created by life on 23/2/14.
  */
 public class JStackDump extends JStackDumpBase{
-
-    ArrayList<JStackMetadataStack> stacks;
+    int JNIglobalReferences = -1;
+    public static String JNI_GLOBAL_REFS= "JNI global references:";
+    ArrayList<ThreadInfo> stacks;
     public JStackDump(String stringRep) {
         String[] splitTraces = stringRep.split("\n\"");  // Assuming that thread stack trace starts with a new line followed by "
 
         header = new JStackHeader(splitTraces[0]);
-        stacks = new ArrayList<JStackMetadataStack>();
+        stacks = new ArrayList<ThreadInfo>();
         for(int i=1;i<splitTraces.length;i++) {
-            stacks.add(new JStackMetadataStack("\""+splitTraces[i]));
+            if (splitTraces[i].startsWith(JNI_GLOBAL_REFS)) {
+                try {
+                    JNIglobalReferences = Integer.parseInt(splitTraces[i].substring(splitTraces[i].indexOf(":") + 2).trim());
+                } catch (NumberFormatException e) {
+                    // do nothing so we missed the JNI global references I do not know what to do with it.
+                }
+
+            } else {
+                stacks.add(new ThreadInfo("\"" + splitTraces[i]));
+            }
         }
     }
     protected JStackDump() {
       super();
     }
 
-    public ArrayList<JStackMetadataStack> getStacks() {
+    public ArrayList<ThreadInfo> getStacks() {
         return stacks;
     }
 
@@ -53,7 +63,7 @@ public class JStackDump extends JStackDumpBase{
         StringBuilder s = new StringBuilder();
         s.append(header+"\n\n");
 
-        for (JStackMetadataStack stack : stacks) {
+        for (ThreadInfo stack : stacks) {
             s.append(stack.toString()+"\n");
         }
 
@@ -62,8 +72,8 @@ public class JStackDump extends JStackDumpBase{
     public JStackDump filterDump(JStackFilter filter) {
         JStackDump that = new JStackDump();
         that.header = header;
-        that.stacks = new ArrayList<JStackMetadataStack>();
-        for (JStackMetadataStack stk: stacks) {
+        that.stacks = new ArrayList<ThreadInfo>();
+        for (ThreadInfo stk: stacks) {
             if (filter.filter(stk)) {
                 that.stacks.add(stk);
             }
@@ -73,17 +83,17 @@ public class JStackDump extends JStackDumpBase{
     public JStackDumpBase mapDump(JStackMapper mapper) {
         JStackDump that = new JStackDump();
         that.header = header;
-        that.stacks = new ArrayList<JStackMetadataStack>();
-        for (JStackMetadataStack stk: stacks) {
+        that.stacks = new ArrayList<ThreadInfo>();
+        for (ThreadInfo stk: stacks) {
             that.stacks.add(mapper.map(stk));
         }
         return that;
     }
-    public JStackDumpBase sortDump(Comparator<JStackMetadataStack> comp) {
+    public JStackDumpBase sortDump(Comparator<ThreadInfo> comp) {
         JStackDump that = new JStackDump();
         that.header = header;
-        that.stacks = new ArrayList<JStackMetadataStack>();
-        for (JStackMetadataStack stk: stacks) {
+        that.stacks = new ArrayList<ThreadInfo>();
+        for (ThreadInfo stk: stacks) {
             that.stacks.add(stk);
         }
         Collections.sort(that.stacks,comp);

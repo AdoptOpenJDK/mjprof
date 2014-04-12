@@ -25,7 +25,7 @@ public class JStackMetadataStackTest {
             "       at com.akkka.aaa.bbb.rest.FileSystemFactory.provide(FlsFactory.java:44)\n";
     @Test
     public void testMetadataLineProperties() throws Exception {
-        JStackMetadataStack s = new JStackMetadataStack(metaLine+stck);
+        ThreadInfo s = new ThreadInfo(metaLine+stck);
 
         assertEquals("10", s.metadataProperty(metaLine, "prio"));
         assertEquals("0xd17",s.metadataProperty(metaLine,"nid"));
@@ -35,7 +35,7 @@ public class JStackMetadataStackTest {
 
     @Test
     public void testMetadata() throws Exception {
-        JStackMetadataStack s = new JStackMetadataStack(metaLine+stck);
+        ThreadInfo s = new ThreadInfo(metaLine+stck);
 
         assertEquals("10",s.getVal("prio"));
         assertEquals(0x0007fd8d8d5b000l,((HexaLong)s.getVal("tidLong")).getValue());
@@ -47,7 +47,7 @@ public class JStackMetadataStackTest {
 
     @Test
     public void testMetadataMixed() throws Exception {
-        JStackMetadataStack s = new JStackMetadataStack(metaLineWithMixedOrder+stck);
+        ThreadInfo s = new ThreadInfo(metaLineWithMixedOrder+stck);
 
         assertEquals("10",s.getVal("prio"));
         assertEquals(0x0007fd8d8d5b000l,((HexaLong)s.getVal("tidLong")).getValue());
@@ -58,7 +58,7 @@ public class JStackMetadataStackTest {
     }
     @Test
     public void testMissingFields() throws Exception {
-        JStackMetadataStack s = new JStackMetadataStack(metaLineMissingFields+stck);
+        ThreadInfo s = new ThreadInfo(metaLineMissingFields+stck);
 
         assertNull(s.getVal("prio"));
         assertNull(s.getVal("tidLong"));

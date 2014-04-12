@@ -40,6 +40,11 @@ import com.performizeit.mjstack.plugin.PluginUtils;
 
 public class MJStack {
 	public static void main(String[] args) throws IOException {
+
+        for (String s : System.getProperties().stringPropertyNames()) {
+            System.out.println(s);
+        }
+
       //  System.setProperty("java.awt.headless","true"); // when using lanterna we suffer when there we do not disable GUI
 		if (args.length <1) {
 			printSynopsisAndExit();
@@ -57,7 +62,7 @@ public class MJStack {
 			ArrayList<JStackDumpBase> jStackDumpsOrig = jStackDumps;
 			jStackDumps = new ArrayList<JStackDumpBase>(jStackDumpsOrig.size());
 			StepInfo step = StepsRepository.getStep(mjstep.getStepName());
-			Object[] paramArgs = buildArgsArray(step.getParamTypes(),mjstep.getStepArgs());		
+			Object[] paramArgs = buildArgsArray(step.getParamTypes(),mjstep.getStepArgs());
 			for (JStackDumpBase jsd : jStackDumpsOrig) {
 				Object obj=PluginUtils.initObj(step.getClazz(), step.getParamTypes(), paramArgs);
 				if(PluginUtils.isImplementsMapper(obj.getClass())){
@@ -71,7 +76,7 @@ public class MJStack {
 				}
 			}
 		}
-		
+
 
 		for (int i = 0; i < jStackDumps.size(); i++) {
 			System.out.println(jStackDumps.get(i));
@@ -179,7 +184,10 @@ public class MJStack {
 					linesOfStack = new StringBuilder();
 
 				}
-				linesOfStack.append(line).append("\n");
+                if (line.startsWith(JStackDump.JNI_GLOBAL_REFS))
+                    linesOfStack.append("\""); // need this hack for later parsing
+                linesOfStack.append(line).append("\n");
+
 			}
 		} catch (IOException e) {
 			System.err.println("Error while parsing stdin" + e);
@@ -188,8 +196,8 @@ public class MJStack {
 			stackDumps.add(linesOfStack.toString());
 		}
 		return stackDumps;
-
 	}
+
 	public static String join(String[] strs,String delim) {
 		StringBuilder b = new StringBuilder();
 		for (int i =0;i<strs.length;i++ ) {

@@ -1,91 +1,68 @@
 package com.performizeit.mjstack.mergers;
 
-import com.performizeit.mjstack.api.JStackTerminal;
-import com.performizeit.mjstack.api.Plugin;
-import com.performizeit.mjstack.parser.JStackDump;
-import com.performizeit.mjstack.parser.JStackMetadataStack;
-import com.performizeit.mjstack.parser.JStackProps;
-import com.performizeit.mjstack.parser.JStackStack;
+
+import com.performizeit.mjstack.parser.StackTrace;
 
 
 import java.util.HashMap;
-import java.util.HashSet;
 
-@Plugin(name="tree", paramTypes={},description="combine all stack traces ")
-public class StackTree implements JStackTerminal {
+
+
+public class StackTree {
     protected boolean color = false;
-    class SFNode {
-        int count;
-        String sf;
-         HashMap<String,SFNode> children=     new HashMap<String,SFNode>();
 
-        @Override
-        public String toString() {
-
-            return toString(0,new HashSet<Integer>());
-        }
-        private String CSI()
-        {
-            return (char)0x1b +"[";
-        }
-        private String GREEN() {
-            if (!color) return "";
-            return  CSI()+ "1;32m";
-        }
-        private String NC() {
-            if (!color) return "";
-            return CSI() + "0m";
-        }
+    public StackTree() {
+        root.setColor(color);
+        root.sf = null;
+    }
 
 
-        public String toString(int lvl,HashSet<Integer> brkPts) {
 
-            String a = "";
-            for (int i=0;i<lvl;i++) {
-                if (brkPts.contains(i))  {
-
-                    a += GREEN()+"|"+NC();
-                }            else
-                a += " ";
-            }
-            String ch = "\\";
-            if (children.size() >1) {
-                ch = "X";
-                brkPts.add(lvl);
-            }
-            if (children.size()==0) {
-                ch = "V";
-            }
-            a = String.format( "%4d ", count)+a+GREEN()+ch+NC() +" "+ sf;
-            a += "\n";
-            int t = 0;
-            for(SFNode n: children.values())  {
-                if (t == children.size()-1) {
-                    brkPts.remove(lvl);
-                }
-                t++;
-                a  += n.toString(lvl+1,brkPts);
-                if (lvl ==0) a+= "\n";
-            }
-
-            return a;
-        }
+    public void addStackTree(String treeString) {
+        String[] lines = treeString.split( "\n");
+        nextFrame(-1,root, lines, 0);
 
     }
-    HashMap<String,SFNode> roots =     new HashMap<String,SFNode>();
-    void transformStack(JStackStack stackTrace) {
+    public int nextFrame(int parentPehIndent,SFNode parent,  String[] lines, int curLine) {
+        while (curLine < lines.length) {
+//            System.out.println("curLine="+curLine + lines[curLine]);
+            String line = lines[curLine];
+
+            ProfileEntryHelper peh = new ProfileEntryHelper(line);
+
+//            System.out.println("ind="+peh.indentation);
+            if (peh.indentation <= parentPehIndent) {
+                return curLine;
+            } else if (peh.indentation > parentPehIndent) {
+                SFNode node;
+                node = parent.children.get(peh.description);
+                if (node == null) {
+                    node = new SFNode();
+                    node.sf = peh.description;
+                    parent.children.put(peh.description, node);
+                }
+                node.count += peh.count;
+                if (peh.indentation ==0) parent.count += peh.count;
+                curLine = nextFrame(peh.indentation, node, lines, curLine + 1);
+            }
+        }
+        return curLine;
+
+    }
+
+
+    SFNode root =     new SFNode();
+    public void addStacktrace(StackTrace stackTrace) {
 
         String[] sf = stackTrace.getStackFrames();
-        HashMap<String,SFNode> c = roots;
+        HashMap<String,SFNode> c = root.children;
+        root.count ++;
         for (int i=sf.length-1;i>=0;i--) {
             String sfi = sf[i].trim();
             if (sfi.isEmpty()) continue;
             SFNode node = c.get(sfi);
             if (node != null) {
                 node.count++;
-
-
-
             }  else {
                 node = new SFNode();
                 node.count++;
@@ -102,22 +79,12 @@ public class StackTree implements JStackTerminal {
 
     @Override
     public String toString() {
-        String a = "";
-        for(SFNode n: roots.values())  {
-            a  += n.toString();
-        }
-        return a;
+        return root.toString();
+
     }
 
 
 
 
 
-    public void addStackDump(JStackDump jsd) {
-
-        for (JStackMetadataStack mss : jsd.getStacks()  ) {
-            transformStack((JStackStack) mss.getVal(JStackProps.STACK));      // System.out.println();
-
-        }
-    }
 }

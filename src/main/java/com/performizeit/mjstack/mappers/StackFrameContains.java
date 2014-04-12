@@ -17,14 +17,7 @@
 
 package com.performizeit.mjstack.mappers;
 
-import com.performizeit.mjstack.api.JStackMapper;
 import com.performizeit.mjstack.api.Plugin;
-import com.performizeit.mjstack.parser.JStackMetadataStack;
-import com.performizeit.mjstack.parser.JStackStack;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 
 @Plugin(name="stackkeep",paramTypes = {String.class},
         description = "Eliminates stack frames from all stacks which do not contain string.")

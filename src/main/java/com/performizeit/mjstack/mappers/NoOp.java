@@ -19,17 +19,13 @@ package com.performizeit.mjstack.mappers;
 
 import com.performizeit.mjstack.api.JStackMapper;
 import com.performizeit.mjstack.api.Plugin;
-import com.performizeit.mjstack.parser.JStackMetadataStack;
-import com.performizeit.mjstack.parser.JStackStack;
-
-import java.util.Arrays;
-import java.util.HashMap;
+import com.performizeit.mjstack.parser.ThreadInfo;
 
 @Plugin(name="nop",paramTypes = {},
         description = "Does nothing")
 public class NoOp implements  JStackMapper {
     @Override
-    public JStackMetadataStack map(JStackMetadataStack stck) {
+    public ThreadInfo map(ThreadInfo stck) {
       return stck;
     }
 

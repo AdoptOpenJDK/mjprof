@@ -2,9 +2,9 @@ package com.performizeit.mjstack.api;
 
 import java.util.Comparator;
 
-import com.performizeit.mjstack.parser.JStackMetadataStack;
+import com.performizeit.mjstack.parser.ThreadInfo;
 
-public interface JStackComparator extends BasePlugin, Comparator<JStackMetadataStack>{
+public interface JStackComparator extends BasePlugin, Comparator<ThreadInfo>{
 
 
 

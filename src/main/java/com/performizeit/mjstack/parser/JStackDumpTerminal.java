@@ -18,7 +18,7 @@ public class JStackDumpTerminal extends JStackDumpBase{
     public JStackDump mapDump(JStackMapper mapper) {
         throw new NotImplementedException();
     }
-    public JStackDump sortDump(Comparator<JStackMetadataStack> comp) {
+    public JStackDump sortDump(Comparator<ThreadInfo> comp) {
         throw new NotImplementedException();
     }
 

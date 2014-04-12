@@ -18,7 +18,7 @@
 package com.performizeit.mjstack.filters;
 
 import com.performizeit.mjstack.api.Plugin;
-import com.performizeit.mjstack.parser.JStackMetadataStack;
+import com.performizeit.mjstack.parser.ThreadInfo;
 
 @Plugin(name="ncontains", paramTypes={String.class,String.class},
         description = "Returns only threads which do not contain the string (regexp not supported)")
@@ -28,7 +28,7 @@ public class JStackFilterFieldNotContains extends JStackFilterFieldContains {
     }
 
     @Override
-    public boolean filter(JStackMetadataStack stck) {
+    public boolean filter(ThreadInfo stck) {
         return !super.filter(stck);
     }
 }

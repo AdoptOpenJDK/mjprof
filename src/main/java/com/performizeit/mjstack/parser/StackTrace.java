@@ -25,9 +25,9 @@ import java.util.List;
 /**
  * Created by life on 23/2/14.
  */
-public class JStackStack implements Comparable<JStackStack>{
+public class StackTrace implements Comparable<StackTrace>{
     String linesOfStack;
-    public JStackStack(String linesOfStack) {
+    public StackTrace(String linesOfStack) {
                         this.linesOfStack = linesOfStack;
     }
     public  void setLinesOfStack(String linesOfStack) {
@@ -44,7 +44,7 @@ public class JStackStack implements Comparable<JStackStack>{
     }
 
     @Override
-    public int compareTo(JStackStack o) {
+    public int compareTo(StackTrace o) {
         return linesOfStack.compareTo(o.linesOfStack);
     }
 
