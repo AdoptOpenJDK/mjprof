@@ -94,3 +94,38 @@ Build mjstack
 Build mjstack with the following command line:  
 `mvn clean package`
 This will create a zip file in `target/dist/mjstack1.0-bin.zip` which contains everything you need.
+
+ an object which represents attributes of thread including  call stack priority native thread id etc///
+
+Write a plugin
+===============
+
+Write a Mapper:
+- Implement JStackMapper interface that includes:
+	map method: JStackMetadataStack map(JStackMetadataStack stck)
+	JStackMetadataStack represents attributes of thread including call stack priority native thread id etc.
+Write a Filter:
+- implement JStackFilter interface that includes:
+	filter method: boolean filter(JStackMetadataStack stck)
+	JStackMetadataStack represents attributes of thread including call stack priority native thread id etc.
+Write a Terminal:
+- Implement JStackTerminal interface that includes:
+	addStackDump method: void addStackDump(JStackDump jsd) 
+	JStackDump represents the entire stack dump 
+Write a comprator:
+- Implement JStackComparator interface that includes:
+	int compare(JStackMetadataStack o1, JStackMetadataStack o2)
+	JStackMetadataStack represents attributes of thread including call stack priority native thread id etc.
+
+For all the options above, add Plugin annotation: @Plugin.
+The plugin annotation includes the following attributes:
+	name - the command string
+	paramTypes - the constractur parameters types.
+	description - the string that will show in the help menu
+For example:
+	@Plugin(name="keeptop",paramTypes = {int.class}, description = "Returns at most n top stack frames of the stack")
+
+
+Install a plugin
+============
+In order to install the plugin just drop your jar into the 'plugins' directory 
