@@ -1,6 +1,6 @@
-mjstack
+MJProf
 =======
-MJStack is a monadic jstack analysis tool set.
+MJProf is a command line monadic java profiler.
 
 Introduction
 =============
