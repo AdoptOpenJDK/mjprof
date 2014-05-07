@@ -1,10 +1,8 @@
 package com.performizeit.mjstack.model;
 
-import com.performizeit.mjstack.model.ProfileEntryHelper;
+
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 public class ProfileEntryHelperTest {
     static String root = "100.00%     [3/3]\\ at com.akkka.aaa.bbb.rest.FileSystemFactory.provide(FlsFactory.java:44)" ;
