@@ -17,6 +17,7 @@
 
 package com.performizeit.mjstack.parser;
 
+import com.performizeit.mjstack.api.DumpMapper;
 import com.performizeit.mjstack.api.JStackFilter;
 import com.performizeit.mjstack.api.JStackMapper;
 import com.performizeit.mjstack.api.JStackTerminal;
@@ -59,6 +60,10 @@ public class JStackDump extends JStackDumpBase{
         return stacks;
     }
 
+    public void  setStacks(ArrayList<ThreadInfo> stacks) {
+        this.stacks = stacks;
+    }
+
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder();
@@ -89,6 +94,10 @@ public class JStackDump extends JStackDumpBase{
             that.stacks.add(mapper.map(stk));
         }
         return that;
+    }
+    public JStackDumpBase mapDump(DumpMapper mapper) {
+
+        return mapper.map(this);
     }
     public JStackDumpBase sortDump(Comparator<ThreadInfo> comp) {
         JStackDump that = new JStackDump();

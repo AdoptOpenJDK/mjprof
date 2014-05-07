@@ -148,6 +148,9 @@ public class ThreadInfo extends Props{
         if (props.get(NAME) != null) {
             mdStr.append("\"" + props.get(NAME) + "\"");
         }
+        if (props.get(COUNT) != null) {
+            mdStr.append(" "+COUNT+"=" + props.get(COUNT));
+        }
         if (props.get(DAEMON) != null) {
             mdStr.append(" "+DAEMON);
         }
@@ -175,6 +178,7 @@ public class ThreadInfo extends Props{
             mdStr.append("   Locked ownable synchronizers:\n").append(
                     props.get(LOS).toString());
         }
+
         return mdStr.toString();
 
     }

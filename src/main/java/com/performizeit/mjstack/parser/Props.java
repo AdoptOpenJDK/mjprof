@@ -20,6 +20,12 @@ public class Props {
     public Object getVal(String key) {
         return props.get(key);
     }
+    public Object setVal(String key,Object val) {
+        return props.put(key,val);
+    }
+    public Object remove(String key) {
+        return props.remove(key);
+    }
 
     public Set<String> getProps() {
         return props.keySet();

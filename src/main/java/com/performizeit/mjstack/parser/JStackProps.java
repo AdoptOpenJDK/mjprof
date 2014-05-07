@@ -10,4 +10,5 @@ public interface JStackProps {
     public static final String STATE = "state";
     public static final String LOS = "los";
     public static final String DAEMON = "daemon";
+    public static final String COUNT = "count";
 }

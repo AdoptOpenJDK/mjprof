@@ -1,5 +1,6 @@
 package com.performizeit.mjstack.parser;
 
+import com.performizeit.mjstack.api.DumpMapper;
 import com.performizeit.mjstack.api.JStackFilter;
 import com.performizeit.mjstack.api.JStackMapper;
 import com.performizeit.mjstack.api.JStackTerminal;
@@ -18,6 +19,7 @@ public abstract class JStackDumpBase {
 
     public abstract JStackDumpBase filterDump(JStackFilter filter) ;
     public abstract JStackDumpBase mapDump(JStackMapper mapper);
+    public abstract JStackDumpBase mapDump(DumpMapper mapper);
     public abstract JStackDumpBase sortDump(Comparator<ThreadInfo> comp);
     public abstract JStackDumpBase terminateDump(JStackTerminal terminal);
 

@@ -15,51 +15,61 @@
         along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.performizeit.mjstack.terminals;
+package com.performizeit.mjstack.mappers;
 
-import com.performizeit.mjstack.api.JStackTerminal;
+import com.performizeit.mjstack.api.DumpMapper;
 import com.performizeit.mjstack.api.Plugin;
+import com.performizeit.mjstack.model.Profile;
 import com.performizeit.mjstack.parser.JStackDump;
 import com.performizeit.mjstack.parser.ThreadInfo;
+import  static com.performizeit.mjstack.parser.JStackProps.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
  * Created by life on 28/2/14.
  */
 @Plugin(name="group", paramTypes={String.class},description="group by an attribute")
-public class GroupByProp implements JStackTerminal {
+public class GroupByProp implements DumpMapper {
     private final String prop;
-    HashMap<String,Integer> propsHash = new HashMap<String, Integer>();
-
-
     public GroupByProp(String prop) {
         this.prop = prop;
     }
-    public void addStackDump(JStackDump jsd) {
-
+    public JStackDump  map(JStackDump jsd ) {
+        HashMap<String,ThreadInfo> threadMap = new HashMap<String, ThreadInfo>();
         for (ThreadInfo mss : jsd.getStacks()  ) {
-           // System.out.println();
+            // System.out.println();
             Object o = mss.getVal(prop);
             if (o != null && o.toString().trim().length()>0) {
                 String key = o.toString().trim();
-                if (propsHash.get(key) != null) {
-                    propsHash.put(key,propsHash.get(key)+1);
+                if (threadMap.get(key) == null) {
+                    threadMap.put(key,overlapAllPropsNotInGroupBy(mss));
+                    mss.setVal("count",1);
                 }   else {
-                    propsHash.put(key,1);
+                    ThreadInfo x = threadMap.get(key);
+                    Profile p = (Profile)x.getVal("stack");
+                    x.setVal("count",((Integer)x.getVal("count"))+1);
+                    p.addMulti((Profile)mss.getVal("stack"));
                 }
             }
         }
+        ArrayList<ThreadInfo> reducedThreadInfo = new  ArrayList<ThreadInfo>();
+        reducedThreadInfo.addAll(threadMap.values());
+
+        jsd.setStacks(reducedThreadInfo);
+        return jsd;
     }
-
-    @Override
-    public String toString() {
-
-        StringBuilder sb = new StringBuilder();
-        for (String key: propsHash.keySet()) {
-            sb.append(propsHash.get(key)+ " [" + key+"]\n");
-
+    ThreadInfo overlapAllPropsNotInGroupBy(ThreadInfo mss) {
+        ArrayList<String> keys = new ArrayList<String>(mss.getProps());
+        for (String prop1: keys) {
+            if (!prop1.equals(prop) && !prop1.equals(STACK) && !prop1.equals(COUNT)) {
+               mss.setVal(prop1,"*");
+            }
         }
-        return sb.toString();
+        mss.remove(DAEMON);
+        return mss;
     }
+
+
 }

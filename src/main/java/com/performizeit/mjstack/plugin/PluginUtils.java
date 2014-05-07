@@ -22,13 +22,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Set;
 
+import com.performizeit.mjstack.api.*;
 import org.reflections.Reflections;
-
-import com.performizeit.mjstack.api.JStackComparator;
-import com.performizeit.mjstack.api.JStackFilter;
-import com.performizeit.mjstack.api.JStackMapper;
-import com.performizeit.mjstack.api.JStackTerminal;
-import com.performizeit.mjstack.api.Plugin;
 
 
 public class PluginUtils {
@@ -72,6 +67,9 @@ public class PluginUtils {
 	public static boolean isImplementsMapper(Class<?> cla) {
 		return JStackMapper.class.isAssignableFrom(cla);
 	}
+    public static boolean isImplementsDumpMapper(Class<?> cla) {
+        return DumpMapper.class.isAssignableFrom(cla);
+    }
 	public static boolean isImplementsFilter(Class<?> cla) {
 		return JStackFilter.class.isAssignableFrom(cla);
 	}

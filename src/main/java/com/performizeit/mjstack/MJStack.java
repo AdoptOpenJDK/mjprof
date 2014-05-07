@@ -26,10 +26,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import com.performizeit.mjstack.api.JStackComparator;
-import com.performizeit.mjstack.api.JStackFilter;
-import com.performizeit.mjstack.api.JStackMapper;
-import com.performizeit.mjstack.api.JStackTerminal;
+import com.performizeit.mjstack.api.*;
 import com.performizeit.mjstack.monads.MJStep;
 import com.performizeit.mjstack.monads.StepInfo;
 import com.performizeit.mjstack.monads.StepsRepository;
@@ -62,8 +59,10 @@ public class MJStack {
 				Object obj=PluginUtils.initObj(step.getClazz(), step.getParamTypes(), paramArgs);
 				if(PluginUtils.isImplementsMapper(obj.getClass())){
 					jStackDumps.add(jsd.mapDump((JStackMapper) obj));
-				}else if(PluginUtils.isImplementsFilter(obj.getClass())){
-					jStackDumps.add(jsd.filterDump((JStackFilter)obj));
+				}else if(PluginUtils.isImplementsDumpMapper(obj.getClass())){
+                    jStackDumps.add(jsd.mapDump((DumpMapper) obj));
+                }else if(PluginUtils.isImplementsFilter(obj.getClass())){
+					jStackDumps.add(jsd.filterDump((JStackFilter) obj));
 				}else if(PluginUtils.isImplementsTerminal(obj.getClass())){
 					jStackDumps.add(jsd.terminateDump((JStackTerminal) obj));
 				}else if(PluginUtils.isImplementsComparators(obj.getClass())){
