@@ -33,32 +33,35 @@ import java.util.HashMap;
         description = "Trim all stack frames below the first occurrence of string")
 public class TrimBelow implements JStackMapper {
     protected final String expr;
-    int flowLevel=Integer.MAX_VALUE;
+
 
 
     public TrimBelow(String expr) {
         this.expr = expr;
 
     }
-
+    private class TrimBelowContext {
+        boolean parentFound = false;
+        int flowLevel=Integer.MAX_VALUE;
+    }
     @Override
     public ThreadInfo map(ThreadInfo stck) {
         Profile p = (Profile)stck.getVal("stack");
         p.filter(new ProfileNodeFilter() {
             @Override
             public boolean accept(SFNode node , int level,Object context) {
+                TrimBelowContext ctx =  (TrimBelowContext)  context;
+
                 String stackFrame = node.getStackFrame();
-                if (level > flowLevel) {System.out.println(stackFrame+ " "+ level +"subtree");return true;}    // we are in an interesting subtree
-                if (level < flowLevel) flowLevel =  Integer.MAX_VALUE;        // this signifies exiting an interesting subtree
+                if (level > ctx.flowLevel) {return true;}    // we are in an interesting subtree
+                if (level < ctx.flowLevel) ctx.flowLevel =  Integer.MAX_VALUE;        // this signifies exiting an interesting subtree
                 if  (stackFrame.contains(expr)) {
-                    flowLevel = level;
-                    System.out.println(stackFrame+ " "+ level +"found");
+                    ctx.flowLevel = level;
                     return true;
                 }
-                System.out.println(stackFrame+ " "+ level +"out");
                 return false;
             }
-        },null) ;
+        },new TrimBelowContext()) ;
         return stck;
     }
 }

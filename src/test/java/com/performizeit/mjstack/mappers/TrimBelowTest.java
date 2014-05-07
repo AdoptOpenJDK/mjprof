@@ -39,20 +39,15 @@ public class TrimBelowTest {
     @Test
     public void testStack() throws Exception {
         ThreadInfo js = new ThreadInfo(stck+stck2);
-       // System.out.println("{"+stck+stck2+"}");
-        //System.out.println("{"+js.toString()+"}");
         assertEquals(stck+stck2,js.toString() );
 
     }
    @Test
     public void testMap() throws Exception {
         ThreadInfo js = new ThreadInfo(stck+stck2);
-      //  System.out.println(js.getVal("stack").toString());
         TrimBelow tb = new TrimBelow("com.akkka");
         ThreadInfo js2 = tb.map(js);
-        System.out.println("{"+stck+"}");
-        System.out.println("{"+js2.toString()+"}");
-       // assertEquals(stck,js2.toString() );
+        assertEquals(stck,js2.toString() );
 
     }
 }
