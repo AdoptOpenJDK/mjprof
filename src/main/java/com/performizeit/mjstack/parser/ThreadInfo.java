@@ -31,10 +31,6 @@ import  static com.performizeit.mjstack.parser.JStackProps.*;
 
 public class ThreadInfo extends Props{
 
-
-
-
-
     public ThreadInfo(String stackTrace) {
         BufferedReader reader = new BufferedReader(new StringReader(stackTrace));
         try {
@@ -71,8 +67,6 @@ public class ThreadInfo extends Props{
     public ThreadInfo(HashMap<String, Object> mtd) {
         super(mtd);
     }
-
-
 
     private void parseThreadState(String threadState) {
         Pattern p = Pattern.compile("^[\\s]*java.lang.Thread.State: (.*)$");
