@@ -2,10 +2,10 @@ package com.performizeit.mjstack.plugin;
 
 import com.performizeit.mjstack.api.JStackMapper;
 import com.performizeit.mjstack.api.Plugin;
+import com.performizeit.mjstack.model.Profile;
+import com.performizeit.mjstack.model.ProfileNodeFilter;
+import com.performizeit.mjstack.model.SFNode;
 import com.performizeit.mjstack.parser.ThreadInfo;
-import com.performizeit.mjstack.model.StackTrace;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 /*
  * Only for TEST! need to be in another project
@@ -20,17 +20,17 @@ public class PluginWithParameterConstructorTest implements JStackMapper {
 
     public ThreadInfo map(ThreadInfo stck) {
         HashMap<String,Object> mtd = stck.cloneMetaData();
-        StackTrace jss = (StackTrace) mtd.get("stack");
-        String[] stackFrames = jss.getStackFrames();
-        ArrayList<String> partial = new ArrayList<String>();
-        boolean fromHere = false;
-        for (int i=stackFrames.length-1;i>=0;i--) {
+        Profile jss = (Profile) mtd.get("stack");
 
-                if (stackFrames[i].contains(expr)  ) fromHere = true;
-                if (fromHere)  partial.add(0,stackFrames[i]);
-        }
-        jss.setStackFrames(partial);
-        return new ThreadInfo(mtd);
+        jss.filter(new ProfileNodeFilter() {
+
+            @Override
+            public boolean accept(SFNode node, int level, Object context) {
+                if (node.getStackFrame() == null) return true;
+                return node.getStackFrame().contains("lock");
+            }
+        },null);
+        return stck;
     }
 
 	public ThreadInfo execute(ThreadInfo stck) {

@@ -69,7 +69,7 @@
                     <descriptors>
                         <descriptor>assembly/bin.xml</descriptor>
                     </descriptors>
-                    <finalName>mjstack${project.version}</finalName>
+                    <finalName>mjprof${project.version}</finalName>
                     <outputDirectory>${project.build.directory}/dist</outputDirectory>
                     <workDirectory>${project.build.directory}/assembly/work</workDirectory>
                     <descriptorRefs>

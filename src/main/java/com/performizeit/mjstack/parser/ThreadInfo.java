@@ -18,7 +18,6 @@
 package com.performizeit.mjstack.parser;
 
 import com.performizeit.mjstack.model.Profile;
-import com.performizeit.mjstack.model.StackTrace;
 
 import java.io.BufferedReader;
 import java.io.IOException;

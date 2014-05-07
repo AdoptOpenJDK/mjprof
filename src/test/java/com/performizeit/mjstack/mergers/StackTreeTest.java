@@ -1,8 +1,6 @@
 package com.performizeit.mjstack.mergers;
 
 import com.performizeit.mjstack.model.Profile;
-import com.performizeit.mjstack.model.StackTrace;
-import com.performizeit.mjstack.model.StackTree;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 

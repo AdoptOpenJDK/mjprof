@@ -22,10 +22,6 @@ import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.model.Profile;
 import com.performizeit.mjstack.model.ProfileVisitor;
 import com.performizeit.mjstack.parser.ThreadInfo;
-import com.performizeit.mjstack.model.StackTrace;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 @Plugin(name="pkgelim",paramTypes = {},
         description = "Eliminates package name from stack frames")
@@ -36,11 +32,12 @@ public class PackageEliminator implements  JStackMapper {
 
     @Override
     public ThreadInfo map(ThreadInfo stck) {
-        HashMap<String,Object> mtd = stck.cloneMetaData();
+       // HashMap<String,Object> mtd = stck.cloneMetaData();
         Profile jss = (Profile) stck.getVal("stack");
         jss.visit(new ProfileVisitor() {
             @Override
             public String visit(String sf,int level) {
+                if (sf == null) return null;
                 return eliminatePackage(sf);
             }
         });

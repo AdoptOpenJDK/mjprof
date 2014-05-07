@@ -23,10 +23,6 @@ import com.performizeit.mjstack.model.Profile;
 import com.performizeit.mjstack.model.ProfileNodeFilter;
 import com.performizeit.mjstack.model.SFNode;
 import com.performizeit.mjstack.parser.ThreadInfo;
-import com.performizeit.mjstack.model.StackTrace;
-
-import java.util.Arrays;
-import java.util.HashMap;
 
 @Plugin(name="keeptop",paramTypes = {int.class},
         description = "Returns at most n top stack frames of the stack")

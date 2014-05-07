@@ -23,11 +23,6 @@ import com.performizeit.mjstack.model.Profile;
 import com.performizeit.mjstack.model.ProfileNodeFilter;
 import com.performizeit.mjstack.model.SFNode;
 import com.performizeit.mjstack.parser.ThreadInfo;
-import com.performizeit.mjstack.model.StackTrace;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 @Plugin(name="trimbelow",paramTypes = {String.class},
         description = "Trim all stack frames below the first occurrence of string")
