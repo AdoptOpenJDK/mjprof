@@ -21,6 +21,7 @@ import com.performizeit.mjstack.api.JStackMapper;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.model.Profile;
 import com.performizeit.mjstack.model.ProfileNodeFilter;
+import com.performizeit.mjstack.model.SFNode;
 import com.performizeit.mjstack.parser.ThreadInfo;
 import com.performizeit.mjstack.model.StackTrace;
 
@@ -43,7 +44,8 @@ public class TrimBottom implements  JStackMapper {
             Profile p = (Profile)stck.getVal("stack");
             p.filter(new ProfileNodeFilter() {
                 @Override
-                public boolean accept(String stackFrame, int level,Object context) {
+                public boolean accept(SFNode node, int level,Object context) {
+
                     return level < count;
                 }
             },null) ;

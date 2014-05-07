@@ -38,7 +38,7 @@ public class StackElimTest {
             "       at org.jvnet.hk2.internal.SystemDescriptor.create(SystemDescriptor.java:456)\n" +
             "       at org.glassfish.jersey.process.internal.RequestScope.findOrCreate(RequestScope.java:158)\n" +
             "       at org.jvnet.hk2.internal.Utilities.createService(Utilities.java:2350)\n" +
-            "       at org.jvnet.hk2.internal.ServiceLocatorImpl.getService(ServiceLocatorImpl.java:612)\n\n";
+            "       at org.jvnet.hk2.internal.ServiceLocatorImpl.getService(ServiceLocatorImpl.java:612)\n";
     @Test
     public void testStack() throws Exception {
         ThreadInfo js = new ThreadInfo(strt+stck+akkka+stck2);
@@ -59,7 +59,7 @@ public class StackElimTest {
         ThreadInfo js = new ThreadInfo(strt + stck+akkka+stck2);
         StackFrameNotContains tb = new StackFrameNotContains("com.akkka");
         ThreadInfo js2 = tb.map(js);
-        assertEquals(strt+stck+stck2,js2.toString() +"\n");
+        assertEquals(strt+stck+stck2,js2.toString());
 
     }
 }

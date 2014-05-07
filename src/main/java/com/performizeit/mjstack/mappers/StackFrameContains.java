@@ -21,6 +21,7 @@ import com.performizeit.mjstack.api.JStackMapper;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.model.Profile;
 import com.performizeit.mjstack.model.ProfileNodeFilter;
+import com.performizeit.mjstack.model.SFNode;
 import com.performizeit.mjstack.parser.ThreadInfo;
 
 @Plugin(name="stackkeep",paramTypes = {String.class},
@@ -39,8 +40,8 @@ public class StackFrameContains implements JStackMapper {
         Profile p = (Profile)stck.getVal("stack");
         p.filter(new ProfileNodeFilter() {
             @Override
-            public boolean accept(String stackFrame, int level,Object context) {
-                return stackFrame.contains(expr);
+            public boolean accept(SFNode node, int level,Object context) {
+                return node.getStackFrame().contains(expr);
             }
         },null) ;
         return stck;

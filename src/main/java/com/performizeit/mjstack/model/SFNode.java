@@ -1,5 +1,7 @@
 package com.performizeit.mjstack.model;
 
+import org.w3c.dom.DOMStringList;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -95,18 +97,26 @@ public class SFNode {
     // filter out children which do not match filter
     public void filterChildren(ProfileNodeFilter pnf,int level, Object context) {
         ArrayList<String> keysToRemove = new ArrayList<String>();
+
         for (String childKey : children.keySet()) {
             SFNode child =    children.get(childKey);
+            boolean acceptNode = pnf.accept(child, level,context);
             child.filterChildren(pnf, level + 1,context);    // first filter out the children
-            if (pnf.accept(child.sf, level,this) && child.children.size()==0) {
+            if ( !acceptNode) {
                keysToRemove.add(childKey);
             }
         }
+        // if we are about to remove this child then we take all its children and fuse them to this node....
         for (String key: keysToRemove) {
             SFNode child = children.get(key);
             children.remove(key);
             for (String grandchildKey :child.children.keySet())  {
-                mergeToNode(child.children.get(key));
+                if (children.get(grandchildKey) == null) {/// there is no child with grandchildKey
+                    children.put(grandchildKey, child.children.get(grandchildKey));
+                } else {
+                    SFNode newChild = children.get(grandchildKey);
+                    newChild.mergeToNode(child.children.get(grandchildKey));
+                }
 
             }
 
@@ -137,5 +147,9 @@ public class SFNode {
             clone.children.put(key, children.get(key).deepClone());
         }
         return clone;
+    }
+
+    public String getStackFrame() {
+        return sf;
     }
 }

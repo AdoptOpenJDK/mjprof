@@ -21,6 +21,7 @@ import com.performizeit.mjstack.api.JStackMapper;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.model.Profile;
 import com.performizeit.mjstack.model.ProfileNodeFilter;
+import com.performizeit.mjstack.model.SFNode;
 import com.performizeit.mjstack.parser.ThreadInfo;
 import com.performizeit.mjstack.model.StackTrace;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -45,7 +46,8 @@ public class TrimBelow implements JStackMapper {
         Profile p = (Profile)stck.getVal("stack");
         p.filter(new ProfileNodeFilter() {
             @Override
-            public boolean accept(String stackFrame, int level,Object context) {
+            public boolean accept(SFNode node , int level,Object context) {
+                String stackFrame = node.getStackFrame();
                 if (level > flowLevel) {System.out.println(stackFrame+ " "+ level +"subtree");return true;}    // we are in an interesting subtree
                 if (level < flowLevel) flowLevel =  Integer.MAX_VALUE;        // this signifies exiting an interesting subtree
                 if  (stackFrame.contains(expr)) {
