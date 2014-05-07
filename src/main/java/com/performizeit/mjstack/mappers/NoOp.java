@@ -21,12 +21,12 @@ import com.performizeit.mjstack.api.JStackMapper;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.parser.ThreadInfo;
 
-@Plugin(name="nop",paramTypes = {},
+@Plugin(name="noop",paramTypes = {},
         description = "Does nothing")
 public class NoOp implements  JStackMapper {
     @Override
-    public ThreadInfo map(ThreadInfo stck) {
-      return stck;
+    public ThreadInfo map(ThreadInfo threadInfo) {
+      return threadInfo;
     }
 
 }
