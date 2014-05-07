@@ -4,11 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.performizeit</groupId>
-    <artifactId>mjstack</artifactId>
+    <artifactId>mjprof</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging> 
 
-    <name>mjstack</name>
+    <name>mjprof</name>
     <url>http://maven.apache.org</url>
     <build>
         <plugins>
