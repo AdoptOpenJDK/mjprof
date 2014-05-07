@@ -19,32 +19,34 @@ package com.performizeit.mjstack.mappers;
 
 import com.performizeit.mjstack.api.JStackMapper;
 import com.performizeit.mjstack.api.Plugin;
+import com.performizeit.mjstack.model.Profile;
+import com.performizeit.mjstack.model.ProfileNodeFilter;
 import com.performizeit.mjstack.parser.ThreadInfo;
-import com.performizeit.mjstack.parser.StackTrace;
+import com.performizeit.mjstack.model.StackTrace;
 
 import java.util.Arrays;
 import java.util.HashMap;
 
 @Plugin(name="keepbot",paramTypes = {int.class},
         description = "Returns at most n bottom stack frames of the stack")
-public class TrimTop implements  JStackMapper {
+public class TrimTop implements   JStackMapper {
     private final int count;
 
     public TrimTop(int count) {
         this.count = count;
     }
 
+
+
     @Override
     public ThreadInfo map(ThreadInfo stck) {
-        HashMap<String,Object> mtd = stck.cloneMetaData();
-        StackTrace jss = (StackTrace) mtd.get("stack");
-        String[] stackFrames = jss.getStackFrames();
-        if (count < stackFrames.length)   {
-            String[] partial = Arrays.copyOfRange(stackFrames,stackFrames.length-count , stackFrames.length);
-            jss.setStackFrames(partial);
-        }
-
-        return      new ThreadInfo(mtd);
+        Profile p = (Profile)stck.getVal("stack");
+        p.filter(new ProfileNodeFilter() {
+            @Override
+            public boolean accept(String stackFrame, int level,Object context) {
+                return level > count;
+            }
+        },null) ;
+        return stck;
     }
-
 }

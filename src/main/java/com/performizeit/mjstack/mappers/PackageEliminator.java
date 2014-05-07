@@ -19,8 +19,10 @@ package com.performizeit.mjstack.mappers;
 
 import com.performizeit.mjstack.api.JStackMapper;
 import com.performizeit.mjstack.api.Plugin;
+import com.performizeit.mjstack.model.Profile;
+import com.performizeit.mjstack.model.ProfileVisitor;
 import com.performizeit.mjstack.parser.ThreadInfo;
-import com.performizeit.mjstack.parser.StackTrace;
+import com.performizeit.mjstack.model.StackTrace;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,23 +32,21 @@ import java.util.HashMap;
 public class PackageEliminator implements  JStackMapper {
 
 
-    public PackageEliminator() {
-
-    }
+    public PackageEliminator() {}
 
     @Override
     public ThreadInfo map(ThreadInfo stck) {
         HashMap<String,Object> mtd = stck.cloneMetaData();
-        StackTrace jss = (StackTrace) mtd.get("stack");
-        String[] stackFrames = jss.getStackFrames();
-        ArrayList<String> partial = new ArrayList<String>();
-        for (String sf:stackFrames) {
-            partial.add(eliminatePackage(sf));
+        Profile jss = (Profile) stck.getVal("stack");
+        jss.visit(new ProfileVisitor() {
+            @Override
+            public String visit(String sf,int level) {
+                return eliminatePackage(sf);
+            }
+        });
+        return stck;
 
-        }
-        jss.setStackFrames(partial);
 
-        return      new ThreadInfo(mtd);
     }
 
     static String eliminatePackage(String stackFrame) {

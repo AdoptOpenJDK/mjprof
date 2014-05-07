@@ -15,7 +15,7 @@
         along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.performizeit.mjstack.parser;
+package com.performizeit.mjstack.model;
 
 
 import java.util.ArrayList;

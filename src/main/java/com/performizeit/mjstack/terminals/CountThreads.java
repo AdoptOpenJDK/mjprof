@@ -20,7 +20,7 @@ package com.performizeit.mjstack.terminals;
 import com.performizeit.mjstack.api.JStackTerminal;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.parser.JStackDump;
-import com.performizeit.mjstack.parser.JStackHeader;
+import com.performizeit.mjstack.model.JStackHeader;
 import com.performizeit.mjstack.parser.ThreadInfo;
 
 import java.util.ArrayList;

@@ -19,8 +19,10 @@ package com.performizeit.mjstack.mappers;
 
 import com.performizeit.mjstack.api.JStackMapper;
 import com.performizeit.mjstack.api.Plugin;
+import com.performizeit.mjstack.model.Profile;
+import com.performizeit.mjstack.model.ProfileNodeFilter;
 import com.performizeit.mjstack.parser.ThreadInfo;
-import com.performizeit.mjstack.parser.StackTrace;
+import com.performizeit.mjstack.model.StackTrace;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -34,17 +36,17 @@ public class TrimBottom implements  JStackMapper {
         this.count = count;
     }
 
-    @Override
-    public ThreadInfo map(ThreadInfo stck) {
-        HashMap<String,Object> mtd = stck.cloneMetaData();
-        StackTrace jss = (StackTrace) mtd.get("stack");
-        String[] stackFrames = jss.getStackFrames();
-        if (count < stackFrames.length)   {
-            String[] partial = Arrays.copyOfRange(stackFrames, 0, count);
-            jss.setStackFrames(partial);
+
+
+        @Override
+        public ThreadInfo map(ThreadInfo stck) {
+            Profile p = (Profile)stck.getVal("stack");
+            p.filter(new ProfileNodeFilter() {
+                @Override
+                public boolean accept(String stackFrame, int level,Object context) {
+                    return level < count;
+                }
+            },null) ;
+            return stck;
         }
-
-        return      new ThreadInfo(mtd);
     }
-
-}

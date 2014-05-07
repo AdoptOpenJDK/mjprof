@@ -1,5 +1,6 @@
-package com.performizeit.mjstack.mergers;
+package com.performizeit.mjstack.model;
 
+import com.performizeit.mjstack.model.ProfileEntryHelper;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

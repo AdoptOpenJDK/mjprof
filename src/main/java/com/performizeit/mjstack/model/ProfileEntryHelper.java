@@ -1,4 +1,4 @@
-package com.performizeit.mjstack.mergers;
+package com.performizeit.mjstack.model;
 
 /**
  * Created by life on 10/4/14.

@@ -20,6 +20,7 @@ package com.performizeit.mjstack.parser;
 import com.performizeit.mjstack.api.JStackFilter;
 import com.performizeit.mjstack.api.JStackMapper;
 import com.performizeit.mjstack.api.JStackTerminal;
+import com.performizeit.mjstack.model.JStackHeader;
 
 import java.util.ArrayList;
 import java.util.Collections;

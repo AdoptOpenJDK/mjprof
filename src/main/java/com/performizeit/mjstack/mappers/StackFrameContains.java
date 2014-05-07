@@ -17,12 +17,32 @@
 
 package com.performizeit.mjstack.mappers;
 
+import com.performizeit.mjstack.api.JStackMapper;
 import com.performizeit.mjstack.api.Plugin;
+import com.performizeit.mjstack.model.Profile;
+import com.performizeit.mjstack.model.ProfileNodeFilter;
+import com.performizeit.mjstack.parser.ThreadInfo;
 
 @Plugin(name="stackkeep",paramTypes = {String.class},
         description = "Eliminates stack frames from all stacks which do not contain string.")
-public class StackFrameContains extends StackFrameCNC {
+public class StackFrameContains implements JStackMapper {
+    protected final String expr;
+
+
     public StackFrameContains(String expr) {
-        super(expr,false);
+        this.expr = expr;
+
+    }
+
+    @Override
+    public ThreadInfo map(ThreadInfo stck) {
+        Profile p = (Profile)stck.getVal("stack");
+        p.filter(new ProfileNodeFilter() {
+            @Override
+            public boolean accept(String stackFrame, int level,Object context) {
+                return stackFrame.contains(expr);
+            }
+        },null) ;
+        return stck;
     }
 }

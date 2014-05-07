@@ -1,3 +1,5 @@
+NOTE: mjprof is going into a major refactoring and currently not stable will be fixed until the end of the day 
+
 MJProf
 =======
 MJProf is a command line monadic java profiler.

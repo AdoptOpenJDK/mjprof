@@ -3,7 +3,7 @@ package com.performizeit.mjstack.plugin;
 import com.performizeit.mjstack.api.JStackMapper;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.parser.ThreadInfo;
-import com.performizeit.mjstack.parser.StackTrace;
+import com.performizeit.mjstack.model.StackTrace;
 
 import java.util.ArrayList;
 import java.util.HashMap;

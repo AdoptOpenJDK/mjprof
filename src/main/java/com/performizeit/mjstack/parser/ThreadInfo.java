@@ -17,12 +17,14 @@
 
 package com.performizeit.mjstack.parser;
 
+import com.performizeit.mjstack.model.Profile;
+import com.performizeit.mjstack.model.StackTrace;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashMap;
 
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import  static com.performizeit.mjstack.parser.JStackProps.*;
@@ -51,7 +53,7 @@ public class ThreadInfo extends Props{
                     if (s.trim().length() == 0) break;
                     linesOfStack += s + "\n";
                 }
-                props.put(STACK, new StackTrace(linesOfStack));
+                props.put(STACK, new Profile(linesOfStack));
                 while ((s = reader.readLine()) != null) {
                    if (s.contains("Locked ownable synchronizers"))     break;
                 }
