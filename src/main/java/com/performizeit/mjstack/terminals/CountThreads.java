@@ -19,7 +19,7 @@ package com.performizeit.mjstack.terminals;
 
 import com.performizeit.mjstack.api.JStackTerminal;
 import com.performizeit.mjstack.api.Plugin;
-import com.performizeit.mjstack.parser.JStackDump;
+import com.performizeit.mjstack.parser.ThreadDump;
 import com.performizeit.mjstack.model.JStackHeader;
 import com.performizeit.mjstack.parser.ThreadInfo;
 
@@ -31,7 +31,7 @@ public class CountThreads implements JStackTerminal {
     ArrayList<JStackHeader> stackDumpsHeaders = new ArrayList<JStackHeader>();
 
 
-    public void addStackDump(JStackDump jsd) {
+    public void addStackDump(ThreadDump jsd) {
         for (ThreadInfo mss : jsd.getStacks()  ) {
                 count++;
         }

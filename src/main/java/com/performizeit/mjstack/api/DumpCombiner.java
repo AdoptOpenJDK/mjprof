@@ -16,9 +16,9 @@
 */
 package com.performizeit.mjstack.api;
 
-import com.performizeit.mjstack.parser.JStackDump;
+import com.performizeit.mjstack.parser.ThreadDump;
 
 
 public interface DumpCombiner extends BasePlugin{
-    JStackDump  map(JStackDump jsd1,JStackDump jsd2);
+    ThreadDump map(ThreadDump jsd1,ThreadDump jsd2);
 }

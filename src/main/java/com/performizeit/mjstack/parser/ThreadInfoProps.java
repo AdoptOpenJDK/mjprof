@@ -17,7 +17,7 @@
 
 package com.performizeit.mjstack.parser;
 
-public interface JStackProps {
+public interface ThreadInfoProps {
     public static final String NAME = "name";     // the name of the thread
     public static final String PRIO = "prio";
     public static final String TID = "tid";

@@ -26,7 +26,7 @@ import java.util.HashMap;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import  static com.performizeit.mjstack.parser.JStackProps.*;
+import  static com.performizeit.mjstack.parser.ThreadInfoProps.*;
 
 
 public class ThreadInfo extends Props{

@@ -17,9 +17,9 @@
 
 package com.performizeit.mjstack.monads;
 
-import com.performizeit.mjstack.parser.JStackDump;
+import com.performizeit.mjstack.parser.ThreadDump;
 
 
 public interface Step {
-    public void addStackDump(JStackDump jsd);
+    public void addStackDump(ThreadDump jsd);
 }

@@ -25,26 +25,26 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import java.util.Comparator;
 
 
-public class JStackDumpTerminal extends JStackDumpBase{
+public class JStackDumpTerminal extends ThreadDumpBase {
     protected  String data;
-    public JStackDump filterDump(JStackFilter filter) {
+    public ThreadDump filterDump(JStackFilter filter) {
         throw new NotImplementedException();
     }
-    public JStackDump mapDump(JStackMapper mapper) {
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public JStackDumpBase mapDump(DumpMapper mapper) {
-        throw new NotImplementedException();
-    }
-
-    public JStackDump sortDump(Comparator<ThreadInfo> comp) {
+    public ThreadDump mapDump(JStackMapper mapper) {
         throw new NotImplementedException();
     }
 
     @Override
-    public JStackDumpBase terminateDump(JStackTerminal terminal) {
+    public ThreadDumpBase mapDump(DumpMapper mapper) {
+        throw new NotImplementedException();
+    }
+
+    public ThreadDump sortDump(Comparator<ThreadInfo> comp) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public ThreadDumpBase terminateDump(JStackTerminal terminal) {
         throw new NotImplementedException();
     }
 

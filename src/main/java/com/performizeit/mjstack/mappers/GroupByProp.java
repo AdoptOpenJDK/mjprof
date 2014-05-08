@@ -20,9 +20,9 @@ package com.performizeit.mjstack.mappers;
 import com.performizeit.mjstack.api.DumpMapper;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.model.Profile;
-import com.performizeit.mjstack.parser.JStackDump;
+import com.performizeit.mjstack.parser.ThreadDump;
 import com.performizeit.mjstack.parser.ThreadInfo;
-import  static com.performizeit.mjstack.parser.JStackProps.*;
+import  static com.performizeit.mjstack.parser.ThreadInfoProps.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,7 +36,7 @@ public class GroupByProp implements DumpMapper {
     public GroupByProp(String prop) {
         this.prop = prop;
     }
-    public JStackDump  map(JStackDump jsd ) {
+    public ThreadDump map(ThreadDump jsd ) {
         HashMap<String,ThreadInfo> threadMap = new HashMap<String, ThreadInfo>();
         for (ThreadInfo mss : jsd.getStacks()  ) {
             // System.out.println();

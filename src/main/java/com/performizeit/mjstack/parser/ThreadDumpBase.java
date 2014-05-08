@@ -24,17 +24,17 @@ import com.performizeit.mjstack.model.JStackHeader;
 
 import java.util.Comparator;
 
-public abstract class JStackDumpBase {
+public abstract class ThreadDumpBase {
     protected JStackHeader header;
-    protected JStackDumpBase() {
+    protected ThreadDumpBase() {
 
     }
 
-    public abstract JStackDumpBase filterDump(JStackFilter filter) ;
-    public abstract JStackDumpBase mapDump(JStackMapper mapper);
-    public abstract JStackDumpBase mapDump(DumpMapper mapper);
-    public abstract JStackDumpBase sortDump(Comparator<ThreadInfo> comp);
-    public abstract JStackDumpBase terminateDump(JStackTerminal terminal);
+    public abstract ThreadDumpBase filterDump(JStackFilter filter) ;
+    public abstract ThreadDumpBase mapDump(JStackMapper mapper);
+    public abstract ThreadDumpBase mapDump(DumpMapper mapper);
+    public abstract ThreadDumpBase sortDump(Comparator<ThreadInfo> comp);
+    public abstract ThreadDumpBase terminateDump(JStackTerminal terminal);
 
     public JStackHeader getHeader() {
         return header;

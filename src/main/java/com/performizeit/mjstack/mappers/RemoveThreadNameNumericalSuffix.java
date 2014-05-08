@@ -20,7 +20,7 @@ package com.performizeit.mjstack.mappers;
 import com.performizeit.mjstack.api.JStackMapper;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.parser.ThreadInfo;
-import  static com.performizeit.mjstack.parser.JStackProps.*;
+import  static com.performizeit.mjstack.parser.ThreadInfoProps.*;
 
 @Plugin(name="namesuffix",paramTypes = {},
         description = "Trim the last number from thread names")

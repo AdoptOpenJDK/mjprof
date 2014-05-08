@@ -28,11 +28,11 @@ import java.util.Collections;
 import java.util.Comparator;
 
 
-public class JStackDump extends JStackDumpBase{
+public class ThreadDump extends ThreadDumpBase {
     int JNIglobalReferences = -1;
     public static String JNI_GLOBAL_REFS= "JNI global references:";
     ArrayList<ThreadInfo> stacks;
-    public JStackDump(String stringRep) {
+    public ThreadDump(String stringRep) {
         String[] splitTraces = stringRep.split("\n\"");  // Assuming that thread stack trace starts with a new line followed by "
 
         header = new JStackHeader(splitTraces[0]);
@@ -50,7 +50,7 @@ public class JStackDump extends JStackDumpBase{
             }
         }
     }
-    protected JStackDump() {
+    protected ThreadDump() {
       super();
     }
 
@@ -73,8 +73,8 @@ public class JStackDump extends JStackDumpBase{
 
         return s.toString();
     }
-    public JStackDump filterDump(JStackFilter filter) {
-        JStackDump that = new JStackDump();
+    public ThreadDump filterDump(JStackFilter filter) {
+        ThreadDump that = new ThreadDump();
         that.header = header;
         that.stacks = new ArrayList<ThreadInfo>();
         for (ThreadInfo stk: stacks) {
@@ -84,8 +84,8 @@ public class JStackDump extends JStackDumpBase{
         }
         return that;
     }
-    public JStackDumpBase mapDump(JStackMapper mapper) {
-        JStackDump that = new JStackDump();
+    public ThreadDumpBase mapDump(JStackMapper mapper) {
+        ThreadDump that = new ThreadDump();
         that.header = header;
         that.stacks = new ArrayList<ThreadInfo>();
         for (ThreadInfo stk: stacks) {
@@ -93,12 +93,12 @@ public class JStackDump extends JStackDumpBase{
         }
         return that;
     }
-    public JStackDumpBase mapDump(DumpMapper mapper) {
+    public ThreadDumpBase mapDump(DumpMapper mapper) {
 
         return mapper.map(this);
     }
-    public JStackDumpBase sortDump(Comparator<ThreadInfo> comp) {
-        JStackDump that = new JStackDump();
+    public ThreadDumpBase sortDump(Comparator<ThreadInfo> comp) {
+        ThreadDump that = new ThreadDump();
         that.header = header;
         that.stacks = new ArrayList<ThreadInfo>();
         for (ThreadInfo stk: stacks) {
@@ -108,7 +108,7 @@ public class JStackDump extends JStackDumpBase{
         return that;
     }
 
-    public JStackDumpBase terminateDump(JStackTerminal terminal) {
+    public ThreadDumpBase terminateDump(JStackTerminal terminal) {
         JStackDumpTerminal that = new JStackDumpTerminal();
         that.header = header;
        terminal.addStackDump(this);

@@ -29,8 +29,8 @@ import com.performizeit.mjstack.api.*;
 import com.performizeit.mjstack.monads.MJStep;
 import com.performizeit.mjstack.monads.StepInfo;
 import com.performizeit.mjstack.monads.StepsRepository;
-import com.performizeit.mjstack.parser.JStackDump;
-import com.performizeit.mjstack.parser.JStackDumpBase;
+import com.performizeit.mjstack.parser.ThreadDump;
+import com.performizeit.mjstack.parser.ThreadDumpBase;
 import com.performizeit.mjstack.plugin.PluginUtils;
 
 
@@ -47,14 +47,14 @@ public class MJStack {
 		}
 		ArrayList<String> stackStrings = getStackStringsFromStdIn();
 
-		ArrayList<JStackDumpBase> jStackDumps = buildJstacks(stackStrings);
+		ArrayList<ThreadDumpBase> jStackDumps = buildJstacks(stackStrings);
 
 		for (MJStep mjstep : steps) {
-			ArrayList<JStackDumpBase> jStackDumpsOrig = jStackDumps;
-			jStackDumps = new ArrayList<JStackDumpBase>(jStackDumpsOrig.size());
+			ArrayList<ThreadDumpBase> jStackDumpsOrig = jStackDumps;
+			jStackDumps = new ArrayList<ThreadDumpBase>(jStackDumpsOrig.size());
 			StepInfo step = StepsRepository.getStep(mjstep.getStepName());
 			Object[] paramArgs = buildArgsArray(step.getParamTypes(),mjstep.getStepArgs());
-			for (JStackDumpBase jsd : jStackDumpsOrig) {
+			for (ThreadDumpBase jsd : jStackDumpsOrig) {
 				Object obj=PluginUtils.initObj(step.getClazz(), step.getParamTypes(), paramArgs);
 				if(PluginUtils.isImplementsMapper(obj.getClass())){
 					jStackDumps.add(jsd.mapDump((JStackMapper) obj));
@@ -177,7 +177,7 @@ public class MJStack {
 					linesOfStack = new StringBuilder();
 
 				}
-                if (line.startsWith(JStackDump.JNI_GLOBAL_REFS))
+                if (line.startsWith(ThreadDump.JNI_GLOBAL_REFS))
                     linesOfStack.append("\""); // need this hack for later parsing
                 linesOfStack.append(line).append("\n");
 
@@ -200,10 +200,10 @@ public class MJStack {
 		return b.toString();
 	}
 
-	public static ArrayList<JStackDumpBase> buildJstacks(ArrayList<String> stackStrings) {
-		ArrayList<JStackDumpBase> jStackDumps = new ArrayList<JStackDumpBase>(stackStrings.size());
+	public static ArrayList<ThreadDumpBase> buildJstacks(ArrayList<String> stackStrings) {
+		ArrayList<ThreadDumpBase> jStackDumps = new ArrayList<ThreadDumpBase>(stackStrings.size());
 		for (String stackDump : stackStrings) {
-			JStackDump stckDump = new JStackDump(stackDump);
+			ThreadDump stckDump = new ThreadDump(stackDump);
 			jStackDumps.add(stckDump);
 		}
 		return jStackDumps;

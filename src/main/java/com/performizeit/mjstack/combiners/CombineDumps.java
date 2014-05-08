@@ -19,18 +19,18 @@ package com.performizeit.mjstack.combiners;
 
 import com.performizeit.mjstack.api.DumpCombiner;
 import com.performizeit.mjstack.api.Plugin;
-import com.performizeit.mjstack.parser.JStackDump;
+import com.performizeit.mjstack.parser.ThreadDump;
 import com.performizeit.mjstack.parser.ThreadInfo;
 import java.util.HashMap;
 
-import static com.performizeit.mjstack.parser.JStackProps.*;
+import static com.performizeit.mjstack.parser.ThreadInfoProps.*;
 
 
 @Plugin(name="merge", paramTypes={String.class},description="combine all dumps to a single one")
 public class CombineDumps implements DumpCombiner {
     public CombineDumps() {
     }
-    public JStackDump  map(JStackDump jsd1,JStackDump jsd2 ) {
+    public ThreadDump map(ThreadDump jsd1,ThreadDump jsd2 ) {
         HashMap<Long,ThreadInfo> threadMap = new HashMap<Long, ThreadInfo>();
         for (ThreadInfo mss : jsd1.getStacks()  ) {
           long a = (Long)mss.getVal(TID+"Long");

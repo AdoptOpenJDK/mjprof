@@ -22,7 +22,7 @@ import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.model.Profile;
 import com.performizeit.mjstack.model.ProfileVisitor;
 import com.performizeit.mjstack.parser.ThreadInfo;
-import  static com.performizeit.mjstack.parser.JStackProps.*;
+import  static com.performizeit.mjstack.parser.ThreadInfoProps.*;
 
 @Plugin(name="pkgelim",paramTypes = {},
         description = "Eliminates package name from stack frames")

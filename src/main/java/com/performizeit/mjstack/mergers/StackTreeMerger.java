@@ -20,17 +20,17 @@ package com.performizeit.mjstack.mergers;
 import com.performizeit.mjstack.api.JStackTerminal;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.model.Profile;
-import com.performizeit.mjstack.parser.JStackDump;
-import com.performizeit.mjstack.parser.JStackProps;
+import com.performizeit.mjstack.parser.ThreadDump;
+import com.performizeit.mjstack.parser.ThreadInfoProps;
 import com.performizeit.mjstack.parser.ThreadInfo;
 
 
 @Plugin(name="tree", paramTypes={},description="combine all stack traces ")
 public class StackTreeMerger implements JStackTerminal {
     Profile st = new Profile();
-    public void addStackDump(JStackDump jsd) {
+    public void addStackDump(ThreadDump jsd) {
         for (ThreadInfo mss : jsd.getStacks()  ) {
-            st.addMulti((Profile) mss.getVal(JStackProps.STACK));      // System.out.println();
+            st.addMulti((Profile) mss.getVal(ThreadInfoProps.STACK));      // System.out.println();
         }
     }
 
