@@ -70,6 +70,9 @@ public class PluginUtils {
     public static boolean isImplementsDumpMapper(Class<?> cla) {
         return DumpMapper.class.isAssignableFrom(cla);
     }
+    public static boolean isImplementsDumpReducer(Class<?> cla) {
+        return DumpReducer.class.isAssignableFrom(cla);
+    }
 	public static boolean isImplementsFilter(Class<?> cla) {
 		return JStackFilter.class.isAssignableFrom(cla);
 	}

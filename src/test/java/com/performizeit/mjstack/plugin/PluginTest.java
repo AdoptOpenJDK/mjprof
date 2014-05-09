@@ -42,8 +42,8 @@ public class PluginTest {
 	@Test
 	public void testPlugin() throws Exception {
 		HashMap<String, Class<?>> map =new HashMap<String, Class<?>>();
-		//       map.put("TrimBelowhelp", PluginWithParameterConstructorTest.class);
-		//       map.put("Trim", PluginWithDefaultConstructorTest.class);
+		//       reduce.put("TrimBelowhelp", PluginWithParameterConstructorTest.class);
+		//       reduce.put("Trim", PluginWithDefaultConstructorTest.class);
 		System.out.println(PluginUtils.getAllPlugins());
 	}
 

@@ -28,7 +28,12 @@ import java.util.Collections;
 import java.util.Comparator;
 
 
-public class ThreadDump extends ThreadDumpBase {
+public class ThreadDump  {
+    protected JStackHeader header;
+    public JStackHeader getHeader() {
+        return header;
+    }
+
     int JNIglobalReferences = -1;
     public static String JNI_GLOBAL_REFS= "JNI global references:";
     ArrayList<ThreadInfo> stacks;
@@ -57,6 +62,9 @@ public class ThreadDump extends ThreadDumpBase {
     public ArrayList<ThreadInfo> getStacks() {
         return stacks;
     }
+    public void addThreadInfo(ThreadInfo ti) {
+        stacks.add(ti);
+    }
 
     public void  setStacks(ArrayList<ThreadInfo> stacks) {
         this.stacks = stacks;
@@ -84,7 +92,7 @@ public class ThreadDump extends ThreadDumpBase {
         }
         return that;
     }
-    public ThreadDumpBase mapDump(JStackMapper mapper) {
+    public ThreadDump mapDump(JStackMapper mapper) {
         ThreadDump that = new ThreadDump();
         that.header = header;
         that.stacks = new ArrayList<ThreadInfo>();
@@ -93,11 +101,11 @@ public class ThreadDump extends ThreadDumpBase {
         }
         return that;
     }
-    public ThreadDumpBase mapDump(DumpMapper mapper) {
+    public ThreadDump mapDump(DumpMapper mapper) {
 
         return mapper.map(this);
     }
-    public ThreadDumpBase sortDump(Comparator<ThreadInfo> comp) {
+    public ThreadDump sortDump(Comparator<ThreadInfo> comp) {
         ThreadDump that = new ThreadDump();
         that.header = header;
         that.stacks = new ArrayList<ThreadInfo>();
@@ -108,7 +116,7 @@ public class ThreadDump extends ThreadDumpBase {
         return that;
     }
 
-    public ThreadDumpBase terminateDump(JStackTerminal terminal) {
+    public ThreadDump terminateDump(JStackTerminal terminal) {
         JStackDumpTerminal that = new JStackDumpTerminal();
         that.header = header;
        terminal.addStackDump(this);

@@ -116,10 +116,17 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-  		  <groupId>org.reflections</groupId>
-    	  <artifactId>reflections</artifactId>
-   		  <version>0.9.9-RC1</version>
-		</dependency>
+ 	   <groupId>org.reflections</groupId>
+    	   <artifactId>reflections</artifactId>
+   	   <version>0.9.9-RC1</version>
+           </dependency>
+        <dependency>
+            <groupId>com.sun</groupId>
+            <artifactId>tools</artifactId>
+            <version>7.0</version>
+            <scope>system</scope>
+            <systemPath>${java.home}/../lib/tools.jar</systemPath>
+        </dependency>
     </dependencies>
     
 </project>

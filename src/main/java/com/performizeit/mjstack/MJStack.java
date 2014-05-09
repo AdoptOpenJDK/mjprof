@@ -30,7 +30,6 @@ import com.performizeit.mjstack.monads.MJStep;
 import com.performizeit.mjstack.monads.StepInfo;
 import com.performizeit.mjstack.monads.StepsRepository;
 import com.performizeit.mjstack.parser.ThreadDump;
-import com.performizeit.mjstack.parser.ThreadDumpBase;
 import com.performizeit.mjstack.plugin.PluginUtils;
 
 
@@ -47,20 +46,32 @@ public class MJStack {
 		}
 		ArrayList<String> stackStrings = getStackStringsFromStdIn();
 
-		ArrayList<ThreadDumpBase> jStackDumps = buildJstacks(stackStrings);
+		ArrayList<ThreadDump> jStackDumps = buildJstacks(stackStrings);
 
 		for (MJStep mjstep : steps) {
-			ArrayList<ThreadDumpBase> jStackDumpsOrig = jStackDumps;
-			jStackDumps = new ArrayList<ThreadDumpBase>(jStackDumpsOrig.size());
+			ArrayList<ThreadDump> jStackDumpsOrig = jStackDumps;
+			jStackDumps = new ArrayList<ThreadDump>(jStackDumpsOrig.size());
+
 			StepInfo step = StepsRepository.getStep(mjstep.getStepName());
 			Object[] paramArgs = buildArgsArray(step.getParamTypes(),mjstep.getStepArgs());
-			for (ThreadDumpBase jsd : jStackDumpsOrig) {
-				Object obj=PluginUtils.initObj(step.getClazz(), step.getParamTypes(), paramArgs);
+
+            Object obj=PluginUtils.initObj(step.getClazz(), step.getParamTypes(), paramArgs);
+
+
+			for (ThreadDump jsd : jStackDumpsOrig) {
 				if(PluginUtils.isImplementsMapper(obj.getClass())){
 					jStackDumps.add(jsd.mapDump((JStackMapper) obj));
 				}else if(PluginUtils.isImplementsDumpMapper(obj.getClass())){
                     jStackDumps.add(jsd.mapDump((DumpMapper) obj));
-                }else if(PluginUtils.isImplementsFilter(obj.getClass())){
+                } else if(PluginUtils.isImplementsDumpReducer(obj.getClass())){
+                    if (jStackDumps.size() <1 ) {
+                        jStackDumps.add(jsd);
+                    }   else {
+                        DumpReducer dr = (DumpReducer) obj;
+                        jStackDumps.set(0,dr.reduce(jStackDumps.get(0),jsd));
+                    }
+
+                } else if(PluginUtils.isImplementsFilter(obj.getClass())){
 					jStackDumps.add(jsd.filterDump((JStackFilter) obj));
 				}else if(PluginUtils.isImplementsTerminal(obj.getClass())){
 					jStackDumps.add(jsd.terminateDump((JStackTerminal) obj));
@@ -200,8 +211,8 @@ public class MJStack {
 		return b.toString();
 	}
 
-	public static ArrayList<ThreadDumpBase> buildJstacks(ArrayList<String> stackStrings) {
-		ArrayList<ThreadDumpBase> jStackDumps = new ArrayList<ThreadDumpBase>(stackStrings.size());
+	public static ArrayList<ThreadDump> buildJstacks(ArrayList<String> stackStrings) {
+		ArrayList<ThreadDump> jStackDumps = new ArrayList<ThreadDump>(stackStrings.size());
 		for (String stackDump : stackStrings) {
 			ThreadDump stckDump = new ThreadDump(stackDump);
 			jStackDumps.add(stckDump);

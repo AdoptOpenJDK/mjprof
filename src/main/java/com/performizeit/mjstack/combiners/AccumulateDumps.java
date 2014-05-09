@@ -17,8 +17,9 @@
 
 package com.performizeit.mjstack.combiners;
 
-import com.performizeit.mjstack.api.DumpCombiner;
+import com.performizeit.mjstack.api.DumpReducer;
 import com.performizeit.mjstack.api.Plugin;
+import com.performizeit.mjstack.model.Profile;
 import com.performizeit.mjstack.parser.ThreadDump;
 import com.performizeit.mjstack.parser.ThreadInfo;
 import java.util.HashMap;
@@ -27,13 +28,24 @@ import static com.performizeit.mjstack.parser.ThreadInfoProps.*;
 
 
 @Plugin(name="merge", paramTypes={String.class},description="combine all dumps to a single one")
-public class CombineDumps implements DumpCombiner {
-    public CombineDumps() {
-    }
-    public ThreadDump map(ThreadDump jsd1,ThreadDump jsd2 ) {
+public class AccumulateDumps implements DumpReducer {
+
+    public ThreadDump reduce(ThreadDump jsd1, ThreadDump jsd2) {
         HashMap<Long,ThreadInfo> threadMap = new HashMap<Long, ThreadInfo>();
-        for (ThreadInfo mss : jsd1.getStacks()  ) {
-          long a = (Long)mss.getVal(TID+"Long");
+        for (ThreadInfo ti : jsd1.getStacks()  ) {
+          long a = (Long)ti.getVal(TID+"Long");
+          threadMap.put(a,ti);
+        }
+        for (ThreadInfo ti2 : jsd1.getStacks() ) {
+           ThreadInfo ti1 = threadMap.get(ti2.getVal(TID+"Long")) ;
+           if (ti1 != null) {
+               Profile p1 = (Profile) ti1.getVal(STACK);
+               Profile p2 = (Profile) ti2.getVal(STACK);
+               p1.addMulti(p2);
+           }  else {
+               jsd1.addThreadInfo(ti2);
+
+           }
         }
 
         return jsd1;

@@ -19,6 +19,6 @@ package com.performizeit.mjstack.api;
 import com.performizeit.mjstack.parser.ThreadDump;
 
 
-public interface DumpCombiner extends BasePlugin{
-    ThreadDump map(ThreadDump jsd1,ThreadDump jsd2);
+public interface DumpReducer extends BasePlugin{
+    public ThreadDump reduce(ThreadDump jsd1, ThreadDump jsd2);
 }
