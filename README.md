@@ -113,36 +113,37 @@ Writing a plugin
 ===============
 
 MJProf monadic capabilities can be extended with plugins. if you feel something is missing you can write your own plugin. 
-A plugin is a java class which is annotated with the annotation Plugin
+A plugin is a java class which is annotated with the annotation Plugin. The annotation accepts three parameters. "name" the
+plugin name (must be unique) paramTypes the expected parameter types in the plugin. description one liner that will be used for 
+synopsis. For example:  
 `import com.performizeit.mjstack.api.Plugin;
-@Plugin(name="group", paramTypes={String.class},description="group by an attribute")`
 
-Write a Mapper:
-- Implement JStackMapper interface that includes:
-	map method: JStackMetadataStack map(JStackMetadataStack stck)
-	JStackMetadataStack represents attributes of thread including call stack priority native thread id etc.
-Write a Filter:
-- implement JStackFilter interface that includes:
-	filter method: boolean filter(JStackMetadataStack stck)
-	JStackMetadataStack represents attributes of thread including call stack priority native thread id etc.
-Write a Terminal:
-- Implement JStackTerminal interface that includes:
-	addStackDump method: void addStackDump(JStackDump jsd) 
-	JStackDump represents the entire stack dump 
-Write a comprator:
-- Implement JStackComparator interface that includes:
-	int compare(JStackMetadataStack o1, JStackMetadataStack o2)
-	JStackMetadataStack represents attributes of thread including call stack priority native thread id etc.
+@Plugin(name="group", paramTypes={String.class},description="Group by an attribute")`
+There are several plugin types mappers filters terminals etc... for each type you will  need to implement a different interface.
 
-For all the options above, add Plugin annotation: @Plugin.
-The plugin annotation includes the following attributes:
-	name - the command string
-	paramTypes - the constractur parameters types.
-	description - the string that will show in the help menu
-For example:
-	@Plugin(name="keeptop",paramTypes = {int.class}, description = "Returns at most n top stack frames of the stack")
+Mapper
+------
+Implement JStackMapper interface which includes a single method 
+`ThreadInfo map(ThreadInfo stck)`
+
+Filter
+------
+Implement JStackFilter interface which includes a single method 
+`boolean filter(ThreadIndo stck)`
+
+Terminal
+------
+Implement JStackFilter interface which includes a single method 
+`void addStackDump(JStackDump jsd)` 
+
+Comparator
+------
+Implement JStackComparator interface which includes a single method 
+`int compare(ThreadInfo o1, ThreadInfo o2)`
+
 
 
 Installing a plugin
 ============
-In order to install the plugin just drop your jar into the 'plugins' directory 
+In order to install the plugin just drop your jar which contains plugin implementation  into the 'plugins' directory 
+inside mjprof installation directory.
