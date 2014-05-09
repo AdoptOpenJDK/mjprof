@@ -83,35 +83,39 @@ Following is the list of usual properties
 * _**stack**_           - The actual stack trace
 
 You can also get the actual list of properties bu using the list monad.  
-`jstack -l pid | ./mjs.sh list`
+`jstack -l pid | ./mjprof.sh list`
 
 Examples
 =============
 jstack Original output:  
 `jstack -l 38515 > mystack.txt`  
 Keep only thread which their names contain ISCREAM:  
-`jstack -l 38515  | ./mjs.sh contains/name,ISCREAM/`  
+`jstack -l 38515  | ./mjprof.sh contains/name,ISCREAM/`  
 Sort them by state  
-`cat mystack.txt  | ./mjs.sh contains/name,ISCREAM/.sort/state/`  
+`cat mystack.txt  | ./mjprof.sh contains/name,ISCREAM/.sort/state/`  
 Eliminate the Locked Ownable Synchronizers Section  
-`jstack -l 38515  | ./mjs.sh contains/name,ISCREAM/.sort/state/.eliminate/los/`  
+`jstack -l 38515  | ./mjprof.sh contains/name,ISCREAM/.sort/state/.eliminate/los/`  
 Shorten stack traces to include only 10 last stack frames  
-`jstack -l 38515  | ./mjs.sh contains/name,ISCREAM/.sort/state/.eliminate/los/.keeptop/10/`  
+`jstack -l 38515  | ./mjprof.sh contains/name,ISCREAM/.sort/state/.eliminate/los/.keeptop/10/`  
 Count threads  
-`jstack -l 38515  | ./mjs.sh contains/name,ISCREAM/.sort/state/.eliminate/los/.keeptop/10/.count`
+`jstack -l 38515  | ./mjprof.sh contains/name,ISCREAM/.sort/state/.eliminate/los/.keeptop/10/.count`
 
 
 
-Build mjstack
+Building MJProf
 =============
-Build mjstack with the following command line:  
-`mvn clean package`
+MJProf uses maven for compilation to build MJProf use the following command line:  
+`mvn clean install assembly:assembly`
 This will create a zip file in `target/dist/mjstack1.0-bin.zip` which contains everything you need.
 
- an object which represents attributes of thread including  call stack priority native thread id etc///
 
-Write a plugin
+Writing a plugin
 ===============
+
+MJProf monadic capabilities can be extended with plugins. if you feel something is missing you can write your own plugin. 
+A plugin is a java class which is annotated with the annotation Plugin
+`import com.performizeit.mjstack.api.Plugin;
+@Plugin(name="group", paramTypes={String.class},description="group by an attribute")`
 
 Write a Mapper:
 - Implement JStackMapper interface that includes:
@@ -139,6 +143,6 @@ For example:
 	@Plugin(name="keeptop",paramTypes = {int.class}, description = "Returns at most n top stack frames of the stack")
 
 
-Install a plugin
+Installing a plugin
 ============
 In order to install the plugin just drop your jar into the 'plugins' directory 
