@@ -252,4 +252,13 @@ public class JMXConnection {
 
         }
     }
+    
+
+    public long[] getThreadIds(JMXConnection server) throws Exception {
+
+       long[] thIds = (long[]) server.getServerConnection().getAttribute(THREADING, "AllThreadIds");
+       return thIds;
+
+   }
+ 
 }
