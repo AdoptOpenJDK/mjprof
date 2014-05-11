@@ -235,6 +235,12 @@ public class JMXConnection {
 
 
     }
+    public long[] getThreadIds() throws Exception {
+
+        long[] thIds = (long[]) getServerConnection().getAttribute(THREADING, "AllThreadIds");
+        return thIds;
+
+    }
 
     public static void addURL(File file) throws RuntimeException {
         try {
