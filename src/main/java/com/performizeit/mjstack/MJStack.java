@@ -26,6 +26,7 @@ import java.util.List;
 
 
 import com.performizeit.mjstack.api.*;
+import com.performizeit.mjstack.dataSource.StdinDataSourcePlugin;
 import com.performizeit.mjstack.monads.MJStep;
 import com.performizeit.mjstack.monads.StepInfo;
 import com.performizeit.mjstack.monads.StepsRepository;
@@ -46,7 +47,14 @@ public class MJStack {
 		}
 		ArrayList<String> stackStrings = getStackStringsFromStdIn();
 
-		ArrayList<ThreadDump> jStackDumps = buildJstacks(stackStrings);
+		ArrayList<ThreadDump> jStackDumps = null ;
+
+		//TODO: call the relevent datasource plugin
+		
+		if(jStackDumps==null){
+			StdinDataSourcePlugin std=new StdinDataSourcePlugin();
+			jStackDumps=std.getStack();
+		}
 
 		for (MJStep mjstep : steps) {
 			ArrayList<ThreadDump> jStackDumpsOrig = jStackDumps;
