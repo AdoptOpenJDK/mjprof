@@ -24,5 +24,5 @@ import com.performizeit.mjstack.parser.ThreadDump;
  * Created by life on 22/2/14.
  */
 public interface DataSourcePlugin extends BasePlugin{
-	ArrayList<ThreadDump> getStack();
+	ArrayList<ThreadDump> getThreadDumps();
 }

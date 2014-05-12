@@ -49,7 +49,8 @@ public class PluginUtils {
 		Set<Class<?>> annotatedPlugin = reflections.getTypesAnnotatedWith(Plugin.class);
 
 		for(Class cla :annotatedPlugin){
-			if(isImplementsMapper(cla) ||isImplementsFilter(cla) ||isImplementsTerminal(cla) || isImplementsComparators(cla) || isImplementsDataSource(cla) ){
+			if(isImplementsMapper(cla) ||isImplementsFilter(cla) ||isImplementsTerminal(cla) || isImplementsComparators(cla) || isImplementsDataSource(cla) 
+					||isImplementsDumpMapper(cla)||isImplementsDumpReducer(cla)){
 				String helpLine=invokeGetHelpLine(cla);	
 				map.put(helpLine, cla);
 			}else{
