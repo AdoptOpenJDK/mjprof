@@ -21,6 +21,7 @@ import com.performizeit.mjstack.api.JStackMapper;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.model.Profile;
 import com.performizeit.mjstack.model.ProfileVisitor;
+import com.performizeit.mjstack.model.SFNode;
 import com.performizeit.mjstack.parser.ThreadInfo;
 
 import java.util.ArrayList;
@@ -41,9 +42,9 @@ public class FileNameEliminator implements  JStackMapper {
         Profile jss = (Profile) stck.getVal("stack");
         jss.visit(new ProfileVisitor() {
             @Override
-            public String visit(String sf,int level) {
-                if (sf==null) return null;
-                return eliminatePackage(sf);
+            public void visit(SFNode sf,int level) {
+                if (sf.getStackFrame()==null) return;
+                sf.setStackFrame(eliminatePackage(sf.getStackFrame()));
             }
         });
         return stck;

@@ -99,7 +99,7 @@ public class SFNode {
     }
     // Visit all chlidren of a node recursively with a ProfileVisitor
     public void visitChildren(ProfileVisitor pv, int level) {
-        sf = pv.visit(sf,level);
+        pv.visit(this, level);
         for (SFNode child : children.values()) {  // visit all childred
             child.visitChildren(pv, level + 1);
 
@@ -162,5 +162,17 @@ public class SFNode {
 
     public String getStackFrame() {
         return sf;
+    }
+
+    public void setStackFrame(String sf) {
+        this.sf = sf;
+    }
+
+    public int getNumChildren() {
+        return children.size();
+    }
+
+    public int getCount() {
+        return count;
     }
 }
