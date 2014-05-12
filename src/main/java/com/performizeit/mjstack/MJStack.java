@@ -77,12 +77,9 @@ public class MJStack {
 				}else if(PluginUtils.isImplementsDumpMapper(obj.getClass())){
                     jStackDumps.add(jsd.mapDump((DumpMapper) obj));
                 } else if(PluginUtils.isImplementsDumpReducer(obj.getClass())){
-                    if (jStackDumps.size() <1 ) {
-                        jStackDumps.add(jsd);
-                    }   else {
+
                         DumpReducer dr = (DumpReducer) obj;
-                        jStackDumps.set(0,dr.reduce(jStackDumps.get(0),jsd));
-                    }
+                        dr.reduce(jsd);
 
                 } else if(PluginUtils.isImplementsFilter(obj.getClass())){
 					jStackDumps.add(jsd.filterDump((JStackFilter) obj));
@@ -92,6 +89,11 @@ public class MJStack {
 					jsd.sortDump((JStackComparator)obj);
 				}
 			}
+            if(PluginUtils.isImplementsDumpReducer(obj.getClass())) {
+                DumpReducer dr = (DumpReducer) obj;
+                jStackDumps.add(dr.getResult());
+            }
+
 		}
 
 

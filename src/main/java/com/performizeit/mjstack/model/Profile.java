@@ -44,7 +44,8 @@ public class Profile {
 
 
     public void addSingle(String stackTrace) {
-
+        if (stackTrace.trim().length()==0) return;  // I am not sure that this is the correct
+        //// decision but when no stack trace then the profile should be  nullified as well
         String[] sf = stackTrace.split("\n");
         HashMap<String,SFNode> c = root.children;
         root.count ++;

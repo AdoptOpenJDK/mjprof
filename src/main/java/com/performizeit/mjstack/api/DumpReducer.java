@@ -20,5 +20,6 @@ import com.performizeit.mjstack.parser.ThreadDump;
 
 
 public interface DumpReducer extends BasePlugin{
-    public ThreadDump reduce(ThreadDump jsd1, ThreadDump jsd2);
+    public void reduce(ThreadDump jsd);
+    public ThreadDump getResult();
 }

@@ -55,7 +55,7 @@ public class ThreadDump  {
             }
         }
     }
-    protected ThreadDump() {
+    public  ThreadDump() {
       super();
     }
 
@@ -125,4 +125,7 @@ public class ThreadDump  {
     }
 
 
+    public void setHeader(String header) {
+        this.header = new JStackHeader(header);
+    }
 }

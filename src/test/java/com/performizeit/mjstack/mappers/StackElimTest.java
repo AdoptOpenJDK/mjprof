@@ -58,7 +58,7 @@ public class StackElimTest {
     public void testStack() throws Exception {
         ThreadInfo js = new ThreadInfo(strt+stck+akkka+stck2);
 
-        assertEquals(strt+stck+akkka+stck2,js.toString() );
+        assertEquals(strt+stck+akkka+stck2,js.toString());
 
     }
     @Test
@@ -66,7 +66,7 @@ public class StackElimTest {
         ThreadInfo js = new ThreadInfo(strt + stck+akkka+stck2);
         StackFrameContains tb = new StackFrameContains("com.akkka");
         ThreadInfo js2 = tb.map(js);
-        assertEquals(strt+akkka,js2.toString() );
+        assertEquals(strt+akkka,js2.toString()  );
 
     }
     @Test
@@ -74,7 +74,7 @@ public class StackElimTest {
         ThreadInfo js = new ThreadInfo(strt + stck+akkka+stck2);
         StackFrameNotContains tb = new StackFrameNotContains("com.akkka");
         ThreadInfo js2 = tb.map(js);
-        assertEquals(strt+stck+stck2,js2.toString());
+        assertEquals(strt+stck+stck2,js2.toString() );
 
     }
 }

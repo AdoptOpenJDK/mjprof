@@ -20,6 +20,7 @@ package com.performizeit.mjstack.mappers;
 import com.performizeit.mjstack.api.DumpMapper;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.model.Profile;
+import com.performizeit.mjstack.model.ThreadInfoAggregator;
 import com.performizeit.mjstack.parser.ThreadDump;
 import com.performizeit.mjstack.parser.ThreadInfo;
 import  static com.performizeit.mjstack.parser.ThreadInfoProps.*;
@@ -35,39 +36,16 @@ public class GroupByProp implements DumpMapper {
         this.prop = prop;
     }
     public ThreadDump map(ThreadDump jsd ) {
-        HashMap<String,ThreadInfo> threadMap = new HashMap<String, ThreadInfo>();
+        ArrayList<String> a= new ArrayList<String>();
+        a.add(prop);
+        ThreadInfoAggregator aggr = new ThreadInfoAggregator(a);
         for (ThreadInfo mss : jsd.getStacks()  ) {
-            // System.out.println();
-            Object o = mss.getVal(prop);
-            if (o != null && o.toString().trim().length()>0) {
-                String key = o.toString().trim();
-                if (threadMap.get(key) == null) {
-                    threadMap.put(key,overlapAllPropsNotInGroupBy(mss));
-                    mss.setVal("count",1);
-                }   else {
-                    ThreadInfo x = threadMap.get(key);
-                    Profile p = (Profile)x.getVal("stack");
-                    x.setVal("count",((Integer)x.getVal("count"))+1);
-                    p.addMulti((Profile)mss.getVal("stack"));
-                }
-            }
+            aggr.accumulateThreadInfo(mss);
         }
-        ArrayList<ThreadInfo> reducedThreadInfo = new  ArrayList<ThreadInfo>();
-        reducedThreadInfo.addAll(threadMap.values());
-
-        jsd.setStacks(reducedThreadInfo);
+       jsd.setStacks(aggr.getAggrInfos());
         return jsd;
     }
-    ThreadInfo overlapAllPropsNotInGroupBy(ThreadInfo mss) {
-        ArrayList<String> keys = new ArrayList<String>(mss.getProps());
-        for (String prop1: keys) {
-            if (!prop1.equals(prop) && !prop1.equals(STACK) && !prop1.equals(COUNT)) {
-               mss.setVal(prop1,"*");
-            }
-        }
-        mss.remove(DAEMON);
-        return mss;
-    }
+
 
 
 }

@@ -137,6 +137,7 @@ public class ThreadInfo extends Props{
 
     @Override
     public String toString() {
+
         StringBuilder mdStr = new StringBuilder();
 
         if (props.get(NAME) != null) {
@@ -165,11 +166,13 @@ public class ThreadInfo extends Props{
         if (props.get(STATE) != null) {
             mdStr.append("\n   java.lang.Thread.State: ").append( props.get(STATE));
         }
+
         if (props.get(STACK) != null) {
-            mdStr.append("\n").append(props.get(STACK).toString()).append("\n");
+            mdStr.append("\n").append(props.get(STACK).toString());
         }
+        mdStr.append("\n");
         if (props.get(LOS) != null) {
-            mdStr.append("   Locked ownable synchronizers:\n").append(
+            mdStr.append("\n   Locked ownable synchronizers:\n").append(
                     props.get(LOS).toString());
         }
 

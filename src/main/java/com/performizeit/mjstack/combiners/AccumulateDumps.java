@@ -20,35 +20,43 @@ package com.performizeit.mjstack.combiners;
 import com.performizeit.mjstack.api.DumpReducer;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.model.Profile;
+import com.performizeit.mjstack.model.ThreadInfoAggregator;
 import com.performizeit.mjstack.parser.ThreadDump;
 import com.performizeit.mjstack.parser.ThreadInfo;
+
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import static com.performizeit.mjstack.parser.ThreadInfoProps.*;
 
 
-@Plugin(name="merge", paramTypes={String.class},description="combine all dumps to a single one")
+@Plugin(name="merge", paramTypes={String.class},description="Combine all dumps to a single one")
 public class AccumulateDumps implements DumpReducer {
 
-    public ThreadDump reduce(ThreadDump jsd1, ThreadDump jsd2) {
-        HashMap<Long,ThreadInfo> threadMap = new HashMap<Long, ThreadInfo>();
-        for (ThreadInfo ti : jsd1.getStacks()  ) {
-          long a = (Long)ti.getVal(TID+"Long");
-          threadMap.put(a,ti);
-        }
-        for (ThreadInfo ti2 : jsd1.getStacks() ) {
-           ThreadInfo ti1 = threadMap.get(ti2.getVal(TID+"Long")) ;
-           if (ti1 != null) {
-               Profile p1 = (Profile) ti1.getVal(STACK);
-               Profile p2 = (Profile) ti2.getVal(STACK);
-               p1.addMulti(p2);
-           }  else {
-               jsd1.addThreadInfo(ti2);
+    ThreadInfoAggregator tidAggr;
+    int countDumps=0;
 
-           }
-        }
+    public AccumulateDumps(String prop) {
+        String[] a = {TID};
+        tidAggr =new ThreadInfoAggregator(Arrays.asList(a));
+    }
 
-        return jsd1;
+    public void reduce(ThreadDump td) {
+        for (ThreadInfo ti :td.getStacks()) {
+            tidAggr.accumulateThreadInfo(ti);
+        }
+        countDumps++;
+
+
+    }
+
+    @Override
+    public ThreadDump getResult() {
+        ThreadDump td = new ThreadDump();
+        td.setHeader("Profiling session number of dumps is "+ countDumps);
+        td.setStacks(tidAggr.getAggrInfos());
+        return td;
     }
 
 
