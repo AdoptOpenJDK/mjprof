@@ -9,16 +9,16 @@ import com.performizeit.mjstack.api.DataSourcePlugin;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.parser.ThreadDump;
 
-@Plugin(name="sdtin", paramTypes={},description = "Anat")
+@Plugin(name="sdtin", paramTypes={},description = "sdtin")
 public class StdinDataSourcePlugin implements DataSourcePlugin{
 
 	@Override
-	public ArrayList<ThreadDump> getStack() {
+	public ArrayList<ThreadDump> getThreadDumps() {
 		ArrayList<String> stackStrings = getStackStringsFromStdIn();
 		return buildJstacks(stackStrings);
 	}
 	
-	private static ArrayList<String> getStackStringsFromStdIn() {
+	private ArrayList<String> getStackStringsFromStdIn() {
 		BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
 		ArrayList<String> stackDumps = new ArrayList<String>();
 		StringBuilder linesOfStack = new StringBuilder();
@@ -46,7 +46,7 @@ public class StdinDataSourcePlugin implements DataSourcePlugin{
 		return stackDumps;
 	}
 	
-	public static ArrayList<ThreadDump> buildJstacks(ArrayList<String> stackStrings) {
+	private  ArrayList<ThreadDump> buildJstacks(ArrayList<String> stackStrings) {
 		ArrayList<ThreadDump> jStackDumps = new ArrayList<ThreadDump>(stackStrings.size());
 		for (String stackDump : stackStrings) {
 			ThreadDump stckDump = new ThreadDump(stackDump);

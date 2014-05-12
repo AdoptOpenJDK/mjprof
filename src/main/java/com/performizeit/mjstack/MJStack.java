@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-
 import com.performizeit.mjstack.api.*;
 import com.performizeit.mjstack.dataSource.StdinDataSourcePlugin;
 import com.performizeit.mjstack.monads.MJStep;
@@ -45,26 +44,32 @@ public class MJStack {
 		if (steps == null) {
 			printSynopsisAndExit();
 		}
-		ArrayList<String> stackStrings = getStackStringsFromStdIn();
 
-		ArrayList<ThreadDump> jStackDumps = null ;
+		ArrayList<ThreadDump> jStackDumps = new  ArrayList<ThreadDump>();
 
-		//TODO: call the relevent datasource plugin
-		
-		if(jStackDumps==null){
+		//calling the relevant datasource plugin
+		for (MJStep mjstep : steps) {
+			//TODO: Save the objects so we won't create it twice
+			Object obj = getObjectFromStep(mjstep);
+			ArrayList<ThreadDump> dumps;
+			if(PluginUtils.isImplementsDataSource((obj.getClass()))){
+				dumps = ((DataSourcePlugin) obj).getThreadDumps();
+				if(dumps!=null){
+					jStackDumps.addAll(dumps);
+				}
+			}
+		}
+		//Default
+		if(jStackDumps.isEmpty()){
 			StdinDataSourcePlugin std=new StdinDataSourcePlugin();
-			jStackDumps=std.getStack();
+			jStackDumps=std.getThreadDumps();
 		}
 
 		for (MJStep mjstep : steps) {
 			ArrayList<ThreadDump> jStackDumpsOrig = jStackDumps;
 			jStackDumps = new ArrayList<ThreadDump>(jStackDumpsOrig.size());
 
-			StepInfo step = StepsRepository.getStep(mjstep.getStepName());
-			Object[] paramArgs = buildArgsArray(step.getParamTypes(),mjstep.getStepArgs());
-
-            Object obj=PluginUtils.initObj(step.getClazz(), step.getParamTypes(), paramArgs);
-
+			Object obj = getObjectFromStep(mjstep);
 
 			for (ThreadDump jsd : jStackDumpsOrig) {
 				if(PluginUtils.isImplementsMapper(obj.getClass())){
@@ -93,6 +98,14 @@ public class MJStack {
 		for (int i = 0; i < jStackDumps.size(); i++) {
 			System.out.println(jStackDumps.get(i));
 		}
+	}
+
+
+	private static Object getObjectFromStep(MJStep mjstep) {
+		StepInfo step = StepsRepository.getStep(mjstep.getStepName());
+		Object[] paramArgs = buildArgsArray(step.getParamTypes(),mjstep.getStepArgs());
+		Object obj=PluginUtils.initObj(step.getClazz(), step.getParamTypes(), paramArgs);
+		return obj;
 	}
 
 
@@ -182,33 +195,6 @@ public class MJStack {
 		return mjsteps;
 	}
 
-	public static ArrayList<String> getStackStringsFromStdIn() {
-		BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
-		ArrayList<String> stackDumps = new ArrayList<String>();
-		StringBuilder linesOfStack = new StringBuilder();
-		String line;
-		try {
-			while ((line = r.readLine()) != null) {
-				if (line.length() > 0 && Character.isDigit(line.charAt(0))) {   //starting a new stack dump
-					if (linesOfStack.length() > 0) {
-						stackDumps.add(linesOfStack.toString());
-					}
-					linesOfStack = new StringBuilder();
-
-				}
-                if (line.startsWith(ThreadDump.JNI_GLOBAL_REFS))
-                    linesOfStack.append("\""); // need this hack for later parsing
-                linesOfStack.append(line).append("\n");
-
-			}
-		} catch (IOException e) {
-			System.err.println("Error while parsing stdin" + e);
-		}
-		if (linesOfStack.length() > 0) {
-			stackDumps.add(linesOfStack.toString());
-		}
-		return stackDumps;
-	}
 
 	public static String join(String[] strs,String delim) {
 		StringBuilder b = new StringBuilder();
@@ -219,15 +205,6 @@ public class MJStack {
 		return b.toString();
 	}
 
-	public static ArrayList<ThreadDump> buildJstacks(ArrayList<String> stackStrings) {
-		ArrayList<ThreadDump> jStackDumps = new ArrayList<ThreadDump>(stackStrings.size());
-		for (String stackDump : stackStrings) {
-			ThreadDump stckDump = new ThreadDump(stackDump);
-			jStackDumps.add(stckDump);
-		}
-		return jStackDumps;
-	}
-	
 	public static Object[] buildArgsArray(Class[] paramTypes, List<String> params) {
 		Object[] paramsTrans = new Object[paramTypes.length];
 
