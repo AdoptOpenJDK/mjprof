@@ -53,7 +53,7 @@ public class MJStack {
 			Object obj = getObjectFromStep(mjstep);
 			ArrayList<ThreadDump> dumps;
 			if(PluginUtils.isImplementsDataSource((obj.getClass()))){
-				dumps = ((DataSourcePlugin) obj).getThreadDumps();
+				dumps = ((DataSourcePlugin) obj).getThreadDumps("");
 				if(dumps!=null){
 					jStackDumps.addAll(dumps);
 				}
@@ -62,7 +62,7 @@ public class MJStack {
 		//Default
 		if(jStackDumps.isEmpty()){
 			StdinDataSourcePlugin std=new StdinDataSourcePlugin();
-			jStackDumps=std.getThreadDumps();
+			jStackDumps=std.getThreadDumps("");
 		}
 
 		for (MJStep mjstep : steps) {
