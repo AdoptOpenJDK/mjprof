@@ -32,6 +32,7 @@ public class CountThreads implements JStackTerminal {
 
 
     public void addStackDump(ThreadDump jsd) {
+        count = 0;
         for (ThreadInfo mss : jsd.getStacks()  ) {
                 count++;
         }

@@ -36,12 +36,11 @@ public class ThreadDump  {
 
     int JNIglobalReferences = -1;
     public static String JNI_GLOBAL_REFS= "JNI global references:";
-    ArrayList<ThreadInfo> stacks;
+    ArrayList<ThreadInfo> stacks = new ArrayList<ThreadInfo>();;
     public ThreadDump(String stringRep) {
         String[] splitTraces = stringRep.split("\n\"");  // Assuming that thread stack trace starts with a new line followed by "
 
         header = new JStackHeader(splitTraces[0]);
-        stacks = new ArrayList<ThreadInfo>();
         for(int i=1;i<splitTraces.length;i++) {
             if (splitTraces[i].startsWith(JNI_GLOBAL_REFS)) {
                 try {

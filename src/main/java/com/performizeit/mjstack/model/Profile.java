@@ -64,6 +64,26 @@ public class Profile {
             c = node.children;
         }
     }
+    public void addSingle(StackTraceElement[] elements) {
+        if (elements.length==0) return;  // I am not sure that this is the correct
+        //// decision but when no stack trace then the profile should be  nullified as well
+        HashMap<String,SFNode> c = root.children;
+        root.count ++;
+        for (int i=elements.length-1;i>=0;i--) {
+
+            String sfi = "at "+ elements[i].getClassName() + "." +elements[i].getMethodName() +"("+elements[i].getFileName()+":"+elements[i].getLineNumber()+")";
+            if (sfi.isEmpty()) continue;
+            SFNode node = c.get(sfi);
+            if (node == null) {
+                node = new SFNode();
+
+                node.sf = sfi;
+                c.put(sfi, node);
+            }
+            node.count++;
+            c = node.children;
+        }
+    }
 
     public  void parseMulti(String treeString) {
         String[] lines = treeString.split( "\n");
