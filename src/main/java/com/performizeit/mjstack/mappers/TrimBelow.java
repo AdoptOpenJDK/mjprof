@@ -17,7 +17,7 @@
 
 package com.performizeit.mjstack.mappers;
 
-import com.performizeit.mjstack.api.JStackMapper;
+import com.performizeit.mjstack.api.Mapper;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.model.Profile;
 import com.performizeit.mjstack.model.ProfileNodeFilter;
@@ -26,7 +26,7 @@ import com.performizeit.mjstack.parser.ThreadInfo;
 
 @Plugin(name="trimbelow",paramTypes = {String.class},
         description = "Trim all stack frames below the first occurrence of string")
-public class TrimBelow implements JStackMapper {
+public class TrimBelow implements Mapper {
     protected final String expr;
 
 

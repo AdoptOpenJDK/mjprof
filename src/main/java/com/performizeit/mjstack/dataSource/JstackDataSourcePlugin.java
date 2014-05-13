@@ -1,25 +1,18 @@
 package com.performizeit.mjstack.dataSource;
 
 import com.performizeit.jmxsupport.JMXConnection;
-import com.performizeit.mjstack.api.DataSourcePlugin;
+import com.performizeit.mjstack.api.DataSource;
 import com.performizeit.mjstack.api.Plugin;
-import com.performizeit.mjstack.model.Profile;
 import com.performizeit.mjstack.parser.ThreadDump;
-import com.performizeit.mjstack.parser.ThreadInfo;
 
-import javax.management.openmbean.CompositeData;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-
-import static com.performizeit.mjstack.parser.ThreadInfoProps.*;
 
 // host:port or pid , freq,period       ,user,pass
 @Plugin(name = "jstack", paramTypes = {int.class, int.class, int.class}, description = "Generate dumps via JMX")
-public class JstackDataSourcePlugin implements DataSourcePlugin {
+public class JstackDataSourcePlugin implements DataSource {
     private final int freq;
     private final int period;
     int pid;

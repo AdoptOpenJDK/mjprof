@@ -16,12 +16,12 @@
 */
 package com.performizeit.mjstack.plugin;
 
-import com.performizeit.mjstack.api.JStackMapper;
+import com.performizeit.mjstack.api.Mapper;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.parser.ThreadInfo;
 
 @Plugin(name="test1",paramTypes = {String.class})
-public class PluginWithDefaultConstructorTest implements JStackMapper {
+public class PluginWithDefaultConstructorTest implements Mapper {
     private final String expr="kk";
 
 

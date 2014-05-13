@@ -66,7 +66,7 @@ public class PluginUtils {
 	}
 
 	public static boolean isImplementsMapper(Class<?> cla) {
-		return JStackMapper.class.isAssignableFrom(cla);
+		return Mapper.class.isAssignableFrom(cla);
 	}
     public static boolean isImplementsDumpMapper(Class<?> cla) {
         return DumpMapper.class.isAssignableFrom(cla);
@@ -75,18 +75,18 @@ public class PluginUtils {
         return DumpReducer.class.isAssignableFrom(cla);
     }
 	public static boolean isImplementsFilter(Class<?> cla) {
-		return JStackFilter.class.isAssignableFrom(cla);
+		return Filter.class.isAssignableFrom(cla);
 	}
 
 	public static boolean isImplementsTerminal(Class<?> cla) {
-		return JStackTerminal.class.isAssignableFrom(cla);
+		return Terminal.class.isAssignableFrom(cla);
 	}
 
 	public static boolean isImplementsComparators(Class cla) {
-		return JStackComparator.class.isAssignableFrom(cla);
+		return ThreadInfoComparator.class.isAssignableFrom(cla);
 	}
 	public static boolean isImplementsDataSource(Class<?> cla) {
-		return DataSourcePlugin.class.isAssignableFrom(cla);
+		return DataSource.class.isAssignableFrom(cla);
 	}
 	
 }

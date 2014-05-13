@@ -18,9 +18,9 @@
 package com.performizeit.mjstack.parser;
 
 import com.performizeit.mjstack.api.DumpMapper;
-import com.performizeit.mjstack.api.JStackFilter;
-import com.performizeit.mjstack.api.JStackMapper;
-import com.performizeit.mjstack.api.JStackTerminal;
+import com.performizeit.mjstack.api.Filter;
+import com.performizeit.mjstack.api.Mapper;
+import com.performizeit.mjstack.api.Terminal;
 import com.performizeit.mjstack.model.JStackHeader;
 
 import java.util.ArrayList;
@@ -80,7 +80,7 @@ public class ThreadDump  {
 
         return s.toString();
     }
-    public ThreadDump filterDump(JStackFilter filter) {
+    public ThreadDump filterDump(Filter filter) {
         ThreadDump that = new ThreadDump();
         that.header = header;
         that.stacks = new ArrayList<ThreadInfo>();
@@ -91,7 +91,7 @@ public class ThreadDump  {
         }
         return that;
     }
-    public ThreadDump mapDump(JStackMapper mapper) {
+    public ThreadDump mapDump(Mapper mapper) {
         ThreadDump that = new ThreadDump();
         that.header = header;
         that.stacks = new ArrayList<ThreadInfo>();
@@ -115,7 +115,7 @@ public class ThreadDump  {
         return that;
     }
 
-    public ThreadDump terminateDump(JStackTerminal terminal) {
+    public ThreadDump terminateDump(Terminal terminal) {
         JStackDumpTerminal that = new JStackDumpTerminal();
         that.header = header;
        terminal.addStackDump(this);

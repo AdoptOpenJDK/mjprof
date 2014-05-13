@@ -17,7 +17,7 @@
 
 package com.performizeit.mjstack.terminals;
 
-import com.performizeit.mjstack.api.JStackTerminal;
+import com.performizeit.mjstack.api.Terminal;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.parser.ThreadDump;
 import com.performizeit.mjstack.parser.ThreadInfo;
@@ -26,7 +26,7 @@ import java.util.HashSet;
 
 
 @Plugin(name="list", paramTypes={},description="lists the possible stack trace attributes")
-public class ListProps implements JStackTerminal {
+public class ListProps implements Terminal {
     HashSet<String> propsHash = new HashSet<String>();
 
     public void addStackDump(ThreadDump jsd) {

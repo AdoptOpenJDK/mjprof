@@ -17,19 +17,18 @@
 
 package com.performizeit.mjstack.mappers;
 
-import com.performizeit.mjstack.api.JStackMapper;
+import com.performizeit.mjstack.api.Mapper;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.model.Profile;
 import com.performizeit.mjstack.model.ProfileVisitor;
 import com.performizeit.mjstack.model.SFNode;
 import com.performizeit.mjstack.parser.ThreadInfo;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 @Plugin(name="fnelim",paramTypes = {},
         description = "Eliminates file name from stack frames")
-public class FileNameEliminator implements  JStackMapper {
+public class FileNameEliminator implements Mapper {
 
 
     public FileNameEliminator() {

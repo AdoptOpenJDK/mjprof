@@ -4,11 +4,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import com.performizeit.mjstack.api.DataSourcePlugin;
+import com.performizeit.mjstack.api.DataSource;
 import com.performizeit.mjstack.parser.ThreadDump;
 
 
-public abstract class StreamDataSourcePluginBase implements DataSourcePlugin{
+public abstract class StreamDataSourcePluginBase implements DataSource {
 
 	protected ArrayList<String> getStackStringsFromReader(BufferedReader r)  {
 

@@ -17,9 +17,7 @@
 
 package com.performizeit.mjstack;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -55,7 +53,7 @@ public class MJStack {
             ArrayList<ThreadDump> dumps;
             if (PluginUtils.isImplementsDataSource((obj.getClass()))) {
                 foundExplicitDataSource = true;
-                dumps = ((DataSourcePlugin) obj).getThreadDumps();
+                dumps = ((DataSource) obj).getThreadDumps();
                 if (dumps != null) {
                     jStackDumps.addAll(dumps);
                 }
@@ -82,7 +80,7 @@ public class MJStack {
             for (ThreadDump jsd : jStackDumpsOrig) {
 
                 if (PluginUtils.isImplementsMapper(obj.getClass())) {
-                    jStackDumps.add(jsd.mapDump((JStackMapper) obj));
+                    jStackDumps.add(jsd.mapDump((Mapper) obj));
                 } else if (PluginUtils.isImplementsDumpMapper(obj.getClass())) {
                     jStackDumps.add(jsd.mapDump((DumpMapper) obj));
                 } else if (PluginUtils.isImplementsDumpReducer(obj.getClass())) {
@@ -91,11 +89,11 @@ public class MJStack {
                     dr.reduce(jsd);
 
                 } else if (PluginUtils.isImplementsFilter(obj.getClass())) {
-                    jStackDumps.add(jsd.filterDump((JStackFilter) obj));
+                    jStackDumps.add(jsd.filterDump((Filter) obj));
                 } else if (PluginUtils.isImplementsTerminal(obj.getClass())) {
-                    jStackDumps.add(jsd.terminateDump((JStackTerminal) obj));
+                    jStackDumps.add(jsd.terminateDump((Terminal) obj));
                 } else if (PluginUtils.isImplementsComparators(obj.getClass())) {
-                    jsd.sortDump((JStackComparator) obj);
+                    jsd.sortDump((ThreadInfoComparator) obj);
                 }
             }
             if (PluginUtils.isImplementsDumpReducer(obj.getClass())) {
@@ -148,7 +146,7 @@ public class MJStack {
                 lineLength += appendAndCount(sb, "/");
                 for (int i = 0; i < stepInfo.getArgNum(); i++) {
                     lineLength += appendAndCount(sb, stepInfo.getParamTypes()[i].getSimpleName());
-                    if (i == stepInfo.getArgNum() - 2) {
+                    if (i < stepInfo.getArgNum() - 1) {
                         lineLength += appendAndCount(sb, ",");
                     }
                 }

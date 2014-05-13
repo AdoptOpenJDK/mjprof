@@ -16,7 +16,7 @@
 */
 
 package com.performizeit.mjstack.mappers;
-import com.performizeit.mjstack.api.JStackMapper;
+import com.performizeit.mjstack.api.Mapper;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.model.Profile;
 import com.performizeit.mjstack.model.ProfileNodeFilter;
@@ -25,7 +25,7 @@ import com.performizeit.mjstack.parser.ThreadInfo;
 
 @Plugin(name="stackelim",paramTypes = {String.class},
         description = "Eliminates stack frames from all stacks which contain string.")
-public class StackFrameNotContains implements JStackMapper {
+public class StackFrameNotContains implements Mapper {
     protected final String expr;
 
 

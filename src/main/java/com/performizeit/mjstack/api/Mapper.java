@@ -16,9 +16,9 @@
 */
 package com.performizeit.mjstack.api;
 
-import java.util.Comparator;
-
 import com.performizeit.mjstack.parser.ThreadInfo;
 
-public interface JStackComparator extends BasePlugin, Comparator<ThreadInfo>{
+
+public interface Mapper extends BasePlugin{
+	ThreadInfo map(ThreadInfo stck);
 }

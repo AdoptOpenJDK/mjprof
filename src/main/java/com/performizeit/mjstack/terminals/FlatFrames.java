@@ -17,7 +17,7 @@
 
 package com.performizeit.mjstack.terminals;
 
-import com.performizeit.mjstack.api.JStackTerminal;
+import com.performizeit.mjstack.api.Terminal;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.model.Profile;
 import com.performizeit.mjstack.model.ProfileVisitor;
@@ -30,7 +30,7 @@ import static com.performizeit.mjstack.parser.ThreadInfoProps.*;
 
 
 @Plugin(name="flat", paramTypes={}, description="Shows flat histogram of the profiles")
-public class FlatFrames implements JStackTerminal {
+public class FlatFrames implements Terminal {
     HashMap<String,Integer> methods = new HashMap<String,Integer>();
 
     public void addStackDump(ThreadDump jsd) {

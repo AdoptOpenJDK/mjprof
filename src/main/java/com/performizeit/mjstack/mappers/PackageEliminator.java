@@ -17,7 +17,7 @@
 
 package com.performizeit.mjstack.mappers;
 
-import com.performizeit.mjstack.api.JStackMapper;
+import com.performizeit.mjstack.api.Mapper;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.model.Profile;
 import com.performizeit.mjstack.model.ProfileVisitor;
@@ -27,7 +27,7 @@ import  static com.performizeit.mjstack.parser.ThreadInfoProps.*;
 
 @Plugin(name="pkgelim",paramTypes = {},
         description = "Eliminates package name from stack frames")
-public class PackageEliminator implements  JStackMapper {
+public class PackageEliminator implements Mapper {
     @Override
     public ThreadInfo map(ThreadInfo stck) {
         Profile jss = (Profile) stck.getVal(STACK);

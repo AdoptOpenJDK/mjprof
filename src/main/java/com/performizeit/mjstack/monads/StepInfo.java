@@ -17,16 +17,36 @@
 
 package com.performizeit.mjstack.monads;
 
+import com.performizeit.mjstack.api.BasePlugin;
+
 public class StepInfo {
-	private Class clazz;
+    private final Class pluginType;
+    private Class clazz;
 	private Class[] paramTypes;
 	private String description;
 	
-	public StepInfo(Class name, Class[] paramTypes,String description) {
-		this.clazz=name;
+	public StepInfo(Class clazz, Class[] paramTypes,String description) {
+		this.clazz=clazz;
 		this.paramTypes=paramTypes;
 		this.description=description;
+        this.pluginType =   getPluginType(clazz);
+        System.out.println(clazz.getSimpleName() +" "+ (pluginType != null ?pluginType.getSimpleName():"null"));
 	}
+    Class getPluginType(Class clazz) {
+        Class interfaces[] = clazz.getInterfaces();
+        if (interfaces.length == 0 ) {
+            Class superc = clazz.getSuperclass();
+            if (superc == null)  return null;
+            return getPluginType(superc);
+        }
+        for (Class i : interfaces) {
+         // todo    if (i.isAssignableFrom(BasePlugin.class)) return i;
+            return i;
+        }
+        Class superc = clazz.getSuperclass();
+        if (superc == null)  return null;
+        return getPluginType(superc);
+    }
 
 	public Class getClazz() {
 		return clazz;

@@ -16,12 +16,12 @@
 */
 package com.performizeit.mjstack.comparators;
 
-import com.performizeit.mjstack.api.JStackComparator;
+import com.performizeit.mjstack.api.ThreadInfoComparator;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.parser.ThreadInfo;
 
 @Plugin(name = "sort", paramTypes = {String.class },description="Sorts based on an attribute") 
-public class PropComparator implements JStackComparator {
+public class PropComparator implements ThreadInfoComparator {
     private final String prop;
 
     public PropComparator(String prop) {

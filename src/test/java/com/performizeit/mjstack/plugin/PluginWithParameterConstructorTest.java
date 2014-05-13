@@ -16,7 +16,7 @@
 */
 package com.performizeit.mjstack.plugin;
 
-import com.performizeit.mjstack.api.JStackMapper;
+import com.performizeit.mjstack.api.Mapper;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.model.Profile;
 import com.performizeit.mjstack.model.ProfileNodeFilter;
@@ -25,7 +25,7 @@ import com.performizeit.mjstack.parser.ThreadInfo;
 import java.util.HashMap;
 
 @Plugin(name="test2",paramTypes = {String.class})
-public class PluginWithParameterConstructorTest implements JStackMapper {
+public class PluginWithParameterConstructorTest implements Mapper {
     private final String expr;
 
     public PluginWithParameterConstructorTest(String expr) {

@@ -17,7 +17,7 @@
 
 package com.performizeit.mjstack.terminals;
 
-import com.performizeit.mjstack.api.JStackTerminal;
+import com.performizeit.mjstack.api.Terminal;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.parser.ThreadDump;
 import com.performizeit.mjstack.model.JStackHeader;
@@ -26,7 +26,7 @@ import com.performizeit.mjstack.parser.ThreadInfo;
 import java.util.ArrayList;
 
 @Plugin(name="count", paramTypes={}, description="counts number of threads")
-public class CountThreads implements JStackTerminal {
+public class CountThreads implements Terminal {
     int count =0;
     ArrayList<JStackHeader> stackDumpsHeaders = new ArrayList<JStackHeader>();
 

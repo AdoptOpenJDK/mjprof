@@ -1,7 +1,7 @@
 package com.performizeit.mjstack.dataSource;
 
 import com.performizeit.jmxsupport.JMXConnection;
-import com.performizeit.mjstack.api.DataSourcePlugin;
+import com.performizeit.mjstack.api.DataSource;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.model.Profile;
 import com.performizeit.mjstack.parser.ThreadDump;
@@ -15,7 +15,7 @@ import static com.performizeit.mjstack.parser.ThreadInfoProps.*;
 
 // host:port or pid , freq,period       ,user,pass
 @Plugin(name = "jmx", paramTypes = {String.class, int.class, int.class, String.class, String.class}, description = "Generate dumps via JMX")
-public class JmxDataSourcePlugin implements DataSourcePlugin {
+public class JmxDataSourcePlugin implements DataSource {
     private final int freq;
     private final int period;
     private final String user;

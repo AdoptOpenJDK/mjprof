@@ -17,9 +17,9 @@
 package com.performizeit.mjstack.parser;
 
 import com.performizeit.mjstack.api.DumpMapper;
-import com.performizeit.mjstack.api.JStackFilter;
-import com.performizeit.mjstack.api.JStackMapper;
-import com.performizeit.mjstack.api.JStackTerminal;
+import com.performizeit.mjstack.api.Filter;
+import com.performizeit.mjstack.api.Mapper;
+import com.performizeit.mjstack.api.Terminal;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.Comparator;
@@ -27,10 +27,10 @@ import java.util.Comparator;
 
 public class JStackDumpTerminal extends ThreadDump {
     protected  String data;
-    public ThreadDump filterDump(JStackFilter filter) {
+    public ThreadDump filterDump(Filter filter) {
         throw new NotImplementedException();
     }
-    public ThreadDump mapDump(JStackMapper mapper) {
+    public ThreadDump mapDump(Mapper mapper) {
         throw new NotImplementedException();
     }
 
@@ -44,7 +44,7 @@ public class JStackDumpTerminal extends ThreadDump {
     }
 
     @Override
-    public ThreadDump terminateDump(JStackTerminal terminal) {
+    public ThreadDump terminateDump(Terminal terminal) {
         throw new NotImplementedException();
     }
 

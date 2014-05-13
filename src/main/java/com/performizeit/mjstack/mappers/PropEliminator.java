@@ -16,7 +16,7 @@
 */
 
 package com.performizeit.mjstack.mappers;
-import com.performizeit.mjstack.api.JStackMapper;
+import com.performizeit.mjstack.api.Mapper;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.parser.ThreadInfo;
 
@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 @Plugin(name="eliminate", paramTypes={String.class},
         description = "Removes a certain attribute e.g. eliminate/stack/")
-public class PropEliminator implements JStackMapper {
+public class PropEliminator implements Mapper {
     private final String prop;
 
     public PropEliminator(String prop) {

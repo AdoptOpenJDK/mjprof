@@ -17,13 +17,13 @@
 
 package com.performizeit.mjstack.filters;
 
-import com.performizeit.mjstack.api.JStackFilter;
+import com.performizeit.mjstack.api.Filter;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.parser.ThreadInfo;
 
 @Plugin(name="contains", paramTypes={String.class,String.class},
         description = "Returns only threads which contain the string (regexp not supported)")
-public class JStackFilterFieldContains implements JStackFilter {
+public class JStackFilterFieldContains implements Filter {
     private final String fieldName;
     private final String valContained;
 

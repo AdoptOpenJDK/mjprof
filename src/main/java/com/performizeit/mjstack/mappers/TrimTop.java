@@ -17,7 +17,7 @@
 
 package com.performizeit.mjstack.mappers;
 
-import com.performizeit.mjstack.api.JStackMapper;
+import com.performizeit.mjstack.api.Mapper;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.model.Profile;
 import com.performizeit.mjstack.model.ProfileNodeFilter;
@@ -27,7 +27,7 @@ import com.performizeit.mjstack.parser.ThreadInfo;
 
 @Plugin(name="keepbot",paramTypes = {int.class},
         description = "Returns at most n bottom stack frames of the stack")
-public class TrimTop implements   JStackMapper {
+public class TrimTop implements Mapper {
     private final int count;
 
     public TrimTop(int count) {
