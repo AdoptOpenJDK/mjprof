@@ -12,8 +12,8 @@ import javax.management.openmbean.CompositeData;
 public class JMXConnectionTest extends TestCase {
     @Test
     public void testJMXConnection() throws Exception {
-        JstackDataSourcePlugin  jdsp = new JstackDataSourcePlugin(70782,100,1000);
-        jdsp.getThreadDumps();
+ //       JstackDataSourcePlugin  jdsp = new JstackDataSourcePlugin(70782,100,1000);
+   //     jdsp.getThreadDumps();
        /* int pid = 6960;
         JMXConnection c = new JMXConnection(new Integer(pid).toString());
         long[] threadsIds = c.getThreadIds();
