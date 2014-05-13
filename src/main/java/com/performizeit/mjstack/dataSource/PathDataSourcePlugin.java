@@ -1,6 +1,8 @@
 package com.performizeit.mjstack.dataSource;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -9,20 +11,33 @@ import com.performizeit.mjstack.api.DataSourcePlugin;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.parser.ThreadDump;
 
-@Plugin(name="sdtin", paramTypes={},description = "sdtin")
-public class StdinDataSourcePlugin extends StreamDataSourcePlugin{
+@Plugin(name="path", paramTypes={},description = "sdtin")
+public class PathDataSourcePlugin extends StreamDataSourcePlugin{
 
-	@Override
 	public ArrayList<ThreadDump> getThreadDumps(String fileName) {
-		ArrayList<String> stackStrings = getStackStringsFromStream();
+		ArrayList<String> stackStrings = getStackStringsFromStream(fileName);
 		return buildJstacks(stackStrings);
 	}
-
-
-
-//	
-//	private ArrayList<String> getStackStringsFromStdIn() {
-//		BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
+	
+//	public ArrayList<String> getStackStringsFromStream(String fileName) {
+//		return getStackStrings(fileName);
+//	}
+//	public ArrayList<String> getStackStringsFromStream() {
+//		return getStackStrings("");
+//	}
+	
+//	@SuppressWarnings("resource")
+//	public ArrayList<String> getStackStrings(String fileName){
+//		BufferedReader r = null;
+//		if(fileName.length()==0){
+//			r = new BufferedReader(new InputStreamReader(System.in));
+//		}else {
+//		 try {
+//			r = new BufferedReader(new FileReader(fileName));
+//		} catch (FileNotFoundException e) {
+//			System.out.println("File " + fileName + "not found");
+//		}
+//		}
 //		ArrayList<String> stackDumps = new ArrayList<String>();
 //		StringBuilder linesOfStack = new StringBuilder();
 //		String line;
@@ -48,15 +63,10 @@ public class StdinDataSourcePlugin extends StreamDataSourcePlugin{
 //		}
 //		return stackDumps;
 //	}
-//	
-//	private  ArrayList<ThreadDump> buildJstacks(ArrayList<String> stackStrings) {
-//		ArrayList<ThreadDump> jStackDumps = new ArrayList<ThreadDump>(stackStrings.size());
-//		for (String stackDump : stackStrings) {
-//			ThreadDump stckDump = new ThreadDump(stackDump);
-//			jStackDumps.add(stckDump);
-//		}
-//		return jStackDumps;
-//	}
+	
+
+
+
 
 
 }
