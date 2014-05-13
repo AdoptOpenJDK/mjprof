@@ -1,37 +1,17 @@
 package com.performizeit.mjstack.dataSource;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import com.performizeit.mjstack.api.DataSourcePlugin;
-import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.parser.ThreadDump;
 
-@Plugin(name="sdtin", paramTypes={},description = "sdtin")
-public abstract class StreamDataSourcePlugin implements DataSourcePlugin{
 
+public abstract class StreamDataSourcePluginBase implements DataSourcePlugin{
 
-	public abstract ArrayList<ThreadDump> getThreadDumps(String fileName) ;
-	
-	protected ArrayList<String> getStackStringsFromStream(){
-		return getStackStringsFromStream("");
-	}
+	protected ArrayList<String> getStackStringsFromReader(BufferedReader r)  {
 
-	public ArrayList<String> getStackStringsFromStream(String fileName){
-		return getStackStringsFromFile(fileName);
-	}
-	public ArrayList<String> getStackStringsFromFile(String fileName)  {
-		BufferedReader r = null;
-		try {
-			r = new BufferedReader(new FileReader(fileName));
-		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
 		ArrayList<String> stackDumps = new ArrayList<String>();
 		StringBuilder linesOfStack = new StringBuilder();
 		String line;

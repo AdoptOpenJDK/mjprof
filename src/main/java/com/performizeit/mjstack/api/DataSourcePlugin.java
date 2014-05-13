@@ -25,6 +25,6 @@ import com.performizeit.mjstack.parser.ThreadDump;
  */
 public interface DataSourcePlugin extends BasePlugin{
 
-	ArrayList<ThreadDump> getThreadDumps(String fileName);
+	ArrayList<ThreadDump> getThreadDumps();
 	
 }
