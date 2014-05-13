@@ -16,8 +16,8 @@ public class PathPluginTest {
 	
 	@Test
 	public void getAllDataSourcePlugin() throws Exception {
-		PathDataSourcePlugin plugin= new PathDataSourcePlugin();
-		System.out.println(plugin.getStackStringsFromFile("c:/test.txt"));
+		//PathDataSourcePlugin plugin= new PathDataSourcePlugin("c:/test.txt");
+		//System.out.println(plugin.getStackStringsFromFile());
 	}
 
 }
