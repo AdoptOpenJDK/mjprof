@@ -126,7 +126,7 @@ public class MJStack {
     public static String getSynopsisString() {
         StringBuilder sb = new StringBuilder();
         StringBuilder command;
-        sb.append("Synopsis\nA list of the following monads concatenated with . ");
+        sb.append("Synopsis\nA list of the following monads concatenated with . \n");
         List<String> keys = new ArrayList<String>(StepsRepository.getRepository().keySet());
         Collections.sort(keys);
         sb.append("\nData sources:\n");
@@ -141,7 +141,7 @@ public class MJStack {
         sb.append("\nTerminals:\n");
         getSynopsisContent(sb, keys,Terminal.class);
 
-        sb.append("\n  help                                    -Prints this message");
+        sb.append("\n  help                                  -Prints this message");
         return sb.toString();
     }
 
