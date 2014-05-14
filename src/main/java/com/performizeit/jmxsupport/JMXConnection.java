@@ -98,11 +98,16 @@ public class JMXConnection {
         userName = uName;
         userPassword = passwd;
         host = serverUrl;
+        port="";
+
         int colonIndex = serverUrl.lastIndexOf(":");
-        port = serverUrl.substring(colonIndex + 1);
+        if (colonIndex >0 ) {
+            port = serverUrl.substring(colonIndex + 1);
+            host = serverUrl.substring(0,colonIndex );
+        }
         connectURL = host + ":" + port;
         //    System.out.println("[" + host + "] [" + port + "] [" + userName + "] [" + userPassword + "]");
-        serviceURL = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + host + ":" + port + "/jmxrmi");
+        serviceURL = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + serverUrl + "/jmxrmi");
     }
     MBeanServerConnection server = null;
 
@@ -114,10 +119,11 @@ public class JMXConnection {
         if (server == null) {
 
             Map env = new HashMap();
-            if (userName != null && userPassword != null && userName.length() > 0) {
+            if (userName != null && userPassword != null && userName.trim().length() > 0) {
                 String[] creds = {userName, userPassword};
                 env.put(JMXConnector.CREDENTIALS, creds);
             }
+            System.out.println(serviceURL);
             JMXConnector conn = JMXConnectorFactory.connect(serviceURL, env);
             server = conn.getMBeanServerConnection();
         }

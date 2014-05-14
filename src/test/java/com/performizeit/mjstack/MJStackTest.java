@@ -46,6 +46,16 @@ public class MJStackTest {
         assertEquals(steps.get(1), "list");
 
     }
+    @Test
+    public void twoTrailingCOmmas() throws Exception {
+        String args =  "contains/key:k,1,1,,/.list";
+        ArrayList<String> steps = MJStack.splitCommandLine(args);
+        assertNotNull(steps);
+        assertEquals(steps.get(0), "contains/key:k,1,1,,/");
+        assertEquals(steps.get(1), "list");
+
+    }
+
 
     @Test
     public void argWhichContainsSlashSplit() throws Exception {
