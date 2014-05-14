@@ -14,7 +14,7 @@ import java.util.HashMap;
 import static com.performizeit.mjstack.parser.ThreadInfoProps.*;
 
 // host:port or pid , freq,period       ,user,pass
-@Plugin(name = "jmx", paramTypes = {String.class, int.class, int.class, String.class, String.class}, description = "Generate dumps via JMX")
+@Plugin(name = "jmx", paramTypes = {String.class, int.class, int.class, String.class, String.class}, description = "Generate dumps via JMX host:port,frequency,period,[user],[passwd]")
 public class JmxDataSourcePlugin implements DataSource {
     private final int freq;
     private final int period;
@@ -75,6 +75,7 @@ public class JmxDataSourcePlugin implements DataSource {
 
                 }
                 dumps.add(threadDump);
+                if (System.currentTimeMillis() + freq - start >= period ) break;
                 Thread.sleep(freq);
             }
         } catch (Exception e) {

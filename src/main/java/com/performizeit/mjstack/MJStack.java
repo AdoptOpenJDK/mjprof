@@ -51,7 +51,7 @@ public class MJStack {
             //TODO: Save the objects so we won't create it twice
             Object obj = getObjectFromStep(mjstep);
             ArrayList<ThreadDump> dumps;
-            if (PluginUtils.isImplementsDataSource((obj.getClass()))) {
+            if (PluginUtils.isDataSource((obj))) {
                 foundExplicitDataSource = true;
                 dumps = ((DataSource) obj).getThreadDumps();
                 if (dumps != null) {
@@ -69,7 +69,7 @@ public class MJStack {
         for (MJStep mjstep : steps) {
             Object obj = getObjectFromStep(mjstep);
 
-            if (PluginUtils.isImplementsDataSource((obj.getClass()))) {
+            if (PluginUtils.isDataSource((obj))) {
                 continue;
             }
             ArrayList<ThreadDump> jStackDumpsOrig = jStackDumps;
@@ -79,24 +79,24 @@ public class MJStack {
 
             for (ThreadDump jsd : jStackDumpsOrig) {
 
-                if (PluginUtils.isImplementsMapper(obj.getClass())) {
+                if (PluginUtils.isMapper(obj)) {
                     jStackDumps.add(jsd.mapDump((Mapper) obj));
-                } else if (PluginUtils.isImplementsDumpMapper(obj.getClass())) {
+                } else if (PluginUtils.isDumpMapper(obj)) {
                     jStackDumps.add(jsd.mapDump((DumpMapper) obj));
-                } else if (PluginUtils.isImplementsDumpReducer(obj.getClass())) {
+                } else if (PluginUtils.isDumpReducer(obj)) {
 
                     DumpReducer dr = (DumpReducer) obj;
                     dr.reduce(jsd);
 
-                } else if (PluginUtils.isImplementsFilter(obj.getClass())) {
+                } else if (PluginUtils.isFilter(obj)) {
                     jStackDumps.add(jsd.filterDump((Filter) obj));
-                } else if (PluginUtils.isImplementsTerminal(obj.getClass())) {
+                } else if (PluginUtils.isTerminal(obj)) {
                     jStackDumps.add(jsd.terminateDump((Terminal) obj));
-                } else if (PluginUtils.isImplementsComparators(obj.getClass())) {
+                } else if (PluginUtils.isComparator(obj)) {
                     jsd.sortDump((ThreadInfoComparator) obj);
                 }
             }
-            if (PluginUtils.isImplementsDumpReducer(obj.getClass())) {
+            if (PluginUtils.isDumpReducer(obj)) {
                 DumpReducer dr = (DumpReducer) obj;
                 jStackDumps.add(dr.getResult());
             }
@@ -109,14 +109,12 @@ public class MJStack {
         }
     }
 
-
     private static Object getObjectFromStep(MJStep mjstep) {
         StepInfo step = StepsRepository.getStep(mjstep.getStepName());
         Object[] paramArgs = buildArgsArray(step.getParamTypes(), mjstep.getStepArgs());
         Object obj = PluginUtils.initObj(step.getClazz(), step.getParamTypes(), paramArgs);
         return obj;
     }
-
 
     private static void printSynopsisAndExit() {
         System.err.println(getSynopsisString());
@@ -190,7 +188,6 @@ public class MJStack {
                 }
             }
             if ((str.charAt(i) == '.' || str.charAt(i) == ' ') && !insideArgList) return i;
-
         }
         return -1;
     }

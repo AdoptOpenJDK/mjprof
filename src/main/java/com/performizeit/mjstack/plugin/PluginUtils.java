@@ -64,28 +64,28 @@ public class PluginUtils {
         return pluginAnnotation.description();
 	}
 
-	public static boolean isImplementsMapper(Class<?> cla) {
-		return Mapper.class.isAssignableFrom(cla);
+	public static boolean isMapper(Object o ) {
+		return Mapper.class.isAssignableFrom(o.getClass());
 	}
-    public static boolean isImplementsDumpMapper(Class<?> cla) {
-        return DumpMapper.class.isAssignableFrom(cla);
+    public static boolean isDumpMapper(Object o) {
+        return DumpMapper.class.isAssignableFrom(o.getClass());
     }
-    public static boolean isImplementsDumpReducer(Class<?> cla) {
-        return DumpReducer.class.isAssignableFrom(cla);
+    public static boolean isDumpReducer(Object o) {
+        return DumpReducer.class.isAssignableFrom(o.getClass());
     }
-	public static boolean isImplementsFilter(Class<?> cla) {
-		return Filter.class.isAssignableFrom(cla);
+	public static boolean isFilter(Object o) {
+		return Filter.class.isAssignableFrom(o.getClass());
 	}
 
-	public static boolean isImplementsTerminal(Class<?> cla) {
-		return Terminal.class.isAssignableFrom(cla);
+	public static boolean isTerminal(Object o) {
+		return Terminal.class.isAssignableFrom(o.getClass());
 	}
 
-	public static boolean isImplementsComparators(Class cla) {
-		return ThreadInfoComparator.class.isAssignableFrom(cla);
+	public static boolean isComparator(Object o) {
+		return ThreadInfoComparator.class.isAssignableFrom(o.getClass());
 	}
-	public static boolean isImplementsDataSource(Class<?> cla) {
-		return DataSource.class.isAssignableFrom(cla);
+	public static boolean isDataSource(Object o) {
+		return DataSource.class.isAssignableFrom(o.getClass());
 	}
 	
 }
