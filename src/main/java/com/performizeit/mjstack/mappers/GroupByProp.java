@@ -17,6 +17,7 @@
 
 package com.performizeit.mjstack.mappers;
 
+import com.performizeit.mjstack.api.Attr;
 import com.performizeit.mjstack.api.DumpMapper;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.model.Profile;
@@ -29,11 +30,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 
-@Plugin(name="group", paramTypes={String.class},description="group by an attribute")
+@Plugin(name="group", paramTypes={Attr.class},description="group by an attribute")
 public class GroupByProp implements DumpMapper {
     private final String prop;
-    public GroupByProp(String prop) {
-        this.prop = prop;
+    public GroupByProp(Attr prop) {
+        this.prop = prop.getAttrName();
     }
     public ThreadDump map(ThreadDump jsd ) {
         ArrayList<String> a= new ArrayList<String>();

@@ -30,7 +30,7 @@ public class StepInfo {
 		this.paramTypes=paramTypes;
 		this.description=description;
         this.pluginType =   getPluginType(clazz);
-        System.out.println(clazz.getSimpleName() +" "+ (pluginType != null ?pluginType.getSimpleName():"null"));
+      //  System.out.println(clazz.getSimpleName() +" "+ (pluginType != null ?pluginType.getSimpleName():"null"));
 	}
     Class getPluginType(Class clazz) {
         Class interfaces[] = clazz.getInterfaces();
@@ -69,4 +69,7 @@ public class StepInfo {
 		return "name "+ clazz + " description " + description + " param " + paramTypes;
 	}
 
+    public Class getPluginType() {
+        return pluginType;
+    }
 }

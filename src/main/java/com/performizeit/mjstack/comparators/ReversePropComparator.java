@@ -16,12 +16,13 @@
 */
 package com.performizeit.mjstack.comparators;
 
+import com.performizeit.mjstack.api.Attr;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.parser.ThreadInfo;
 
-@Plugin(name = "sortd", paramTypes = {String.class },description="Sorts based on an attribute (descending order)") 
+@Plugin(name = "sortd", paramTypes = {Attr.class },description="Sorts based on an attribute (descending order)")
 public class ReversePropComparator extends PropComparator {
-    public ReversePropComparator(String prop) {
+    public ReversePropComparator(Attr prop) {
         super(prop);
     }
     @Override

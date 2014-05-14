@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.HashMap;
 import java.util.Set;
 
+import com.performizeit.mjstack.terminals.ListProps;
 import org.junit.Test;
 import org.reflections.Reflections;
 
@@ -66,8 +67,8 @@ public class PluginTest {
 
 	@Test
 	public void testSynopsis() throws Exception{
-		assertTrue(MJStack.getSynopsisString().contains("synopsis"));
-		assertTrue(MJStack.getSynopsisString().contains("list                                    -lists the possible stack trace attributes"));
+		assertTrue(MJStack.getSynopsisString().contains("Synopsis"));
+		assertTrue(MJStack.getSynopsisString().contains(ListProps.class.getAnnotation(Plugin.class).description()));
 
 	}
 	

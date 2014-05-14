@@ -126,26 +126,37 @@ public class MJStack {
     public static String getSynopsisString() {
         StringBuilder sb = new StringBuilder();
         StringBuilder command;
-        sb.append("synopsis\n");
-        sb.append("Building Blocks:\n");
+        sb.append("Synopsis\nA list of the following monads concatenated with . ");
         List<String> keys = new ArrayList<String>(StepsRepository.getRepository().keySet());
         Collections.sort(keys);
-        getSynopsisContent(sb, keys);
-        sb.append("help                                    -Prints this message");
+        sb.append("\nData sources:\n");
+        getSynopsisContent(sb, keys,DataSource.class);
+        sb.append("\nFilters:\n");
+        getSynopsisContent(sb, keys,Filter.class);
+        sb.append("\nMappers:\n");
+        getSynopsisContent(sb, keys,Mapper.class);
+        getSynopsisContent(sb, keys,DumpMapper.class);
+        getSynopsisContent(sb, keys,DumpReducer.class);
+        getSynopsisContent(sb, keys,ThreadInfoComparator.class);
+        sb.append("\nTerminals:\n");
+        getSynopsisContent(sb, keys,Terminal.class);
+
+        sb.append("\n  help                                    -Prints this message");
         return sb.toString();
     }
 
-    private static void getSynopsisContent(StringBuilder sb, List<String> keys) {
+    private static void getSynopsisContent(StringBuilder sb, List<String> keys,Class pluginType) {
         int lineLength = 0;
         StepInfo stepInfo;
         for (String stepName : keys) {
             lineLength = 0;
             stepInfo = StepsRepository.getStep(stepName);
-            lineLength += appendAndCount(sb, stepName);
+            if (!stepInfo.getPluginType().equals(pluginType))  continue;
+            lineLength += appendAndCount(sb, "  "+stepName);
             if (stepInfo.getArgNum() > 0) {
                 lineLength += appendAndCount(sb, "/");
                 for (int i = 0; i < stepInfo.getArgNum(); i++) {
-                    lineLength += appendAndCount(sb, stepInfo.getParamTypes()[i].getSimpleName());
+                    lineLength += appendAndCount(sb, stepInfo.getParamTypes()[i].getSimpleName().toLowerCase());
                     if (i < stepInfo.getArgNum() - 1) {
                         lineLength += appendAndCount(sb, ",");
                     }
@@ -226,7 +237,10 @@ public class MJStack {
                     paramsTrans[i] = Integer.parseInt(params.get(i));
                 } else if (paramTypes[i].equals(Long.class) || paramTypes[i].equals(long.class)) {
                     paramsTrans[i] = Long.parseLong(params.get(i));
-                } else {
+                } else if (paramTypes[i].equals(Attr.class) ) {
+                    paramsTrans[i] = new Attr(params.get(i));
+                }
+                else {
                     paramsTrans[i] = params.get(i);
                 }
             } catch (NumberFormatException e) {

@@ -17,6 +17,7 @@
 
 package com.performizeit.mjstack.combiners;
 
+import com.performizeit.mjstack.api.Attr;
 import com.performizeit.mjstack.api.DumpReducer;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.model.Profile;
@@ -31,13 +32,13 @@ import java.util.HashMap;
 import static com.performizeit.mjstack.parser.ThreadInfoProps.*;
 
 
-@Plugin(name="merge", paramTypes={String.class},description="Combine all dumps to a single one")
+@Plugin(name="merge", paramTypes={Attr.class},description="Combine all dumps to a single one merge based on thread id attribute")
 public class AccumulateDumps implements DumpReducer {
 
     ThreadInfoAggregator tidAggr;
     int countDumps=0;
 
-    public AccumulateDumps(String prop) {
+    public AccumulateDumps(Attr prop) {
         String[] a = {TID};
         tidAggr =new ThreadInfoAggregator(Arrays.asList(a));
     }
