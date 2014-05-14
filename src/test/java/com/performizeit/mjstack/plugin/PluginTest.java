@@ -2,10 +2,12 @@ package com.performizeit.mjstack.plugin;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.HashMap;
 import java.util.Set;
 
+import com.performizeit.mjstack.mappers.GroupByProp;
 import com.performizeit.mjstack.terminals.ListProps;
 import org.junit.Test;
 import org.reflections.Reflections;
@@ -48,9 +50,7 @@ public class PluginTest {
 	@Test
 	public void testPlugin() throws Exception {
 		HashMap<String, Class<?>> map =new HashMap<String, Class<?>>();
-		//       reduce.put("TrimBelowhelp", PluginWithParameterConstructorTest.class);
-		//       reduce.put("Trim", PluginWithDefaultConstructorTest.class);
-		System.out.println(PluginUtils.getAllPlugins());
+        assertNotNull(PluginUtils.getAllPlugins().get(GroupByProp.class));
 	}
 
 	@Test
@@ -77,12 +77,10 @@ public class PluginTest {
 		HashMap<String, StepInfo> repo = new HashMap<String, StepInfo>();
 		Reflections reflections = new Reflections("com.performizeit");
 		Set<Class<?>> annotatedPlugin = reflections.getTypesAnnotatedWith(Plugin.class);
-		System.out.println(annotatedPlugin);
 		for(Class cla: annotatedPlugin){
 			Plugin pluginAnnotation = (Plugin) cla.getAnnotation(Plugin.class);
 			StepInfo stepInit = new StepInfo(cla, pluginAnnotation.paramTypes(),pluginAnnotation.description());
 			repo.put(pluginAnnotation.name(), stepInit);
 		}
-		System.out.println(repo.get("JMX"));
 	}
 }

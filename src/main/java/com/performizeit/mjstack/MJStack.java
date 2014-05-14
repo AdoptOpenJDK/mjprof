@@ -119,18 +119,17 @@ public class MJStack {
 
 
     private static void printSynopsisAndExit() {
-        System.out.println(getSynopsisString());
+        System.err.println(getSynopsisString());
         System.exit(1);
     }
 
     public static String getSynopsisString() {
         StringBuilder sb = new StringBuilder();
-        StringBuilder command;
         sb.append("Synopsis\nA list of the following monads concatenated with . \n");
         List<String> keys = new ArrayList<String>(StepsRepository.getRepository().keySet());
         Collections.sort(keys);
         sb.append("\nData sources:\n");
-        getSynopsisContent(sb, keys,DataSource.class);
+        getSynopsisContent(sb, keys, DataSource.class);
         sb.append("\nFilters:\n");
         getSynopsisContent(sb, keys,Filter.class);
         sb.append("\nMappers:\n");
@@ -182,7 +181,14 @@ public class MJStack {
     static int findNextSeperator(String str) {
         boolean insideArgList = false;
         for (int i = 0; i < str.length(); i++) {
-            if (str.charAt(i) == '/') insideArgList = !insideArgList;
+
+            if (str.charAt(i) == '/') {
+                if (i<str.length()-1 && insideArgList && str.charAt(i+1) !='.'  && str.charAt(i+1) !=' ' && str.charAt(i+1) !='/') {
+                    //do nothing
+                } else {
+                    insideArgList = !insideArgList;
+                }
+            }
             if ((str.charAt(i) == '.' || str.charAt(i) == ' ') && !insideArgList) return i;
 
         }
@@ -210,7 +216,7 @@ public class MJStack {
             }
             MJStep step = new MJStep(s);
             if (!StepsRepository.stepValid(step)) {
-                System.out.println("Step " + step + " is invalid\n");
+                System.err.println("Step " + step + " is invalid\n");
                 return null;
             }
             mjsteps.add(step);
@@ -244,7 +250,7 @@ public class MJStack {
                     paramsTrans[i] = params.get(i);
                 }
             } catch (NumberFormatException e) {
-                System.out.println("Please re-enter - wrong parameter format.");
+                System.err.println("Please re-enter - wrong parameter format.");
             }
         }
         return paramsTrans;

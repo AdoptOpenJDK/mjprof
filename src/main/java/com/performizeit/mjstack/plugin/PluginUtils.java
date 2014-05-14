@@ -42,17 +42,16 @@ public class PluginUtils {
 
 
 	//conParameter - constructor parameters
-	public static HashMap<String,Class> getAllPlugins() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, ClassNotFoundException{
-		HashMap<String,Class> map = new HashMap<String,Class>();
+	public static HashMap<Class,Class> getAllPlugins() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, ClassNotFoundException{
+		HashMap<Class,Class> map = new HashMap<Class,Class>();
 		//TODO
 		Reflections reflections = new Reflections("com.performizeit");
 		Set<Class<?>> annotatedPlugin = reflections.getTypesAnnotatedWith(Plugin.class);
 
 		for(Class cla :annotatedPlugin){
-			if(isImplementsMapper(cla) ||isImplementsFilter(cla) ||isImplementsTerminal(cla) || isImplementsComparators(cla) || isImplementsDataSource(cla) 
-					||isImplementsDumpMapper(cla)||isImplementsDumpReducer(cla)){
+			if(BasePlugin.class.isAssignableFrom(cla)){
 				String helpLine=invokeGetHelpLine(cla);	
-				map.put(helpLine, cla);
+				map.put(cla, cla);
 			}else{
 				System.out.println("class " + cla.getName() + " needs to extend BasePlugin child");
 			}

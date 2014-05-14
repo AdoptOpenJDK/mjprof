@@ -46,6 +46,25 @@ public class MJStackTest {
         assertEquals(steps.get(1), "list");
 
     }
+
+    @Test
+    public void argWhichContainsSlashSplit() throws Exception {
+        String args =  "path/lib/dd/a.kk/.list";
+        ArrayList<String> steps = MJStack.splitCommandLine(args);
+        assertNotNull(steps);
+        assertEquals(steps.get(0), "path/lib/dd/a.kk/");
+        assertEquals(steps.get(1), "list");
+
+    }
+    @Test
+    public void argWhichContainsSlashSplit2() throws Exception {
+        String args =  "path/lib/dd//.kk/.list";
+        ArrayList<String> steps = MJStack.splitCommandLine(args);
+        assertNotNull(steps);
+        assertEquals(steps.get(0), "path/lib/dd//.kk/");
+        assertEquals(steps.get(1), "list");
+
+    }
     @Test
     public void argWhichContainsPeriod2() throws Exception {
         String args =  "contains/key.k,val.,,val/.contains/stack,com.performizeit/";
