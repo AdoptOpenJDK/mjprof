@@ -123,7 +123,6 @@ public class JMXConnection {
                 String[] creds = {userName, userPassword};
                 env.put(JMXConnector.CREDENTIALS, creds);
             }
-            System.out.println(serviceURL);
             JMXConnector conn = JMXConnectorFactory.connect(serviceURL, env);
             server = conn.getMBeanServerConnection();
         }

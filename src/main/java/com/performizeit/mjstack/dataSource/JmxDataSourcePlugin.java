@@ -37,11 +37,9 @@ public class JmxDataSourcePlugin implements DataSource {
     public ArrayList<ThreadDump> getThreadDumps() {
         JMXConnection server=null;
         ArrayList<ThreadDump> dumps = new ArrayList<ThreadDump>();
-        System.out.println(hostPortPid);
         try {
             try {
                 Integer.parseInt(hostPortPid);
-                System.out.println("parsed integer");
                 server = new JMXConnection(hostPortPid);
             } catch (NumberFormatException e) {
 
