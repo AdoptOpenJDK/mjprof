@@ -20,6 +20,7 @@ package com.performizeit.mjstack.parser;
 public interface ThreadInfoProps {
     public static final String NAME = "name";     // the name of the thread
     public static final String PRIO = "prio";
+    public static final String CPU = "cpu";
     public static final String TID = "tid";
     public static final String NID = "nid";
     public static final String STACK = "stack";

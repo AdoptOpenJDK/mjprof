@@ -240,10 +240,11 @@ public class MJStack {
                     paramsTrans[i] = Integer.parseInt(params.get(i));
                 } else if (paramTypes[i].equals(Long.class) || paramTypes[i].equals(long.class)) {
                     paramsTrans[i] = Long.parseLong(params.get(i));
+                } else if (paramTypes[i].equals(Boolean.class) || paramTypes[i].equals(boolean.class)) {
+                    paramsTrans[i] = Boolean.parseBoolean(params.get(i));
                 } else if (paramTypes[i].equals(Attr.class) ) {
                     paramsTrans[i] = new Attr(params.get(i));
-                }
-                else {
+                } else {
                     paramsTrans[i] = params.get(i);
                 }
             } catch (NumberFormatException e) {
