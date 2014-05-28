@@ -29,7 +29,7 @@ import java.util.HashMap;
 import static com.performizeit.mjstack.parser.ThreadInfoProps.*;
 
 
-@Plugin(name="flat", paramTypes={}, description="Shows flat histogram of the profiles")
+@Plugin(name="flat", params ={}, description="Shows flat histogram of the profiles")
 public class FlatFrames implements Terminal {
     HashMap<String,Integer> methods = new HashMap<String,Integer>();
 

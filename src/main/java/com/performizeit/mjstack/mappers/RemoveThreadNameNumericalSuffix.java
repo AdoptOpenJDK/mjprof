@@ -22,7 +22,7 @@ import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.parser.ThreadInfo;
 import  static com.performizeit.mjstack.parser.ThreadInfoProps.*;
 
-@Plugin(name="namesuffix",paramTypes = {},
+@Plugin(name="namesuffix", params = {},
         description = "Trim the last number from thread names")
 public class RemoveThreadNameNumericalSuffix implements Mapper {
     public RemoveThreadNameNumericalSuffix() {

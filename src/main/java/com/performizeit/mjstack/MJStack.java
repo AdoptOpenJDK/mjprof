@@ -25,6 +25,7 @@ import java.util.List;
 import com.performizeit.mjstack.api.*;
 import com.performizeit.mjstack.dataSource.StdinDataSourcePlugin;
 import com.performizeit.mjstack.monads.MJStep;
+import com.performizeit.mjstack.monads.Param;
 import com.performizeit.mjstack.monads.StepInfo;
 import com.performizeit.mjstack.monads.StepsRepository;
 import com.performizeit.mjstack.parser.ThreadDump;
@@ -111,7 +112,7 @@ public class MJStack {
 
     private static Object getObjectFromStep(MJStep mjstep) {
         StepInfo step = StepsRepository.getStep(mjstep.getStepName());
-        Object[] paramArgs = buildArgsArray(step.getParamTypes(), mjstep.getStepArgs());
+        Object[] paramArgs = buildArgsArray(step.getParams(), mjstep.getStepArgs());
         Object obj = PluginUtils.initObj(step.getClazz(), step.getParamTypes(), paramArgs);
         return obj;
     }
@@ -152,15 +153,22 @@ public class MJStack {
             lineLength += appendAndCount(sb, "  "+stepName);
             if (stepInfo.getArgNum() > 0) {
                 lineLength += appendAndCount(sb, "/");
+                Param[] params = stepInfo.getParams();
                 for (int i = 0; i < stepInfo.getArgNum(); i++) {
-                    lineLength += appendAndCount(sb, stepInfo.getParamTypes()[i].getSimpleName().toLowerCase());
+                    String paramName = params[i].name();
+                    if (paramName == null || paramName.length() ==0)   // the default paramter name is ""
+                        paramName = params[i].value().getSimpleName().toLowerCase();
+                    if (params[i].optional()) {
+                        paramName = "["+paramName+"]";
+                    }
+                    lineLength += appendAndCount(sb,paramName );
                     if (i < stepInfo.getArgNum() - 1) {
                         lineLength += appendAndCount(sb, ",");
                     }
                 }
                 lineLength += appendAndCount(sb, "/");
             }
-            for (int j = 0; j < (40 - lineLength); j++) {
+            for (int j = 0; j < (60 - lineLength); j++) {
                 sb.append(" ");
             }
             sb.append("-");
@@ -231,21 +239,21 @@ public class MJStack {
         return b.toString();
     }
 
-    public static Object[] buildArgsArray(Class[] paramTypes, List<String> params) {
-        Object[] paramsTrans = new Object[paramTypes.length];
+    public static Object[] buildArgsArray(Param[] params, List<String> paramsVals) {
+        Object[] paramsTrans = new Object[params.length];
 
-        for (int i = 0; i < paramTypes.length; i++) {
+        for (int i = 0; i < params.length; i++) {
             try {
-                if (paramTypes[i].equals(Integer.class) || paramTypes[i].equals(int.class)) {
-                    paramsTrans[i] = Integer.parseInt(params.get(i));
-                } else if (paramTypes[i].equals(Long.class) || paramTypes[i].equals(long.class)) {
-                    paramsTrans[i] = Long.parseLong(params.get(i));
-                } else if (paramTypes[i].equals(Boolean.class) || paramTypes[i].equals(boolean.class)) {
-                    paramsTrans[i] = Boolean.parseBoolean(params.get(i));
-                } else if (paramTypes[i].equals(Attr.class) ) {
-                    paramsTrans[i] = new Attr(params.get(i));
+                if (params[i].value().equals(Integer.class) || params[i].value().equals(int.class)) {
+                    paramsTrans[i] = Integer.parseInt(paramsVals.get(i));
+                } else if (params[i].value().equals(Long.class) || params[i].value().equals(long.class)) {
+                    paramsTrans[i] = Long.parseLong(paramsVals.get(i));
+                } else if (params[i].value().equals(Boolean.class) || params[i].value().equals(boolean.class)) {
+                    paramsTrans[i] = Boolean.parseBoolean(paramsVals.get(i));
+                } else if (params[i].value().equals(Attr.class) ) {
+                    paramsTrans[i] = new Attr(paramsVals.get(i));
                 } else {
-                    paramsTrans[i] = params.get(i);
+                    paramsTrans[i] = paramsVals.get(i);
                 }
             } catch (NumberFormatException e) {
                 System.err.println("Please re-enter - wrong parameter format.");

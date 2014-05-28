@@ -22,9 +22,10 @@ import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.model.Profile;
 import com.performizeit.mjstack.model.ProfileNodeFilter;
 import com.performizeit.mjstack.model.SFNode;
+import com.performizeit.mjstack.monads.Param;
 import com.performizeit.mjstack.parser.ThreadInfo;
 
-@Plugin(name="keeptop",paramTypes = {int.class},
+@Plugin(name="keeptop", params = {@Param(int.class)},
         description = "Returns at most n top stack frames of the stack")
 public class TrimBottom implements Mapper {
     private final int count;

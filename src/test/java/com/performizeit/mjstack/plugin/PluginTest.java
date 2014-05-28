@@ -79,7 +79,7 @@ public class PluginTest {
 		Set<Class<?>> annotatedPlugin = reflections.getTypesAnnotatedWith(Plugin.class);
 		for(Class cla: annotatedPlugin){
 			Plugin pluginAnnotation = (Plugin) cla.getAnnotation(Plugin.class);
-			StepInfo stepInit = new StepInfo(cla, pluginAnnotation.paramTypes(),pluginAnnotation.description());
+			StepInfo stepInit = new StepInfo(cla, pluginAnnotation.params(),pluginAnnotation.description());
 			repo.put(pluginAnnotation.name(), stepInit);
 		}
 	}

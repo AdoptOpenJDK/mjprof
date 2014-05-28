@@ -25,7 +25,7 @@ import com.performizeit.mjstack.parser.ThreadInfoProps;
 import com.performizeit.mjstack.parser.ThreadInfo;
 
 
-@Plugin(name="tree", paramTypes={},description="combine all stack traces ")
+@Plugin(name="tree", params ={},description="combine all stack traces ")
 public class StackTreeMerger implements Terminal {
     Profile st = new Profile();
     public void addStackDump(ThreadDump jsd) {

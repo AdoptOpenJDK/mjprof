@@ -17,6 +17,8 @@
 
 package com.performizeit.mjstack.api;
 
+import com.performizeit.mjstack.monads.Param;
+
 import java.lang.annotation.*;
 
 /*
@@ -26,6 +28,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Plugin {
     public String name();
-    public Class[] paramTypes();
+    public Param[] params();
     public String description() default "";
 }

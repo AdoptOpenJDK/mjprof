@@ -21,7 +21,7 @@ import com.performizeit.mjstack.api.Mapper;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.parser.ThreadInfo;
 
-@Plugin(name="noop",paramTypes = {},
+@Plugin(name="noop", params = {},
         description = "Does nothing")
 public class NoOp implements Mapper {
     @Override

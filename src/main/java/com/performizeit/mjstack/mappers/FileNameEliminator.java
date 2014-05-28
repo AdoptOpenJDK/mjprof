@@ -26,7 +26,7 @@ import com.performizeit.mjstack.parser.ThreadInfo;
 
 import java.util.HashMap;
 
-@Plugin(name="fnelim",paramTypes = {},
+@Plugin(name="fnelim", params = {},
         description = "Eliminates file name from stack frames")
 public class FileNameEliminator implements Mapper {
 

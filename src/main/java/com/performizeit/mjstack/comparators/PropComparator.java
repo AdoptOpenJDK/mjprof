@@ -19,14 +19,15 @@ package com.performizeit.mjstack.comparators;
 import com.performizeit.mjstack.api.Attr;
 import com.performizeit.mjstack.api.ThreadInfoComparator;
 import com.performizeit.mjstack.api.Plugin;
+import com.performizeit.mjstack.monads.Param;
 import com.performizeit.mjstack.parser.ThreadInfo;
 
-@Plugin(name = "sort", paramTypes = {Attr.class },description="Sorts based on an attribute")
+@Plugin(name = "sort", params = {@Param(name="attr") },description="Sorts based on an attribute")
 public class PropComparator implements ThreadInfoComparator {
     private final String prop;
 
-    public PropComparator(Attr prop) {
-        this.prop = prop.getAttrName();
+    public PropComparator(String prop) {
+        this.prop = prop;
     }
     @Override
     public int compare(ThreadInfo o1, ThreadInfo o2) {

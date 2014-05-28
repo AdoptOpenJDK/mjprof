@@ -22,9 +22,10 @@ import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.model.Profile;
 import com.performizeit.mjstack.model.ProfileNodeFilter;
 import com.performizeit.mjstack.model.SFNode;
+import com.performizeit.mjstack.monads.Param;
 import com.performizeit.mjstack.parser.ThreadInfo;
 
-@Plugin(name="trimbelow",paramTypes = {String.class},
+@Plugin(name="trimbelow", params = {@Param()},
         description = "Trim all stack frames below the first occurrence of string")
 public class TrimBelow implements Mapper {
     protected final String expr;

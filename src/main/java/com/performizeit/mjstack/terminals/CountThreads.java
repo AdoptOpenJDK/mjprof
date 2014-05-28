@@ -25,7 +25,7 @@ import com.performizeit.mjstack.parser.ThreadInfo;
 
 import java.util.ArrayList;
 
-@Plugin(name="count", paramTypes={}, description="counts number of threads")
+@Plugin(name="count", params ={}, description="counts number of threads")
 public class CountThreads implements Terminal {
     int count =0;
     ArrayList<JStackHeader> stackDumpsHeaders = new ArrayList<JStackHeader>();

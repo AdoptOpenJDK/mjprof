@@ -22,12 +22,12 @@ import com.performizeit.mjstack.api.BasePlugin;
 public class StepInfo {
     private final Class pluginType;
     private Class clazz;
-	private Class[] paramTypes;
+	private Param[] params;
 	private String description;
 	
-	public StepInfo(Class clazz, Class[] paramTypes,String description) {
+	public StepInfo(Class clazz, Param[] params,String description) {
 		this.clazz=clazz;
-		this.paramTypes=paramTypes;
+		this.params=params;
 		this.description=description;
         this.pluginType =   getPluginType(clazz);
       //  System.out.println(clazz.getSimpleName() +" "+ (pluginType != null ?pluginType.getSimpleName():"null"));
@@ -53,7 +53,12 @@ public class StepInfo {
 	}
 
 	public Class[] getParamTypes() {
-		return paramTypes;
+		Class[] paramTypes = new Class[params.length];
+
+        for (int i=0;i<params.length;i++)    {
+            paramTypes[i]  = params[i].value();
+        }
+        return paramTypes;
 	}
 
 	public String getDescription() {
@@ -61,15 +66,19 @@ public class StepInfo {
 	}
 	
 	public int getArgNum(){
-		return paramTypes.length;
+		return params.length;
 	}
 	
 	@Override
 	public String toString() {
-		return "name "+ clazz + " description " + description + " param " + paramTypes;
+		return "name "+ clazz + " description " + description + " param " + params;
 	}
 
     public Class getPluginType() {
         return pluginType;
+    }
+
+    public Param[] getParams() {
+        return params;
     }
 }

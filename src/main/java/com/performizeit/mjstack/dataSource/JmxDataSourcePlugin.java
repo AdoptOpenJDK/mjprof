@@ -4,6 +4,7 @@ import com.performizeit.jmxsupport.JMXConnection;
 import com.performizeit.mjstack.api.DataSource;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.model.Profile;
+import com.performizeit.mjstack.monads.Param;
 import com.performizeit.mjstack.parser.ThreadDump;
 import com.performizeit.mjstack.parser.ThreadInfo;
 
@@ -14,7 +15,14 @@ import java.util.HashMap;
 import static com.performizeit.mjstack.parser.ThreadInfoProps.*;
 
 // host:port or pid , freq,period       ,user,pass
-@Plugin(name = "jmx", paramTypes = {String.class, boolean.class,int.class, int.class, String.class, String.class}, description = "Generate dumps via JMX host:port,frequency,period,[user],[passwd]")
+@Plugin(name = "jmx", params = {@Param(name = "host:port|pid"),
+
+            @Param(value = int.class,name = "frequency"),
+            @Param(value = int.class,name = "period"),
+            @Param(value = boolean.class,name="collect-cpu"),
+            @Param(name="username",optional=true),
+            @Param(name="passwd",optional=true)
+            }, description = "Generate dumps via JMX ")
 public class JmxDataSourcePlugin implements DataSource {
     private final int freq;
     private final int period;
@@ -50,6 +58,7 @@ public class JmxDataSourcePlugin implements DataSource {
             long start = System.currentTimeMillis();
 
             while (System.currentTimeMillis() - start < period) {
+                long iterStart = System.currentTimeMillis();
                 ThreadDump threadDump = new ThreadDump();
                 threadDump.setHeader((new Date()).toString() +  "\nThread dump via JMX of process "+ hostPortPid);
                 long[] threadsIds = server.getThreadIds();
@@ -84,8 +93,10 @@ public class JmxDataSourcePlugin implements DataSource {
 
                 }
                 dumps.add(threadDump);
-                if (System.currentTimeMillis() + freq - start >= period ) break;
-                Thread.sleep(freq);
+                long iterEnd = System.currentTimeMillis();
+                if (iterEnd - iterStart < freq)
+                    Thread.sleep(freq - (iterEnd - iterStart));
+
             }
         } catch (Exception e) {
             e.printStackTrace();

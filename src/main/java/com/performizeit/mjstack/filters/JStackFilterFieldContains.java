@@ -20,16 +20,17 @@ package com.performizeit.mjstack.filters;
 import com.performizeit.mjstack.api.Attr;
 import com.performizeit.mjstack.api.Filter;
 import com.performizeit.mjstack.api.Plugin;
+import com.performizeit.mjstack.monads.Param;
 import com.performizeit.mjstack.parser.ThreadInfo;
 
-@Plugin(name="contains", paramTypes={Attr.class,String.class},
+@Plugin(name="contains", params ={@Param(name="attr"),@Param(name="value")},
         description = "Returns only threads which contain the string in certain attribute (regexp not supported)")
 public class JStackFilterFieldContains implements Filter {
     private final String attrName;
     private final String valContained;
 
-    public JStackFilterFieldContains(Attr attrName, String valContained) {
-        this.attrName = attrName.getAttrName();
+    public JStackFilterFieldContains(String attrName, String valContained) {
+        this.attrName = attrName;
         this.valContained = valContained;
     }
 

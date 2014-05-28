@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.parser.ThreadDump;
 
-@Plugin(name="stdin", paramTypes={},description = "Read thread dumps from standard input")
+@Plugin(name="stdin", params ={},description = "Read thread dumps from standard input")
 public class StdinDataSourcePlugin extends StreamDataSourcePluginBase {
     public StdinDataSourcePlugin() {
     }

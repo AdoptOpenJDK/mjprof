@@ -20,21 +20,19 @@ package com.performizeit.mjstack.mappers;
 import com.performizeit.mjstack.api.Attr;
 import com.performizeit.mjstack.api.DumpMapper;
 import com.performizeit.mjstack.api.Plugin;
-import com.performizeit.mjstack.model.Profile;
 import com.performizeit.mjstack.model.ThreadInfoAggregator;
+import com.performizeit.mjstack.monads.Param;
 import com.performizeit.mjstack.parser.ThreadDump;
 import com.performizeit.mjstack.parser.ThreadInfo;
-import  static com.performizeit.mjstack.parser.ThreadInfoProps.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 
-@Plugin(name="group", paramTypes={Attr.class},description="group by an attribute")
+@Plugin(name="group", params ={@Param(name="attr")},description="group by an attribute")
 public class GroupByProp implements DumpMapper {
     private final String prop;
-    public GroupByProp(Attr prop) {
-        this.prop = prop.getAttrName();
+    public GroupByProp(String prop) {
+        this.prop = prop;
     }
     public ThreadDump map(ThreadDump jsd ) {
         ArrayList<String> a= new ArrayList<String>();

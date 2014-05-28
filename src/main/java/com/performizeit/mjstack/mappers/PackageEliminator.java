@@ -25,7 +25,7 @@ import com.performizeit.mjstack.model.SFNode;
 import com.performizeit.mjstack.parser.ThreadInfo;
 import  static com.performizeit.mjstack.parser.ThreadInfoProps.*;
 
-@Plugin(name="pkgelim",paramTypes = {},
+@Plugin(name="pkgelim", params = {},
         description = "Eliminates package name from stack frames")
 public class PackageEliminator implements Mapper {
     @Override

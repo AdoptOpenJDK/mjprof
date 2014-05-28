@@ -25,7 +25,7 @@ import com.performizeit.mjstack.parser.ThreadInfo;
 import java.util.HashSet;
 
 
-@Plugin(name="list", paramTypes={},description="lists the possible stack trace attributes")
+@Plugin(name="list", params ={},description="lists the possible stack trace attributes")
 public class ListProps implements Terminal {
     HashSet<String> propsHash = new HashSet<String>();
 

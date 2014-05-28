@@ -2,20 +2,17 @@ package com.performizeit.mjstack.dataSource;
 
 import com.performizeit.mjstack.api.DataSource;
 import com.performizeit.mjstack.api.Plugin;
+import com.performizeit.mjstack.monads.Param;
 import com.performizeit.mjstack.parser.ThreadDump;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.util.ArrayList;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.Node;
 import org.w3c.dom.Element;
 import java.io.File;
-@Plugin(name="visualvm", paramTypes={String.class},description = "Read profiling session from xml export of visualvm")
+@Plugin(name="visualvm", params ={@Param(name="path")},description = "Read profiling session from xml export of visualvm")
 public class VisualVMDataSourcePlugin implements DataSource {
     String fileName;
 

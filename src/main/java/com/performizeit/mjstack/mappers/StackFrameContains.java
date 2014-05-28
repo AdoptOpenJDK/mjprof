@@ -22,10 +22,11 @@ import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.model.Profile;
 import com.performizeit.mjstack.model.ProfileNodeFilter;
 import com.performizeit.mjstack.model.SFNode;
+import com.performizeit.mjstack.monads.Param;
 import com.performizeit.mjstack.parser.ThreadInfo;
 import  static com.performizeit.mjstack.parser.ThreadInfoProps.*;
 
-@Plugin(name="stackkeep",paramTypes = {String.class},
+@Plugin(name="stackkeep", params = {@Param()},
         description = "Eliminates stack frames from all stacks which do not contain string.")
 public class StackFrameContains implements Mapper {
     protected final String expr;
