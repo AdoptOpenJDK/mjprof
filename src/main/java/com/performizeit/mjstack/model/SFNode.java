@@ -100,10 +100,12 @@ public class SFNode {
     // Visit all chlidren of a node recursively with a ProfileVisitor
     public void visitChildren(ProfileVisitor pv, int level) {
         pv.visit(this, level);
+        HashMap<String,SFNode> newChildren=     new HashMap<String,SFNode>();
         for (SFNode child : children.values()) {  // visit all childred
             child.visitChildren(pv, level + 1);
-
+            newChildren.put(child.getStackFrame(),child);
         }
+        children = newChildren;
     }
     // filter out children which do not match filter
     public void filterChildren(ProfileNodeFilter pnf,int level, Object context) {
