@@ -41,7 +41,7 @@ public class StepsRepository {
 	
 	   public static boolean stepValid(MJStep a) {
 	        StepInfo pr = repo.get(a.getStepName());
-	        return pr != null && a.stepArgs.size() == pr.getArgNum();
+	        return pr != null && (a.stepArgs.size() <= pr.getArgNum()) && (a.stepArgs.size() >= pr.getMinArgNum());
 	    }
 	   
 	   public static StepInfo getStep(String stepName) {

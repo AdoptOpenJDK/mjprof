@@ -68,6 +68,14 @@ public class StepInfo {
 	public int getArgNum(){
 		return params.length;
 	}
+    public int getMinArgNum(){
+        int minNum =  params.length;
+        for (Param param:params) {
+            if (param.optional()) minNum--;
+
+        }
+        return minNum;
+    }
 	
 	@Override
 	public String toString() {
