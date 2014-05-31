@@ -16,9 +16,8 @@
 */
 package com.performizeit.mjstack.comparators;
 
-import com.performizeit.mjstack.api.Attr;
 import com.performizeit.mjstack.api.Plugin;
-import com.performizeit.mjstack.monads.Param;
+import com.performizeit.mjstack.api.Param;
 import com.performizeit.mjstack.parser.ThreadInfo;
 
 @Plugin(name = "sortd", params = {@Param() },description="Sorts based on an attribute (descending order)")

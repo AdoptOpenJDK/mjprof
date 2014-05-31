@@ -6,10 +6,10 @@ import java.io.FileReader;
 import java.util.ArrayList;
 
 import com.performizeit.mjstack.api.Plugin;
-import com.performizeit.mjstack.monads.Param;
+import com.performizeit.mjstack.api.Param;
 import com.performizeit.mjstack.parser.ThreadDump;
 
-@Plugin(name="path", params ={@Param(name="path")},description = "Read thread dump from file ")
+@Plugin(name="path", params ={@Param("path")},description = "Read thread dump from file ")
 public class PathDataSourcePlugin extends StreamDataSourcePluginBase {
     String fileName;
 

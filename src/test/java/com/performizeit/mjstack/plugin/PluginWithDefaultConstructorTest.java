@@ -18,10 +18,10 @@ package com.performizeit.mjstack.plugin;
 
 import com.performizeit.mjstack.api.Mapper;
 import com.performizeit.mjstack.api.Plugin;
-import com.performizeit.mjstack.monads.Param;
+import com.performizeit.mjstack.api.Param;
 import com.performizeit.mjstack.parser.ThreadInfo;
 
-@Plugin(name="test1", params = {@Param(String.class)})
+@Plugin(name="test1", params = {@Param()})
 public class PluginWithDefaultConstructorTest implements Mapper {
     private final String expr="kk";
 

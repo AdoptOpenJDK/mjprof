@@ -17,13 +17,12 @@
 
 package com.performizeit.mjstack.filters;
 
-import com.performizeit.mjstack.api.Attr;
 import com.performizeit.mjstack.api.Filter;
 import com.performizeit.mjstack.api.Plugin;
-import com.performizeit.mjstack.monads.Param;
+import com.performizeit.mjstack.api.Param;
 import com.performizeit.mjstack.parser.ThreadInfo;
 
-@Plugin(name="contains", params ={@Param(name="attr"),@Param(name="value")},
+@Plugin(name="contains", params ={@Param("attr"),@Param("value")},
         description = "Returns only threads which contain the string in certain attribute (regexp not supported)")
 public class JStackFilterFieldContains implements Filter {
     private final String attrName;

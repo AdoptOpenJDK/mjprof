@@ -1,13 +1,14 @@
-package com.performizeit.mjstack.monads;
+package com.performizeit.mjstack.api;
 
 import java.lang.annotation.*;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Param {
-    Class value() default String.class;
-    String name() default "";
+    Class type() default String.class;
+    String value() default "";
     boolean optional() default false;
+    String defaultValue() default "";
 
 
 }

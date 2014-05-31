@@ -1,9 +1,8 @@
 package com.performizeit.mjstack.dataSource;
 
-import com.performizeit.jmxsupport.JMXConnection;
 import com.performizeit.mjstack.api.DataSource;
 import com.performizeit.mjstack.api.Plugin;
-import com.performizeit.mjstack.monads.Param;
+import com.performizeit.mjstack.api.Param;
 import com.performizeit.mjstack.parser.ThreadDump;
 
 import java.io.BufferedReader;
@@ -12,9 +11,9 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 // host:port or pid , freq,period       ,user,pass
-@Plugin(name = "jstack", params = {@Param(value=int.class,name="pid"),
-                                   @Param(value=int.class,name="frequency"),
-                                    @Param(value = int.class,name="period")}, description = "Generate dumps using jstack")
+@Plugin(name = "jstack", params = {@Param(type=int.class,value="pid"),
+                                   @Param(type=int.class,value="frequency"),
+                                    @Param(type = int.class,value="period")}, description = "Generate dumps using jstack")
 public class JstackDataSourcePlugin implements DataSource {
     private final int freq;
     private final int period;

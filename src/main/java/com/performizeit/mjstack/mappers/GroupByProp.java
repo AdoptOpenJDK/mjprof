@@ -17,18 +17,17 @@
 
 package com.performizeit.mjstack.mappers;
 
-import com.performizeit.mjstack.api.Attr;
 import com.performizeit.mjstack.api.DumpMapper;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.model.ThreadInfoAggregator;
-import com.performizeit.mjstack.monads.Param;
+import com.performizeit.mjstack.api.Param;
 import com.performizeit.mjstack.parser.ThreadDump;
 import com.performizeit.mjstack.parser.ThreadInfo;
 
 import java.util.ArrayList;
 
 
-@Plugin(name="group", params ={@Param(name="attr")},description="group by an attribute")
+@Plugin(name="group", params ={@Param("attr")},description="Group by an attribute")
 public class GroupByProp implements DumpMapper {
     private final String prop;
     public GroupByProp(String prop) {

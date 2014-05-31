@@ -2,7 +2,7 @@ package com.performizeit.mjstack.dataSource;
 
 import com.performizeit.mjstack.api.DataSource;
 import com.performizeit.mjstack.api.Plugin;
-import com.performizeit.mjstack.monads.Param;
+import com.performizeit.mjstack.api.Param;
 import com.performizeit.mjstack.parser.ThreadDump;
 
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Element;
 import java.io.File;
-@Plugin(name="visualvm", params ={@Param(name="path")},description = "Read profiling session from xml export of visualvm")
+@Plugin(name="visualvm", params ={@Param("path")},description = "Read profiling session from xml export of VisualVM")
 public class VisualVMDataSourcePlugin implements DataSource {
     String fileName;
 

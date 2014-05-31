@@ -22,11 +22,11 @@ import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.model.Profile;
 import com.performizeit.mjstack.model.ProfileNodeFilter;
 import com.performizeit.mjstack.model.SFNode;
-import com.performizeit.mjstack.monads.Param;
+import com.performizeit.mjstack.api.Param;
 import com.performizeit.mjstack.parser.ThreadInfo;
 
 
-@Plugin(name="keepbot", params = {@Param(int.class)},
+@Plugin(name="keepbot", params = {@Param(type=int.class)},
         description = "Returns at most n bottom stack frames of the stack")
 public class TrimTop implements Mapper {
     private final int count;

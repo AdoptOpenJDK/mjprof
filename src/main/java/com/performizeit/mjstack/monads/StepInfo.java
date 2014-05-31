@@ -17,7 +17,7 @@
 
 package com.performizeit.mjstack.monads;
 
-import com.performizeit.mjstack.api.BasePlugin;
+import com.performizeit.mjstack.api.Param;
 
 public class StepInfo {
     private final Class pluginType;
@@ -56,7 +56,7 @@ public class StepInfo {
 		Class[] paramTypes = new Class[params.length];
 
         for (int i=0;i<params.length;i++)    {
-            paramTypes[i]  = params[i].value();
+            paramTypes[i]  = params[i].type();
         }
         return paramTypes;
 	}

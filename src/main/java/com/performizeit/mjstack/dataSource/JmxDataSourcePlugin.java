@@ -4,7 +4,7 @@ import com.performizeit.jmxsupport.JMXConnection;
 import com.performizeit.mjstack.api.DataSource;
 import com.performizeit.mjstack.api.Plugin;
 import com.performizeit.mjstack.model.Profile;
-import com.performizeit.mjstack.monads.Param;
+import com.performizeit.mjstack.api.Param;
 import com.performizeit.mjstack.parser.ThreadDump;
 import com.performizeit.mjstack.parser.ThreadInfo;
 
@@ -15,13 +15,13 @@ import java.util.HashMap;
 import static com.performizeit.mjstack.parser.ThreadInfoProps.*;
 
 // host:port or pid , freq,period       ,user,pass
-@Plugin(name = "jmx", params = {@Param(name = "host:port|pid"),
+@Plugin(name = "jmx", params = {@Param("host:port|pid"),
 
-            @Param(value = int.class,name = "frequency"),
-            @Param(value = int.class,name = "period"),
-            @Param(value = boolean.class,name="collect-cpu"),
-            @Param(name="username",optional=true),
-            @Param(name="passwd",optional=true)
+            @Param(type = int.class,value="frequency"),
+            @Param(type = int.class,value = "period"),
+            @Param(type = boolean.class,value="collect-cpu",optional=true,defaultValue = "false"),
+            @Param(value="username",optional=true),
+            @Param(value="passwd",optional=true)
             }, description = "Generate dumps via JMX ")
 public class JmxDataSourcePlugin implements DataSource {
     private final int freq;

@@ -25,7 +25,7 @@ import java.util.List;
 import com.performizeit.mjstack.api.*;
 import com.performizeit.mjstack.dataSource.StdinDataSourcePlugin;
 import com.performizeit.mjstack.monads.MJStep;
-import com.performizeit.mjstack.monads.Param;
+import com.performizeit.mjstack.api.Param;
 import com.performizeit.mjstack.monads.StepInfo;
 import com.performizeit.mjstack.monads.StepsRepository;
 import com.performizeit.mjstack.parser.ThreadDump;
@@ -155,9 +155,9 @@ public class MJStack {
                 lineLength += appendAndCount(sb, "/");
                 Param[] params = stepInfo.getParams();
                 for (int i = 0; i < stepInfo.getArgNum(); i++) {
-                    String paramName = params[i].name();
+                    String paramName = params[i].value();
                     if (paramName == null || paramName.length() ==0)   // the default paramter name is ""
-                        paramName = params[i].value().getSimpleName().toLowerCase();
+                        paramName = params[i].type().getSimpleName().toLowerCase();
                     if (params[i].optional()) {
                         paramName = "["+paramName+"]";
                     }
@@ -244,16 +244,30 @@ public class MJStack {
 
         for (int i = 0; i < params.length; i++) {
             try {
-                if (params[i].value().equals(Integer.class) || params[i].value().equals(int.class)) {
-                    paramsTrans[i] = Integer.parseInt(paramsVals.get(i));
-                } else if (params[i].value().equals(Long.class) || params[i].value().equals(long.class)) {
-                    paramsTrans[i] = Long.parseLong(paramsVals.get(i));
-                } else if (params[i].value().equals(Boolean.class) || params[i].value().equals(boolean.class)) {
-                    paramsTrans[i] = Boolean.parseBoolean(paramsVals.get(i));
-                } else if (params[i].value().equals(Attr.class) ) {
-                    paramsTrans[i] = new Attr(paramsVals.get(i));
+                String val;
+                if (paramsVals.size() <= i ) {
+                    if (params[i].optional()) {
+                        val = params[i].defaultValue();
+
+                    } else {
+                        throw new RuntimeException("Non optional parameter" + params[i].value() + "  is missing ");
+                        // TODO improve error handling
+                    }
                 } else {
-                    paramsTrans[i] = paramsVals.get(i);
+                    val = paramsVals.get(i);
+                }
+
+
+                if (params[i].type().equals(Integer.class) || params[i].type().equals(int.class)) {
+                    paramsTrans[i] = Integer.parseInt(val);
+                } else if (params[i].type().equals(Long.class) || params[i].type().equals(long.class)) {
+                    paramsTrans[i] = Long.parseLong(val);
+                } else if (params[i].type().equals(Boolean.class) || params[i].type().equals(boolean.class)) {
+                    paramsTrans[i] = Boolean.parseBoolean(val);
+                } else if (params[i].type().equals(Attr.class) ) {
+                    paramsTrans[i] = new Attr(val);
+                } else {
+                    paramsTrans[i] = val;
                 }
             } catch (NumberFormatException e) {
                 System.err.println("Please re-enter - wrong parameter format.");
