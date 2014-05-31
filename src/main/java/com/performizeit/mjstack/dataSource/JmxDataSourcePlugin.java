@@ -16,26 +16,25 @@ import static com.performizeit.mjstack.parser.ThreadInfoProps.*;
 
 // host:port or pid , freq,period       ,user,pass
 @Plugin(name = "jmx", params = {@Param("host:port|pid"),
-
-            @Param(type = int.class,value="frequency"),
-            @Param(type = int.class,value = "period"),
-            @Param(type = boolean.class,value="collect-cpu",optional=true,defaultValue = "false"),
+        @Param(type = int.class,value = "count",optional=true,defaultValue = "1"),
+        @Param(type = int.class,value="sleep",optional=true,defaultValue = "1000"),
+        @Param(type = boolean.class,value="collect-cpu",optional=true,defaultValue = "false"),
             @Param(value="username",optional=true),
             @Param(value="passwd",optional=true)
             }, description = "Generate dumps via JMX ")
 public class JmxDataSourcePlugin implements DataSource {
-    private final int freq;
-    private final int period;
+    private final int sleep;
+    private final int count;
     private final String user;
     private final String pass;
     boolean collectCPU = true;
     String hostPortPid;
 
-    public JmxDataSourcePlugin(String hostPortPid, boolean collectCPU,int freq, int period, String user, String pass) {
+    public JmxDataSourcePlugin(String hostPortPid, int count, int sleep, boolean collectCPU,String user, String pass) {
         this.hostPortPid = hostPortPid;
-        this.freq = freq;
+        this.count = count;
         this.collectCPU = collectCPU;
-        this.period = period;
+        this.sleep = sleep;
         this.user = user.trim().isEmpty() ? null : user;;
 
         this.pass = pass.trim().isEmpty() ? null : pass;
@@ -55,9 +54,9 @@ public class JmxDataSourcePlugin implements DataSource {
 
                 server = new JMXConnection(hostPortPid, user, pass);
             }
-            long start = System.currentTimeMillis();
 
-            while (System.currentTimeMillis() - start < period) {
+
+            for (int iter= 0;iter<count;iter++) {
                 long iterStart = System.currentTimeMillis();
                 ThreadDump threadDump = new ThreadDump();
                 threadDump.setHeader((new Date()).toString() +  "\nThread dump via JMX of process "+ hostPortPid);
@@ -94,8 +93,8 @@ public class JmxDataSourcePlugin implements DataSource {
                 }
                 dumps.add(threadDump);
                 long iterEnd = System.currentTimeMillis();
-                if (iterEnd - iterStart < freq)
-                    Thread.sleep(freq - (iterEnd - iterStart));
+                if ((iter < count -1) && (iterEnd - iterStart < sleep))
+                    Thread.sleep(sleep - (iterEnd - iterStart));
 
             }
         } catch (Exception e) {

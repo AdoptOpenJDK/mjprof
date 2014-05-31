@@ -34,7 +34,7 @@ public class PluginUtils {
         	Constructor<?>  constructor = clazz.getConstructor(paramTypes);
         	return constructor.newInstance(paramArgs);
         } catch (Exception e) {
-       	    throw new RuntimeException(e.getMessage());
+       	    throw new RuntimeException(e );
         }
 	}
 
