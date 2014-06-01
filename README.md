@@ -4,29 +4,25 @@ MJProf is a command line monadic java profiler.
 
 Introduction
 =============
-MJProf is Monadic jstack analysis tool set. It is a fancy way to say it analyzes jstack output using a series of simple building blocks
-which can be composed together. I have thought for a long time how to analyze stack traces of java processes.  
-After getting used to thinking with lambda expressions
-and streams it suddenly occured to me that this may be a nice approach to stack trace analysis as well.
+MJProf is a Monadic jstack analysis tool set. It is a fancy way to say it analyzes jstack output using a series of simple composable building blocks (monads).
 
 Motivation
 ==========
 So, You are out there in the wild vs a production machine. All you have have in hand is the 'poor's man profiler': jstack.
 You take one, two, three stack dumps and then you need to look at them manually inside an editor, vi or less etc....
-If you done it enough you will probably know that it is a lot of manual work.
+If you done it enough you will probably know that it is a lot of manual work. Especially when you have thousands of threads in your process.
 
 
 
 Running MJProf
 ===========
 MJProf reads thread dumps from one or more data sources and writes to standard output.  An example of a data source can be standard input. 
-In that case you can pipe output of one or more jstack into mjprof. 
-The following example will filter out all the threads which are not in RUNNABLE state.  
+Example: The following example will filter out all the threads which are not in RUNNABLE state.  
 `jstack -l pid | ./mjprof.sh contains/state,RUNNABLE/`  
 The commands passed to mjprof consists of several building blocks, monads from now on, concatenated with . (comma)
 While the monads are relatively simple mixing and matching them can result a very powerful 
-analysis that will let you focus on exactly what you want to see.
-Parameters to building blocks are wrapped with / (instead of () {} or [] which are special chars in the shell) and seperated by ,
+analysis, that will enable you focus on the data you need.
+Parameters to monads are wrapped with / (instead of () {} or [] which are special chars in the shell) and seperated by ,
 
 
 Monads 
@@ -72,11 +68,11 @@ Properties
 ----------
 Properties may change from one dump to another and the can also be eliminated by **mjstack**.
 Following is the list of usual properties  
-* _**status**_          - the status of the thread
-* _**nid**_             - native thread id ( a number)
-* _**name**_            - name of thread
-* _**state**_           - state of thread
-* _**los**_            - The locked ownable synchronizers part of the stack trace
+* _**status**_          - The status of the thread
+* _**nid**_             - Native thread id ( a number)
+* _**name**_            - Name of thread
+* _**state**_           - State of thread
+* _**los**_             - The locked ownable synchronizers part of the stack trace
 * _**daemon**_          - Whether the thread is a daemon or not
 * _**tid**_             - The thread id (a number)
 * _**prio**_            - Thread priority, a number
@@ -104,7 +100,7 @@ Count threads
 
 Building MJProf
 =============
-MJProf uses maven for compilation to build MJProf use the following command line:  
+MJProf uses maven for compilation. In order to build MJProf use the following command line:  
 `mvn clean install assembly:assembly`
 This will create a zip file in `target/dist/mjstack1.0-bin.zip` which contains everything you need.
 
@@ -112,8 +108,9 @@ This will create a zip file in `target/dist/mjstack1.0-bin.zip` which contains e
 Writing a plugin
 ===============
 
-MJProf monadic capabilities can be extended with plugins. if you feel something is missing you can write your own plugin. 
-A plugin is a java class which is annotated with the annotation Plugin. The annotation accepts three parameters. "name" the
+MJProf monadic capabilities can be extended with plugins. If you feel something is missing you can write your own plugin. 
+We will appreciate if you will contribute it back to the community. 
+A plugin is a Java class which is annotated with the com.performizeit.mjstack.plugin.Plugin. The annotation accepts three parameters. "name" the
 plugin name (must be unique) paramTypes the expected parameter types in the plugin. description one liner that will be used for 
 synopsis. For example:  
 `import com.performizeit.mjstack.api.Plugin;
