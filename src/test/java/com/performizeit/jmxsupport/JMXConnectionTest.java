@@ -1,12 +1,8 @@
 package com.performizeit.jmxsupport;
 
-import com.performizeit.mjstack.dataSource.JmxDataSourcePlugin;
-import com.performizeit.mjstack.dataSource.JstackDataSourcePlugin;
 import junit.framework.TestCase;
 
 import org.junit.Test;
-
-import javax.management.openmbean.CompositeData;
 
 
 public class JMXConnectionTest extends TestCase {

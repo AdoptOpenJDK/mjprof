@@ -31,7 +31,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>libs/</classpathPrefix>
-                            <mainClass>com.performizeit.mjstack.MJStack</mainClass>
+                            <mainClass>com.performizeit.mjprof.MJProf</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
