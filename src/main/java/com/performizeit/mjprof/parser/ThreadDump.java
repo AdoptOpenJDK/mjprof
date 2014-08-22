@@ -19,7 +19,6 @@ package com.performizeit.mjprof.parser;
 
 import com.performizeit.mjprof.api.DumpMapper;
 import com.performizeit.mjprof.api.Filter;
-import com.performizeit.mjprof.api.Mapper;
 import com.performizeit.mjprof.api.Terminal;
 import com.performizeit.mjprof.model.JStackHeader;
 
@@ -91,15 +90,7 @@ public class ThreadDump  {
         }
         return that;
     }
-    public ThreadDump mapDump(Mapper mapper) {
-        ThreadDump that = new ThreadDump();
-        that.header = header;
-        that.stacks = new ArrayList<ThreadInfo>();
-        for (ThreadInfo stk: stacks) {
-            that.stacks.add(mapper.map(stk));
-        }
-        return that;
-    }
+
     public ThreadDump mapDump(DumpMapper mapper) {
 
         return mapper.map(this);
@@ -126,5 +117,8 @@ public class ThreadDump  {
 
     public void setHeader(String header) {
         this.header = new JStackHeader(header);
+    }
+    public void setHeader(JStackHeader header) {
+        this.header = header;
     }
 }

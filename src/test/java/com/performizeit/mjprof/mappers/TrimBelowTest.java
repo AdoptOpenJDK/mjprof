@@ -16,6 +16,7 @@
 */
 package com.performizeit.mjprof.mappers;
 
+import com.performizeit.mjprof.mappers.singlethread.TrimBelow;
 import com.performizeit.mjprof.parser.ThreadInfo;
 import org.junit.Test;
 

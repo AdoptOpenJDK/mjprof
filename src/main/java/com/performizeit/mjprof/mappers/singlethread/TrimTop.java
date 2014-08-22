@@ -15,9 +15,8 @@
         along with mjprof.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.performizeit.mjprof.mappers;
+package com.performizeit.mjprof.mappers.singlethread;
 
-import com.performizeit.mjprof.api.Mapper;
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.model.Profile;
 import com.performizeit.mjprof.model.ProfileNodeFilter;
@@ -28,7 +27,7 @@ import com.performizeit.mjprof.parser.ThreadInfo;
 
 @Plugin(name="keepbot", params = {@Param(type=int.class)},
         description = "Returns at most n bottom stack frames of the stack")
-public class TrimTop implements Mapper {
+public class TrimTop extends SingleThreadMapper  {
     private final int count;
 
     public TrimTop(int count) {

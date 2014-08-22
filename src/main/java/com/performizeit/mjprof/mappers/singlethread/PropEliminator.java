@@ -15,29 +15,29 @@
         along with mjprof.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.performizeit.mjprof.mappers;
-
-import com.performizeit.mjprof.api.Mapper;
+package com.performizeit.mjprof.mappers.singlethread;
+import com.performizeit.mjprof.api.Attr;
 import com.performizeit.mjprof.api.Plugin;
+import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.parser.ThreadInfo;
-import  static com.performizeit.mjprof.parser.ThreadInfoProps.*;
 
-@Plugin(name="namesuffix", params = {},
-        description = "Trim the last number from thread names")
-public class RemoveThreadNameNumericalSuffix implements Mapper {
-    public RemoveThreadNameNumericalSuffix() {
+import java.util.HashMap;
+
+
+@Plugin(name="eliminate", params ={@Param("attr")},
+        description = "Removes a certain attribute e.g. eliminate/stack/")
+public class PropEliminator extends SingleThreadMapper {
+    private final String prop;
+
+    public PropEliminator(Attr prop) {
+        this.prop = prop.getAttrName();
     }
-
     @Override
     public ThreadInfo map(ThreadInfo stck) {
-        String tName = (String)stck.getVal(NAME);
-        int idx = tName.length()-1;
-        for (;;idx--) {
-            Character c = tName.charAt(idx);
-            if (!Character.isDigit(c)) break;
-        }
-        tName = tName.substring(0,idx+1);
-        stck.setVal(NAME,tName);
-        return stck;
+
+        HashMap<String,Object> mtd = stck.cloneMetaData();
+        mtd.remove(prop);
+        return      new ThreadInfo(mtd);
+
     }
 }

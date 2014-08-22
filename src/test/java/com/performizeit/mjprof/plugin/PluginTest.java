@@ -14,8 +14,8 @@ import org.junit.Test;
 import org.reflections.Reflections;
 
 import com.performizeit.mjprof.api.Plugin;
-import com.performizeit.mjprof.mappers.StackFrameContains;
-import com.performizeit.mjprof.mappers.TrimTop;
+import com.performizeit.mjprof.mappers.singlethread.StackFrameContains;
+import com.performizeit.mjprof.mappers.singlethread.TrimTop;
 import com.performizeit.mjprof.monads.StepInfo;
 
 public class PluginTest {

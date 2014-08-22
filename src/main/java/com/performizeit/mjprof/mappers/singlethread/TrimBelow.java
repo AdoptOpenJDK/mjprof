@@ -15,7 +15,8 @@
         along with mjprof.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.performizeit.mjprof.mappers;
+package com.performizeit.mjprof.mappers.singlethread;
+
 import com.performizeit.mjprof.api.Mapper;
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.model.Profile;
@@ -24,26 +25,39 @@ import com.performizeit.mjprof.model.SFNode;
 import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.parser.ThreadInfo;
 
-@Plugin(name="stackelim", params = {@Param()},
-        description = "Eliminates stack frames from all stacks which contain string.")
-public class StackFrameNotContains implements Mapper {
+@Plugin(name="trimbelow", params = {@Param()},
+        description = "Trim all stack frames below the first occurrence of string")
+public class TrimBelow extends SingleThreadMapper  {
     protected final String expr;
 
 
-    public StackFrameNotContains(String expr) {
+
+    public TrimBelow(String expr) {
         this.expr = expr;
 
     }
-
+    private class TrimBelowContext {
+        boolean parentFound = false;
+        int flowLevel=Integer.MAX_VALUE;
+    }
     @Override
     public ThreadInfo map(ThreadInfo stck) {
         Profile p = (Profile)stck.getVal("stack");
         p.filter(new ProfileNodeFilter() {
             @Override
-            public boolean accept(SFNode node, int level,Object context) {
-                return !node.getStackFrame().contains(expr);
+            public boolean accept(SFNode node , int level,Object context) {
+                TrimBelowContext ctx =  (TrimBelowContext)  context;
+
+                String stackFrame = node.getStackFrame();
+                if (level > ctx.flowLevel) {return true;}    // we are in an interesting subtree
+                if (level < ctx.flowLevel) ctx.flowLevel =  Integer.MAX_VALUE;        // this signifies exiting an interesting subtree
+                if  (stackFrame.contains(expr)) {
+                    ctx.flowLevel = level;
+                    return true;
+                }
+                return false;
             }
-        },null) ;
+        },new TrimBelowContext()) ;
         return stck;
     }
 }

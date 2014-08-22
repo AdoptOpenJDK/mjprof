@@ -80,9 +80,7 @@ public class MJProf {
 
             for (ThreadDump jsd : jStackDumpsOrig) {
 
-                if (PluginUtils.isMapper(obj)) {
-                    jStackDumps.add(jsd.mapDump((Mapper) obj));
-                } else if (PluginUtils.isDumpMapper(obj)) {
+                 if (PluginUtils.isDumpMapper(obj)) {
                     jStackDumps.add(jsd.mapDump((DumpMapper) obj));
                 } else if (PluginUtils.isDumpReducer(obj)) {
 
@@ -132,7 +130,6 @@ public class MJProf {
         sb.append("\nFilters:\n");
         getSynopsisContent(sb, keys,Filter.class);
         sb.append("\nMappers:\n");
-        getSynopsisContent(sb, keys,Mapper.class);
         getSynopsisContent(sb, keys,DumpMapper.class);
         getSynopsisContent(sb, keys,DumpReducer.class);
         getSynopsisContent(sb, keys,ThreadInfoComparator.class);

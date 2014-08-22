@@ -19,7 +19,7 @@ package com.performizeit.mjprof.model;
 
 
 public class JStackHeader {
-    String header;
+    private String header;
     public JStackHeader(String header) {
                   this.header = header;
     }
