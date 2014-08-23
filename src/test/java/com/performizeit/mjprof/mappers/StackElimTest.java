@@ -17,6 +17,8 @@
 
 package com.performizeit.mjprof.mappers;
 
+import com.performizeit.mjprof.mappers.singlethread.StackFrameContains;
+import com.performizeit.mjprof.mappers.singlethread.StackFrameNotContains;
 import com.performizeit.mjprof.parser.ThreadInfo;
 import org.junit.Test;
 

@@ -15,9 +15,8 @@
         along with mjprof.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.performizeit.mjprof.mappers;
+package com.performizeit.mjprof.mappers.singlethread;
 
-import com.performizeit.mjprof.api.Mapper;
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.model.Profile;
 import com.performizeit.mjprof.model.ProfileVisitor;
@@ -28,7 +27,7 @@ import java.util.HashMap;
 
 @Plugin(name="fnelim", params = {},
         description = "Eliminates file name from stack frames")
-public class FileNameEliminator implements Mapper {
+public class FileNameEliminator extends SingleThreadMapper {
 
 
     public FileNameEliminator() {

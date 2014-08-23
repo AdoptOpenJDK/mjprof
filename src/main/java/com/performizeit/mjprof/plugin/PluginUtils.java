@@ -64,9 +64,7 @@ public class PluginUtils {
         return pluginAnnotation.description();
 	}
 
-	public static boolean isMapper(Object o ) {
-		return Mapper.class.isAssignableFrom(o.getClass());
-	}
+
     public static boolean isDumpMapper(Object o) {
         return DumpMapper.class.isAssignableFrom(o.getClass());
     }

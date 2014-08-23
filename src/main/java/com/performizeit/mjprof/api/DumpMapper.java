@@ -19,6 +19,6 @@ package com.performizeit.mjprof.api;
 import com.performizeit.mjprof.parser.ThreadDump;
 
 
-public interface DumpMapper extends BasePlugin{
+public interface DumpMapper extends BasePlugin {
     ThreadDump map(ThreadDump jsd );
 }

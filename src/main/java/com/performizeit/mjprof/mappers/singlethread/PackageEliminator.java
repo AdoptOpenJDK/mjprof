@@ -15,9 +15,9 @@
         along with mjprof.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.performizeit.mjprof.mappers;
+package com.performizeit.mjprof.mappers.singlethread;
 
-import com.performizeit.mjprof.api.Mapper;
+
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.model.Profile;
 import com.performizeit.mjprof.model.ProfileVisitor;
@@ -27,7 +27,7 @@ import  static com.performizeit.mjprof.parser.ThreadInfoProps.*;
 
 @Plugin(name="pkgelim", params = {},
         description = "Eliminates package name from stack frames")
-public class PackageEliminator implements Mapper {
+public class PackageEliminator extends SingleThreadMapper {
     @Override
     public ThreadInfo map(ThreadInfo stck) {
         Profile jss = (Profile) stck.getVal(STACK);

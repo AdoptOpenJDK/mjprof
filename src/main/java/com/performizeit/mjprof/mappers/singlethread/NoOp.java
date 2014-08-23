@@ -15,15 +15,15 @@
         along with mjprof.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.performizeit.mjprof.mappers;
+package com.performizeit.mjprof.mappers.singlethread;
 
-import com.performizeit.mjprof.api.Mapper;
+
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.parser.ThreadInfo;
 
 @Plugin(name="noop", params = {},
         description = "Does nothing")
-public class NoOp implements Mapper {
+public class NoOp extends SingleThreadMapper {
     @Override
     public ThreadInfo map(ThreadInfo threadInfo) {
       return threadInfo;

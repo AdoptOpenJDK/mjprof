@@ -20,5 +20,4 @@ import com.performizeit.mjprof.parser.ThreadInfo;
 
 
 public interface Mapper extends BasePlugin{
-	ThreadInfo map(ThreadInfo stck);
 }

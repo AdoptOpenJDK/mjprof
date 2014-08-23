@@ -15,8 +15,7 @@
         along with mjprof.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.performizeit.mjprof.mappers;
-
+package com.performizeit.mjprof.mappers.singlethread;
 import com.performizeit.mjprof.api.Mapper;
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.model.Profile;
@@ -24,24 +23,25 @@ import com.performizeit.mjprof.model.ProfileNodeFilter;
 import com.performizeit.mjprof.model.SFNode;
 import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.parser.ThreadInfo;
-import  static com.performizeit.mjprof.parser.ThreadInfoProps.*;
 
-@Plugin(name="stackkeep", params = {@Param()},
-        description = "Eliminates stack frames from all stacks which do not contain string.")
-public class StackFrameContains implements Mapper {
+@Plugin(name="stackelim", params = {@Param()},
+        description = "Eliminates stack frames from all stacks which contain string.")
+public class StackFrameNotContains extends SingleThreadMapper {
     protected final String expr;
 
-    public StackFrameContains(String expr) {
+
+    public StackFrameNotContains(String expr) {
         this.expr = expr;
+
     }
 
     @Override
     public ThreadInfo map(ThreadInfo stck) {
-        Profile p = (Profile)stck.getVal(STACK);
+        Profile p = (Profile)stck.getVal("stack");
         p.filter(new ProfileNodeFilter() {
             @Override
             public boolean accept(SFNode node, int level,Object context) {
-                return node.getStackFrame().contains(expr);
+                return !node.getStackFrame().contains(expr);
             }
         },null) ;
         return stck;

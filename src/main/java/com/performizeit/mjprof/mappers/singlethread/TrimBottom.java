@@ -15,7 +15,7 @@
         along with mjprof.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.performizeit.mjprof.mappers;
+package com.performizeit.mjprof.mappers.singlethread;
 
 import com.performizeit.mjprof.api.Mapper;
 import com.performizeit.mjprof.api.Plugin;
@@ -27,7 +27,7 @@ import com.performizeit.mjprof.parser.ThreadInfo;
 
 @Plugin(name="keeptop", params = {@Param(type=int.class)},
         description = "Returns at most n top stack frames of the stack")
-public class TrimBottom implements Mapper {
+public class TrimBottom extends SingleThreadMapper  {
     private final int count;
 
     public TrimBottom(int count) {

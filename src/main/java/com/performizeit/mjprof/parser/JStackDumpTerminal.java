@@ -18,7 +18,7 @@ package com.performizeit.mjprof.parser;
 
 import com.performizeit.mjprof.api.DumpMapper;
 import com.performizeit.mjprof.api.Filter;
-import com.performizeit.mjprof.api.Mapper;
+
 import com.performizeit.mjprof.api.Terminal;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -27,21 +27,10 @@ import java.util.Comparator;
 
 public class JStackDumpTerminal extends ThreadDump {
     protected  String data;
-    public ThreadDump filterDump(Filter filter) {
-        throw new NotImplementedException();
-    }
-    public ThreadDump mapDump(Mapper mapper) {
-        throw new NotImplementedException();
-    }
 
-    @Override
-    public ThreadDump mapDump(DumpMapper mapper) {
-        throw new NotImplementedException();
-    }
 
-    public ThreadDump sortDump(Comparator<ThreadInfo> comp) {
-        throw new NotImplementedException();
-    }
+
+
 
     @Override
     public ThreadDump terminateDump(Terminal terminal) {
