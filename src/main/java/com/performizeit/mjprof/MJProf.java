@@ -81,18 +81,14 @@ public class MJProf {
             for (ThreadDump jsd : jStackDumpsOrig) {
 
                  if (PluginUtils.isDumpMapper(obj)) {
-                    jStackDumps.add(jsd.mapDump((DumpMapper) obj));
+                    jStackDumps.add(((DumpMapper) obj).map(jsd));
                 } else if (PluginUtils.isDumpReducer(obj)) {
 
                     DumpReducer dr = (DumpReducer) obj;
                     dr.reduce(jsd);
 
-                } else if (PluginUtils.isFilter(obj)) {
-                    jStackDumps.add(jsd.filterDump((Filter) obj));
-                } else if (PluginUtils.isTerminal(obj)) {
+                }  else if (PluginUtils.isTerminal(obj)) {
                     jStackDumps.add(jsd.terminateDump((Terminal) obj));
-                } else if (PluginUtils.isComparator(obj)) {
-                    jsd.sortDump((ThreadInfoComparator) obj);
                 }
             }
             if (PluginUtils.isDumpReducer(obj)) {
@@ -130,7 +126,7 @@ public class MJProf {
         sb.append("\nFilters:\n");
         getSynopsisContent(sb, keys,Filter.class);
         sb.append("\nMappers:\n");
-        getSynopsisContent(sb, keys,DumpMapper.class);
+        getSynopsisContent(sb, keys,Mapper.class);
         getSynopsisContent(sb, keys,DumpReducer.class);
         getSynopsisContent(sb, keys,ThreadInfoComparator.class);
         sb.append("\nTerminals:\n");

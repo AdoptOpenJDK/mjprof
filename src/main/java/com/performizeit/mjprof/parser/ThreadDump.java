@@ -18,7 +18,7 @@
 package com.performizeit.mjprof.parser;
 
 import com.performizeit.mjprof.api.DumpMapper;
-import com.performizeit.mjprof.api.Filter;
+
 import com.performizeit.mjprof.api.Terminal;
 import com.performizeit.mjprof.model.JStackHeader;
 
@@ -79,32 +79,9 @@ public class ThreadDump  {
 
         return s.toString();
     }
-    public ThreadDump filterDump(Filter filter) {
-        ThreadDump that = new ThreadDump();
-        that.header = header;
-        that.stacks = new ArrayList<ThreadInfo>();
-        for (ThreadInfo stk: stacks) {
-            if (filter.filter(stk)) {
-                that.stacks.add(stk);
-            }
-        }
-        return that;
-    }
 
-    public ThreadDump mapDump(DumpMapper mapper) {
 
-        return mapper.map(this);
-    }
-    public ThreadDump sortDump(Comparator<ThreadInfo> comp) {
-        ThreadDump that = new ThreadDump();
-        that.header = header;
-        that.stacks = new ArrayList<ThreadInfo>();
-        for (ThreadInfo stk: stacks) {
-            that.stacks.add(stk);
-        }
-        Collections.sort(that.stacks,comp);
-        return that;
-    }
+
 
     public ThreadDump terminateDump(Terminal terminal) {
         JStackDumpTerminal that = new JStackDumpTerminal();
@@ -120,5 +97,13 @@ public class ThreadDump  {
     }
     public void setHeader(JStackHeader header) {
         this.header = header;
+    }
+
+    public ArrayList<ThreadInfo> cloneStacks() {
+        ArrayList<ThreadInfo> newStcks = new ArrayList<ThreadInfo>();
+        for (ThreadInfo stk: getStacks()) {
+            newStcks.add(stk);
+        }
+        return newStcks;
     }
 }

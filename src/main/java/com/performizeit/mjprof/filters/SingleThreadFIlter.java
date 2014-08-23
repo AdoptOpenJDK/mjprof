@@ -1,6 +1,7 @@
 package com.performizeit.mjprof.filters;
 
 import com.performizeit.mjprof.api.DumpMapper;
+import com.performizeit.mjprof.api.Filter;
 import com.performizeit.mjprof.parser.ThreadDump;
 import com.performizeit.mjprof.parser.ThreadInfo;
 
@@ -9,7 +10,7 @@ import java.util.ArrayList;
 /**
  * Created by life on 22/8/14.
  */
-public abstract class SingleThreadFilter implements DumpMapper  {
+public abstract class SingleThreadFilter implements Filter,DumpMapper {
 
 
 
@@ -29,6 +30,6 @@ public abstract class SingleThreadFilter implements DumpMapper  {
 
     }
 
-
+    @Override
     abstract public boolean filter(ThreadInfo stck);
 }

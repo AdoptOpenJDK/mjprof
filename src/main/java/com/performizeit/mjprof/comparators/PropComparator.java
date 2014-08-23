@@ -22,7 +22,7 @@ import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.parser.ThreadInfo;
 
 @Plugin(name = "sort", params = {@Param("attr") },description="Sorts based on an attribute")
-public class PropComparator implements ThreadInfoComparator {
+public class PropComparator extends SortMapper{
     private final String prop;
 
     public PropComparator(String prop) {

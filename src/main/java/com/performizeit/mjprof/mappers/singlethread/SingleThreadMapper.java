@@ -10,7 +10,7 @@ import java.util.ArrayList;
 /**
  * Created by life on 22/8/14.
  */
-public abstract class SingleThreadMapper implements DumpMapper  {
+public abstract class SingleThreadMapper implements Mapper,DumpMapper  {
 
 
 

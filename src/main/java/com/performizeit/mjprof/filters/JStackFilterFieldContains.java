@@ -24,7 +24,7 @@ import com.performizeit.mjprof.parser.ThreadInfo;
 
 @Plugin(name="contains", params ={@Param("attr"),@Param("value")},
         description = "Returns only threads which contain the string in certain attribute (regexp not supported)")
-public class JStackFilterFieldContains implements Filter {
+public class JStackFilterFieldContains extends SingleThreadFilter {
     private final String attrName;
     private final String valContained;
 

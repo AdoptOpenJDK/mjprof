@@ -27,18 +27,10 @@ import java.util.Comparator;
 
 public class JStackDumpTerminal extends ThreadDump {
     protected  String data;
-    public ThreadDump filterDump(Filter filter) {
-        throw new NotImplementedException();
-    }
 
-    @Override
-    public ThreadDump mapDump(DumpMapper mapper) {
-        throw new NotImplementedException();
-    }
 
-    public ThreadDump sortDump(Comparator<ThreadInfo> comp) {
-        throw new NotImplementedException();
-    }
+
+
 
     @Override
     public ThreadDump terminateDump(Terminal terminal) {
