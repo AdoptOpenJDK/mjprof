@@ -15,13 +15,19 @@
         along with mjprof.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.performizeit.mjprof.api;
-
-import com.performizeit.mjprof.parser.ThreadDump;
-
-import java.io.OutputStream;
+package com.performizeit.mjprof.plugins.mappers.singlethread;
 
 
-public interface Terminal extends BasePlugin {
-    public void addStackDump(ThreadDump jsd);
+import com.performizeit.mjprof.api.Plugin;
+import com.performizeit.mjprof.parser.ThreadInfo;
+
+@Plugin(name="noop", params = {},
+        description = "Does nothing")
+public class NoOp extends SingleThreadMapper {
+    @Override
+    public ThreadInfo map(ThreadInfo threadInfo) {
+
+        return threadInfo;
+    }
+
 }

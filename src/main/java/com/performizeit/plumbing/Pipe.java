@@ -7,51 +7,54 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * pipe is a class which runs continuesly recieves msg from producers and trsfers them on after processing .
  */
-public class Pipe<E> extends Thread   {
-    boolean producersDone = false;
+public class Pipe<S,D> extends Thread   {
     AtomicInteger numProducers=new AtomicInteger(0);
 
-    BlockingQueue<E> queue = new LinkedBlockingQueue<E>();
-    Thread consumer;
-    private final PipeHandler<E> handler;
-    private final Pipe<E> nextPipe;
+    BlockingQueue<S> inQueue = new LinkedBlockingQueue<S>();
+    private final PipeHandler<S,D> handler;
+    private  Pipe<D,?> outgoingPipe =null;
 
-    public Pipe(String name, Thread consumer, PipeHandler<E> handler, Pipe<E> nextPipe) {
+    public Pipe(String name, PipeHandler<S,D> handler) {
         super() ;
-        this.nextPipe = nextPipe;
+
         setName(name);
-        this.consumer = consumer;
         this.handler = handler;
     }
 
-    public void send(E e) {
-        queue.add(e);
+    public void send(S e) {
+        inQueue.add(e);
 
     }
+
+    public void setOutgoingPipe(Pipe<D,?> outgoingPipe) {
+        this.outgoingPipe = outgoingPipe;
+        outgoingPipe.registerProducer();
+    }
+
     public int registerProducer() {
         return numProducers.incrementAndGet();
     }
     public int producerDone() {
         int numP = numProducers.decrementAndGet();
         if (numP<=0) {
-            consumer.interrupt();
+            interrupt();
 
 
         }
         return numP;
     }
 
-    private void handleMsg(E e) {
-        E e1 = handler.handleMsg(e);
-        if (nextPipe != null && e1 != null) {
-            nextPipe.send(e1);
+    private void handleMsg(S e) {
+        D e1 = handler.handleMsg(e);
+        if (outgoingPipe != null && e1 != null) {
+            outgoingPipe.send(e1);
         }
     }
     @Override
     public void run() {
         while (numProducers.get() > 0 ) {
             try {
-                E a = queue.take();
+                S a = inQueue.take();
                 handleMsg(a);
 
             } catch (InterruptedException e) {
@@ -60,14 +63,14 @@ public class Pipe<E> extends Thread   {
         }
         // it is stopped     get all remaining messages
         while (true) {
-            E a = queue.poll();
+            S a = inQueue.poll();
             if (a ==  null) break;
             handleMsg(a);
         }
-        E e = handler.handleDone();
-        if (nextPipe != null) {
-            if (e != null) nextPipe.send(e);
-            nextPipe.producerDone();
+        D e = handler.handleDone();
+        if (outgoingPipe != null) {
+            if (e != null) outgoingPipe.send(e);
+            outgoingPipe.producerDone();
         }
     }
 }

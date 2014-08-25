@@ -1,0 +1,32 @@
+package com.performizeit.mjprof.plugins.mappers.singlethread;
+
+import com.performizeit.mjprof.api.DumpMapper;
+import com.performizeit.mjprof.api.Mapper;
+import com.performizeit.mjprof.parser.ThreadDump;
+import com.performizeit.mjprof.parser.ThreadInfo;
+import com.performizeit.plumbing.PipeHandler;
+
+import java.util.ArrayList;
+
+/**
+ * Created by life on 22/8/14.
+ */
+public abstract class SingleThreadMapper implements Mapper,DumpMapper ,PipeHandler<ThreadDump,ThreadDump> {
+    @Override
+    public ThreadDump map(ThreadDump jsd) {
+
+        ThreadDump that = new ThreadDump();
+        that.setHeader(jsd.getHeader());
+            ArrayList<ThreadInfo> stcks = new ArrayList<ThreadInfo>();
+            for (ThreadInfo stk: jsd.getStacks()) {
+                stcks.add(map(stk));
+            }
+            that.setStacks(stcks);
+            return that;
+
+    }
+
+    abstract public ThreadInfo map(ThreadInfo stck);
+    @Override public ThreadDump handleMsg(ThreadDump msg) { return map(msg);}
+    @Override public ThreadDump handleDone() {return null;}
+}

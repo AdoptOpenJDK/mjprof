@@ -14,14 +14,19 @@
         You should have received a copy of the GNU General Public License
         along with mjprof.  If not, see <http://www.gnu.org/licenses/>.
 */
+package com.performizeit.mjprof.plugins.comparators;
 
-package com.performizeit.mjprof.api;
+import com.performizeit.mjprof.api.Plugin;
+import com.performizeit.mjprof.api.Param;
+import com.performizeit.mjprof.parser.ThreadInfo;
 
-import com.performizeit.mjprof.parser.ThreadDump;
-
-import java.io.OutputStream;
-
-
-public interface Terminal extends BasePlugin {
-    public void addStackDump(ThreadDump jsd);
+@Plugin(name = "sortd", params = {@Param() },description="Sorts based on an attribute (descending order)")
+public class ReversePropComparator extends PropComparator {
+    public ReversePropComparator(String prop) {
+        super(prop);
+    }
+    @Override
+    public int compare(ThreadInfo o1, ThreadInfo o2) {
+        return -super.compare(o1,o2);
+    }
 }

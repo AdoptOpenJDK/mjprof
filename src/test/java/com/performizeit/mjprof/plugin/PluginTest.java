@@ -8,14 +8,14 @@ import java.util.HashMap;
 import java.util.Set;
 
 import com.performizeit.mjprof.MJProf;
-import com.performizeit.mjprof.mappers.GroupByProp;
-import com.performizeit.mjprof.terminals.ListProps;
+import com.performizeit.mjprof.plugins.mappers.GroupByProp;
+import com.performizeit.mjprof.plugins.terminals.ListProps;
 import org.junit.Test;
 import org.reflections.Reflections;
 
 import com.performizeit.mjprof.api.Plugin;
-import com.performizeit.mjprof.mappers.singlethread.StackFrameContains;
-import com.performizeit.mjprof.mappers.singlethread.TrimTop;
+import com.performizeit.mjprof.plugins.mappers.singlethread.StackFrameContains;
+import com.performizeit.mjprof.plugins.mappers.singlethread.TrimTop;
 import com.performizeit.mjprof.monads.StepInfo;
 
 public class PluginTest {

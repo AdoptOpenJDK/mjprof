@@ -5,4 +5,6 @@ package com.performizeit.plumbing;
  */
 public interface GeneratorHandler<E> {
     public E generate();
+    public boolean isDone();
+    public void sleepBetweenIteration();
 }

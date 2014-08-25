@@ -15,13 +15,13 @@
         along with mjprof.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.performizeit.mjprof.api;
+package com.performizeit.mjprof.plugins.mergers;
 
-import com.performizeit.mjprof.parser.ThreadDump;
+import com.performizeit.mjprof.api.Plugin;
 
-import java.io.OutputStream;
-
-
-public interface Terminal extends BasePlugin {
-    public void addStackDump(ThreadDump jsd);
+@Plugin(name="ctree", params ={},description="combine all stack traces in color (UNIX Terminal) ")
+public class StackTreeColor extends StackTreeMerger {
+    public StackTreeColor() {
+        st.color = true;
+    }
 }

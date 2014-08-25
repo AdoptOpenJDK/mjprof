@@ -1,6 +1,6 @@
 package com.performizeit.mjprof.model;
 
-import com.performizeit.mjprof.mappers.singlethread.FileNameEliminator;
+import com.performizeit.mjprof.plugins.mappers.singlethread.FileNameEliminator;
 import com.performizeit.mjprof.parser.ThreadInfo;
 import junit.framework.TestCase;
 import org.junit.Test;
