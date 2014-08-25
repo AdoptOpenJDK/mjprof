@@ -27,7 +27,6 @@ import com.performizeit.mjprof.monads.MJStep;
 import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.monads.StepInfo;
 import com.performizeit.mjprof.monads.StepsRepository;
-import com.performizeit.mjprof.parser.ThreadDump;
 import com.performizeit.mjprof.parser.ThreadInfo;
 import com.performizeit.mjprof.plugin.PluginUtils;
 import com.performizeit.plumbing.Generator;
@@ -76,59 +75,6 @@ public class MJProf {
         }
 
 
- /*       ArrayList<ThreadDump> jStackDumps = new ArrayList<ThreadDump>();
-
-
-        //calling the relevant datasource plugin
-        for (MJStep mjstep : steps) {
-            Object obj = getObjectFromStep(mjstep);
-            ArrayList<ThreadDump> dumps;
-            if (PluginUtils.isDataSource((obj))) {
-                foundExplicitDataSource = true;
-                dumps = ((DataSource) obj).getThreadDumps();
-                if (dumps != null) {
-                    jStackDumps.addAll(dumps);
-                }
-
-            }
-        }
-
-
-        for (MJStep mjstep : steps) {
-            Object obj = getObjectFromStep(mjstep);
-
-            if (PluginUtils.isDataSource((obj))) {
-                continue;
-            }
-            ArrayList<ThreadDump> jStackDumpsOrig = jStackDumps;
-            jStackDumps = new ArrayList<ThreadDump>(jStackDumpsOrig.size());
-
-
-
-            for (ThreadDump jsd : jStackDumpsOrig) {
-
-                 if (PluginUtils.isDumpMapper(obj)) {
-                    jStackDumps.add(((DumpMapper) obj).map(jsd));
-                } else if (PluginUtils.isDumpReducer(obj)) {
-
-                    DumpReducer dr = (DumpReducer) obj;
-                    dr.reduce(jsd);
-
-                }  else if (PluginUtils.isTerminal(obj)) {
-                    jStackDumps.add(jsd.terminateDump((Terminal) obj));
-                }
-            }
-            if (PluginUtils.isDumpReducer(obj)) {
-                DumpReducer dr = (DumpReducer) obj;
-                jStackDumps.add(dr.getResult());
-            }
-
-        }
-
-
-        for (int i = 0; i < jStackDumps.size(); i++) {
-            System.out.println(jStackDumps.get(i));
-        }  */
     }
 
     static ArrayList <Pipe> pipes = new ArrayList<Pipe>();
