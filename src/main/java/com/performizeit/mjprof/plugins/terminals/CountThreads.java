@@ -20,34 +20,21 @@ package com.performizeit.mjprof.plugins.terminals;
 import com.performizeit.mjprof.api.Terminal;
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.parser.ThreadDump;
-import com.performizeit.mjprof.model.JStackHeader;
 import com.performizeit.mjprof.parser.ThreadInfo;
 import com.performizeit.plumbing.PipeHandler;
 
-import java.util.ArrayList;
 
+@SuppressWarnings("unused")
 @Plugin(name="count", params ={}, description="counts number of threads")
 public class CountThreads implements Terminal ,PipeHandler<ThreadDump,String> {
-    int count =0;
-    ArrayList<JStackHeader> stackDumpsHeaders = new ArrayList<JStackHeader>();
-
-
-    public void addStackDump(ThreadDump jsd) {
-        count = 0;
-        for (ThreadInfo mss : jsd.getStacks()  ) {
-                count++;
-        }
-    }
-
-    @Override
-    public String toString() {
-        return "Total number of threads is "+ count + "\n";
-    }
-
     @Override public String handleMsg(ThreadDump msg) {
-        return toString();}
+        int count=0;
+        for (ThreadInfo mss : msg.getStacks()  ) {
+            count++;
+        }
+        return msg.getHeader() + "\n" +    "Total number of threads is "+ count + "\n";
+    }
     @Override public String handleDone() {
-
         return null;
     }
 }

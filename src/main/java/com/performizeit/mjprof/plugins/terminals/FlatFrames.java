@@ -25,11 +25,10 @@ import com.performizeit.mjprof.model.SFNode;
 import com.performizeit.mjprof.parser.ThreadDump;
 import com.performizeit.mjprof.parser.ThreadInfo;
 import com.performizeit.plumbing.PipeHandler;
-
 import java.util.HashMap;
 import static com.performizeit.mjprof.parser.ThreadInfoProps.*;
 
-
+@SuppressWarnings("unused")
 @Plugin(name="flat", params ={}, description="Shows flat histogram of the profiles")
 public class FlatFrames implements Terminal,PipeHandler<ThreadDump,String> {
     HashMap<String,Integer> methods = new HashMap<String,Integer>();
@@ -67,6 +66,7 @@ public class FlatFrames implements Terminal,PipeHandler<ThreadDump,String> {
 
 
     @Override public String handleMsg(ThreadDump msg) {
+        addStackDump(msg);
         return null;}
     @Override public String handleDone() {
         return toString();

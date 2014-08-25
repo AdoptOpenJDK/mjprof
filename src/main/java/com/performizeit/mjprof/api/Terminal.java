@@ -23,5 +23,4 @@ import java.io.OutputStream;
 
 
 public interface Terminal extends BasePlugin {
-    public void addStackDump(ThreadDump jsd);
 }
