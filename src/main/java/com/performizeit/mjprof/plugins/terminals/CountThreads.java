@@ -15,12 +15,26 @@
         along with mjprof.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.performizeit.mjprof.api;
+package com.performizeit.mjprof.plugins.terminals;
 
+import com.performizeit.mjprof.api.Terminal;
+import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.parser.ThreadDump;
+import com.performizeit.mjprof.parser.ThreadInfo;
+import com.performizeit.plumbing.PipeHandler;
 
-import java.io.OutputStream;
 
-
-public interface Terminal extends BasePlugin {
+@SuppressWarnings("unused")
+@Plugin(name="count", params ={}, description="counts number of threads")
+public class CountThreads implements Terminal ,PipeHandler<ThreadDump,String> {
+    @Override public String handleMsg(ThreadDump msg) {
+        int count=0;
+        for (ThreadInfo mss : msg.getStacks()  ) {
+            count++;
+        }
+        return msg.getHeader() + "\n" +    "Total number of threads is "+ count + "\n";
+    }
+    @Override public String handleDone() {
+        return null;
+    }
 }

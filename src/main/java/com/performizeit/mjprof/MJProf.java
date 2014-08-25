@@ -23,13 +23,16 @@ import java.util.Collections;
 import java.util.List;
 
 import com.performizeit.mjprof.api.*;
-import com.performizeit.mjprof.dataSource.StdinDataSourcePlugin;
 import com.performizeit.mjprof.monads.MJStep;
 import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.monads.StepInfo;
 import com.performizeit.mjprof.monads.StepsRepository;
-import com.performizeit.mjprof.parser.ThreadDump;
+import com.performizeit.mjprof.parser.ThreadInfo;
 import com.performizeit.mjprof.plugin.PluginUtils;
+import com.performizeit.plumbing.Generator;
+import com.performizeit.plumbing.GeneratorHandler;
+import com.performizeit.plumbing.Pipe;
+import com.performizeit.plumbing.PipeHandler;
 
 
 public class MJProf {
@@ -43,65 +46,69 @@ public class MJProf {
         if (steps == null) {
             printSynopsisAndExit();
         }
-
-        ArrayList<ThreadDump> jStackDumps = new ArrayList<ThreadDump>();
-
         boolean foundExplicitDataSource = false;
-        //calling the relevant datasource plugin
         for (MJStep mjstep : steps) {
-            //TODO: Save the objects so we won't create it twice
             Object obj = getObjectFromStep(mjstep);
-            ArrayList<ThreadDump> dumps;
             if (PluginUtils.isDataSource((obj))) {
                 foundExplicitDataSource = true;
-                dumps = ((DataSource) obj).getThreadDumps();
-                if (dumps != null) {
-                    jStackDumps.addAll(dumps);
-                }
-
             }
         }
-        //Default
         if (!foundExplicitDataSource) {
-            StdinDataSourcePlugin std = new StdinDataSourcePlugin();
-            jStackDumps = std.getThreadDumps();
+            steps.add(0,new MJStep("stdin"));
+
         }
-
-        for (MJStep mjstep : steps) {
-            Object obj = getObjectFromStep(mjstep);
-
-            if (PluginUtils.isDataSource((obj))) {
-                continue;
-            }
-            ArrayList<ThreadDump> jStackDumpsOrig = jStackDumps;
-            jStackDumps = new ArrayList<ThreadDump>(jStackDumpsOrig.size());
-
-
-
-            for (ThreadDump jsd : jStackDumpsOrig) {
-
-                 if (PluginUtils.isDumpMapper(obj)) {
-                    jStackDumps.add(((DumpMapper) obj).map(jsd));
-                } else if (PluginUtils.isDumpReducer(obj)) {
-
-                    DumpReducer dr = (DumpReducer) obj;
-                    dr.reduce(jsd);
-
-                }  else if (PluginUtils.isTerminal(obj)) {
-                    jStackDumps.add(jsd.terminateDump((Terminal) obj));
-                }
-            }
-            if (PluginUtils.isDumpReducer(obj)) {
-                DumpReducer dr = (DumpReducer) obj;
-                jStackDumps.add(dr.getResult());
-            }
-
+        MJStep lastStep = steps.get(steps.size()-1);
+        Object lststp = getObjectFromStep(lastStep);
+        if (!PluginUtils.isOutputer(lststp)) {
+            steps.add(new MJStep("stdout"));
         }
 
 
-        for (int i = 0; i < jStackDumps.size(); i++) {
-            System.out.println(jStackDumps.get(i));
+
+
+        constructPlumbing(steps);
+        for (Pipe pipe : pipes) {
+             pipe.start();
         }
+        for (Generator g : generators) {
+            g.start();
+        }
+
+
+    }
+
+    static ArrayList <Pipe> pipes = new ArrayList<Pipe>();
+    static ArrayList <Generator<ThreadInfo>> generators = new ArrayList<Generator<ThreadInfo>>();
+    private static void constructPlumbing(ArrayList<MJStep> steps) {
+        int i=0;
+
+        for (MJStep step:steps) {    // create handlers
+            Pipe p;
+            if (PluginUtils.isDataSource(getObjectFromStep(step))) {
+                MJStep noopStep = new MJStep("noop");
+                PipeHandler handler = (PipeHandler)getObjectFromStep(noopStep);
+                p = new Pipe("Pipe Thread "+step.getStepName() +i,handler);
+                GeneratorHandler genHandler = (GeneratorHandler)getObjectFromStep(step);
+                Generator<ThreadInfo> g = new Generator<ThreadInfo>("Generator Thread "+step.getStepName() +i,genHandler,p);
+                generators.add(g);
+
+
+            }   else {
+
+                PipeHandler<ThreadInfo,ThreadInfo> handler = (PipeHandler<ThreadInfo,ThreadInfo>)getObjectFromStep(step);
+                p = new Pipe<ThreadInfo,ThreadInfo> ("Pipe Thread "+step.getStepName() +i,handler);
+            }
+            pipes.add(p);
+            if (i>0) {     //connect to previous pipe
+              Pipe  prevPipe = pipes.get(i-1);
+                prevPipe.setOutgoingPipe(p);
+            }
+            i++;
+
+
+        }
+
+
     }
 
     private static Object getObjectFromStep(MJStep mjstep) {
@@ -124,7 +131,7 @@ public class MJProf {
         sb.append("\nData sources:\n");
         getSynopsisContent(sb, keys, DataSource.class);
         sb.append("\nFilters:\n");
-        getSynopsisContent(sb, keys,Filter.class);
+        getSynopsisContent(sb, keys, Filter.class);
         sb.append("\nMappers:\n");
         getSynopsisContent(sb, keys,Mapper.class);
         getSynopsisContent(sb, keys,DumpReducer.class);

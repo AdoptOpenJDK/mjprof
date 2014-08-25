@@ -17,14 +17,10 @@
 
 package com.performizeit.mjprof.parser;
 
-import com.performizeit.mjprof.api.DumpMapper;
 
-import com.performizeit.mjprof.api.Terminal;
 import com.performizeit.mjprof.model.JStackHeader;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 
 public class ThreadDump  {
@@ -83,13 +79,6 @@ public class ThreadDump  {
 
 
 
-    public ThreadDump terminateDump(Terminal terminal) {
-        JStackDumpTerminal that = new JStackDumpTerminal();
-        that.header = header;
-       terminal.addStackDump(this);
-        that.data = terminal.toString();
-        return that;
-    }
 
 
     public void setHeader(String header) {

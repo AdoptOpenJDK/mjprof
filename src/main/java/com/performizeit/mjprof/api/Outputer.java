@@ -19,8 +19,7 @@ package com.performizeit.mjprof.api;
 
 import com.performizeit.mjprof.parser.ThreadDump;
 
-import java.io.OutputStream;
 
+public interface Outputer extends BasePlugin {
 
-public interface Terminal extends BasePlugin {
 }

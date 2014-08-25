@@ -6,9 +6,9 @@ package com.performizeit.plumbing;
 public class Generator<E> extends Thread {
 
     private final GeneratorHandler<E> generator;
-    private final Pipe<E> pipe;
+    private final Pipe<E,?> pipe;
 
-    public Generator(String name, GeneratorHandler<E> generator,Pipe<E> pipe ) {
+    public Generator(String name, GeneratorHandler<E> generator,Pipe<E,?> pipe ) {
         super(name);
         this.generator = generator;
         this.pipe = pipe;
@@ -17,13 +17,13 @@ public class Generator<E> extends Thread {
 
     @Override
     public void run() {
-        while (true) {
-            E data = generator.  generate();
-            if (data == null) {
+        while (!generator.isDone()) {
+            E data = generator.generate();
+            if (pipe != null && data != null) pipe.send(data);
+            if (generator.isDone())    {
                 this.pipe.producerDone();
-                break;
             }  else {
-                pipe.send(data);
+                generator.sleepBetweenIteration();
             }
         }
     }

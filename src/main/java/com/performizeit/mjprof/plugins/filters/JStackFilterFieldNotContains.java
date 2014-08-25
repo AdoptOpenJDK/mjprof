@@ -15,12 +15,22 @@
         along with mjprof.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.performizeit.mjprof.api;
+package com.performizeit.mjprof.plugins.filters;
 
-import com.performizeit.mjprof.parser.ThreadDump;
+import com.performizeit.mjprof.api.Plugin;
+import com.performizeit.mjprof.api.Param;
+import com.performizeit.mjprof.parser.ThreadInfo;
 
-import java.io.OutputStream;
+@SuppressWarnings("unused")
+@Plugin(name="ncontains", params ={@Param("attr"),@Param("str")},
+        description = "Returns only threads which do not contain the string (regexp not supported)")
+public class JStackFilterFieldNotContains extends JStackFilterFieldContains {
+    public JStackFilterFieldNotContains(String attr, String valNotContained) {
+       super(attr,valNotContained);
+    }
 
-
-public interface Terminal extends BasePlugin {
+    @Override
+    public boolean filter(ThreadInfo stck) {
+        return !super.filter(stck);
+    }
 }

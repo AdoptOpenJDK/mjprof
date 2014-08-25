@@ -14,13 +14,22 @@
         You should have received a copy of the GNU General Public License
         along with mjprof.  If not, see <http://www.gnu.org/licenses/>.
 */
+package com.performizeit.mjprof.plugins.comparators;
 
-package com.performizeit.mjprof.api;
+import com.performizeit.mjprof.api.Plugin;
+import com.performizeit.mjprof.api.Param;
+import com.performizeit.mjprof.parser.ThreadInfo;
 
-import com.performizeit.mjprof.parser.ThreadDump;
+@Plugin(name = "sort", params = {@Param("attr") },description="Sorts based on an attribute")
+public class PropComparator extends SortMapper{
+    private final String prop;
 
-import java.io.OutputStream;
+    public PropComparator(String prop) {
+        this.prop = prop;
+    }
+    @Override
+    public int compare(ThreadInfo o1, ThreadInfo o2) {
+        return ((Comparable)o1.getVal(prop)) .compareTo(o2.getVal(prop));
 
-
-public interface Terminal extends BasePlugin {
+    }
 }

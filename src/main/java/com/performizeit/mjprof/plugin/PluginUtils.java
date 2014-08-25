@@ -85,5 +85,8 @@ public class PluginUtils {
 	public static boolean isDataSource(Object o) {
 		return DataSource.class.isAssignableFrom(o.getClass());
 	}
-	
+
+    public static boolean isOutputer(Object lststp) {
+        return Outputer.class.isAssignableFrom(lststp.getClass());
+    }
 }
