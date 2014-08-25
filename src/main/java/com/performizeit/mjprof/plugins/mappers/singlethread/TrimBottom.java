@@ -24,6 +24,7 @@ import com.performizeit.mjprof.model.SFNode;
 import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.parser.ThreadInfo;
 
+@SuppressWarnings("unused")
 @Plugin(name="keeptop", params = {@Param(type=int.class)},
         description = "Returns at most n top stack frames of the stack")
 public class TrimBottom extends SingleThreadMapper  {
