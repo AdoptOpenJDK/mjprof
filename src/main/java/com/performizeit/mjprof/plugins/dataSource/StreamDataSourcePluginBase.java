@@ -2,37 +2,27 @@ package com.performizeit.mjprof.plugins.dataSource;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.ArrayList;
 
-import com.performizeit.mjprof.api.DataSource;
+import com.performizeit.mjprof.plugin.types.DataSource;
 import com.performizeit.mjprof.parser.ThreadDump;
 import com.performizeit.plumbing.GeneratorHandler;
 
 
 public abstract class StreamDataSourcePluginBase implements DataSource, GeneratorHandler<ThreadDump> {
-    protected  BufferedReader r;
+    protected  BufferedReader reader;
     boolean isDone = false;
 
-    @Deprecated
-	protected ArrayList<String> getStackStringsFromReader()  {
-		ArrayList<String> stackDumps = new ArrayList<String>();
-			while (true) {
-                String stck = getStackStringFromReader();
-                if (stck == null) break;
-                stackDumps.add(stck);
-			}
-		return stackDumps;
-	}
 
-    public void setR(BufferedReader r) {
-        this.r = r;
+
+    public void setReader(BufferedReader reader) {
+        this.reader = reader;
     }
 
     protected String getStackStringFromReader()  {
         StringBuilder linesOfStack = new StringBuilder();
         String line;
         try {
-            while ((line = r.readLine()) != null) {
+            while ((line = reader.readLine()) != null) {
                 if (line.length() > 0 && Character.isDigit(line.charAt(0))) {   //starting a new stack dump
                     if (linesOfStack.length() > 0) {
                         return linesOfStack.toString();
@@ -55,15 +45,6 @@ public abstract class StreamDataSourcePluginBase implements DataSource, Generato
         return null;
     }
 
-    @Deprecated
-	protected  ArrayList<ThreadDump> buildJstacks(ArrayList<String> stackStrings) {
-		ArrayList<ThreadDump> jStackDumps = new ArrayList<ThreadDump>(stackStrings.size());
-		for (String stackDump : stackStrings) {
-			ThreadDump stckDump = new ThreadDump(stackDump);
-			jStackDumps.add(stckDump);
-		}
-		return jStackDumps;
-	}
 
     @Override
     public ThreadDump generate() {

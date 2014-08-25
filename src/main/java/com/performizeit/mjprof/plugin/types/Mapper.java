@@ -14,10 +14,11 @@
         You should have received a copy of the GNU General Public License
         along with mjprof.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.performizeit.mjprof.api;
+package com.performizeit.mjprof.plugin.types;
 
+import com.performizeit.mjprof.api.BasePlugin;
 import com.performizeit.mjprof.parser.ThreadInfo;
 
 
-public interface Mapper extends BasePlugin{
+public interface Mapper extends BasePlugin {
 }

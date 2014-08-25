@@ -17,8 +17,8 @@
 
 package com.performizeit.mjprof.plugins.combiners;
 
-import com.performizeit.mjprof.api.DumpReducer;
-import com.performizeit.mjprof.api.Mapper;
+import com.performizeit.mjprof.plugin.types.DumpReducer;
+import com.performizeit.mjprof.plugin.types.Mapper;
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.model.ThreadInfoAggregator;
 import com.performizeit.mjprof.api.Param;
@@ -51,7 +51,6 @@ public class AccumulateDumps implements Mapper,DumpReducer,PipeHandler<ThreadDum
 
     }
 
-    @Override
     public ThreadDump getResult() {
         ThreadDump td = new ThreadDump();
         td.setHeader("Profiling session number of dumps is "+ countDumps);

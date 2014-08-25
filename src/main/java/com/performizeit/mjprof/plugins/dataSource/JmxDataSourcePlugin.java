@@ -1,7 +1,7 @@
 package com.performizeit.mjprof.plugins.dataSource;
 
 import com.performizeit.jmxsupport.JMXConnection;
-import com.performizeit.mjprof.api.DataSource;
+import com.performizeit.mjprof.plugin.types.DataSource;
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.model.Profile;
 import com.performizeit.mjprof.api.Param;

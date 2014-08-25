@@ -17,7 +17,7 @@
 
 package com.performizeit.mjprof.plugins.terminals;
 
-import com.performizeit.mjprof.api.Terminal;
+import com.performizeit.mjprof.plugin.types.Terminal;
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.parser.ThreadDump;
 import com.performizeit.mjprof.parser.ThreadInfo;

@@ -1,18 +1,15 @@
 package com.performizeit.mjprof.plugins.comparators;
 
-import com.performizeit.mjprof.api.DumpMapper;
 import com.performizeit.mjprof.api.ThreadInfoComparator;
 import com.performizeit.mjprof.parser.ThreadDump;
 import com.performizeit.mjprof.parser.ThreadInfo;
+import com.performizeit.mjprof.plugin.types.Mapper;
 import com.performizeit.plumbing.PipeHandler;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-public abstract class SortMapper  implements ThreadInfoComparator,DumpMapper,PipeHandler<ThreadDump,ThreadDump> {
-
-
-    @Override
+public abstract class SortMapper  implements Mapper,ThreadInfoComparator,PipeHandler<ThreadDump,ThreadDump> {
     public ThreadDump map(ThreadDump jsd) {
         ThreadDump that = new ThreadDump();
         that.setHeader(jsd.getHeader());

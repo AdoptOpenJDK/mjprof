@@ -1,12 +1,12 @@
 /*
-       This file is part of mjprof.
+       This file is part of mjstack.
 
-        mjprof is free software: you can redistribute it and/or modify
+        mjstack is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
         the Free Software Foundation, either version 3 of the License, or
         (at your option) any later version.
 
-        mjprof is distributed in the hope that it will be useful,
+        mjstack is distributed in the hope that it will be useful,
         but WITHOUT ANY WARRANTY; without even the implied warranty of
         MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
         GNU General Public License for more details.
@@ -15,11 +15,14 @@
         along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.performizeit.mjprof.api;
+package com.performizeit.mjprof.plugin.types;
 
-import com.performizeit.mjprof.parser.ThreadInfo;
+import java.util.ArrayList;
 
-
-public interface Filter extends BasePlugin{
-	boolean filter(ThreadInfo stck);
+import com.performizeit.mjprof.api.BasePlugin;
+import com.performizeit.mjprof.parser.ThreadDump;
+/**
+ * Created by life on 22/2/14.
+ */
+public interface DataSource extends BasePlugin {
 }

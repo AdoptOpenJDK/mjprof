@@ -22,13 +22,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.performizeit.mjprof.api.*;
+
+import com.performizeit.mjprof.api.Attr;
+import com.performizeit.mjprof.api.ThreadInfoComparator;
 import com.performizeit.mjprof.monads.MJStep;
 import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.monads.StepInfo;
 import com.performizeit.mjprof.monads.StepsRepository;
 import com.performizeit.mjprof.parser.ThreadInfo;
 import com.performizeit.mjprof.plugin.PluginUtils;
+import com.performizeit.mjprof.plugin.types.*;
 import com.performizeit.plumbing.Generator;
 import com.performizeit.plumbing.GeneratorHandler;
 import com.performizeit.plumbing.Pipe;

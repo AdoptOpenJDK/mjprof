@@ -1,6 +1,6 @@
 package com.performizeit.mjprof.plugins.dataSource;
 
-import com.performizeit.mjprof.api.DataSource;
+import com.performizeit.mjprof.plugin.types.DataSource;
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.parser.ThreadDump;

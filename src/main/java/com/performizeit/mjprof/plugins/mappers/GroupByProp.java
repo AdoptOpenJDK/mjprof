@@ -17,8 +17,7 @@
 
 package com.performizeit.mjprof.plugins.mappers;
 
-import com.performizeit.mjprof.api.DumpMapper;
-import com.performizeit.mjprof.api.Mapper;
+import com.performizeit.mjprof.plugin.types.Mapper;
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.model.ThreadInfoAggregator;
 import com.performizeit.mjprof.api.Param;
@@ -30,7 +29,7 @@ import java.util.ArrayList;
 
 
 @Plugin(name="group", params ={@Param("attr")},description="Group by an attribute")
-public class GroupByProp implements Mapper ,DumpMapper,PipeHandler<ThreadDump,ThreadDump>  {
+public class GroupByProp implements Mapper ,PipeHandler<ThreadDump,ThreadDump>  {
     private final String prop;
     public GroupByProp(String prop) {
         this.prop = prop;

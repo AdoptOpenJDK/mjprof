@@ -141,16 +141,16 @@ public class ThreadInfo extends Props{
         StringBuilder mdStr = new StringBuilder();
 
         if (props.get(NAME) != null) {
-            mdStr.append("\"" + props.get(NAME) + "\"");
+            mdStr.append("\"").append(props.get(NAME)).append("\"");
         }
         if (props.get(COUNT) != null) {
-            mdStr.append(" "+COUNT+"=" + props.get(COUNT));
+            mdStr.append(" " + COUNT + "=").append(props.get(COUNT));
         }
         if (props.get(DAEMON) != null) {
             mdStr.append(" "+DAEMON);
         }
         if (props.get(PRIO) != null) {
-            mdStr.append(" "+PRIO+"=" + props.get(PRIO));
+            mdStr.append(" " + PRIO + "=").append(props.get(PRIO));
         }
         if (props.get(TID) != null) {
             mdStr.append(" "+TID+"=" + props.get(TID));
@@ -162,7 +162,7 @@ public class ThreadInfo extends Props{
             mdStr.append(" " + props.get(STATUS));
         }
         if (props.get(CPU) != null) {
-            mdStr.append(" "+CPU+"=" + props.get(CPU));
+            mdStr.append(" " + CPU + "=").append(props.get(CPU));
         }
 
 

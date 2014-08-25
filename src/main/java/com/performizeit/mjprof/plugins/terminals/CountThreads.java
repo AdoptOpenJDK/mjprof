@@ -17,7 +17,7 @@
 
 package com.performizeit.mjprof.plugins.terminals;
 
-import com.performizeit.mjprof.api.Terminal;
+import com.performizeit.mjprof.plugin.types.Terminal;
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.parser.ThreadDump;
 import com.performizeit.mjprof.parser.ThreadInfo;
@@ -30,7 +30,9 @@ public class CountThreads implements Terminal ,PipeHandler<ThreadDump,String> {
     @Override public String handleMsg(ThreadDump msg) {
         int count=0;
         for (ThreadInfo mss : msg.getStacks()  ) {
-            count++;
+            int inc = (Integer)mss.getVal("count") == null ? 1 : (Integer)mss.getVal("count");
+
+            count+= inc;
         }
         return msg.getHeader() + "\n" +    "Total number of threads is "+ count + "\n";
     }

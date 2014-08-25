@@ -17,15 +17,13 @@
 
 package com.performizeit.mjprof.plugins.mergers;
 
-import com.performizeit.mjprof.api.Terminal;
+import com.performizeit.mjprof.plugin.types.Terminal;
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.model.Profile;
 import com.performizeit.mjprof.parser.ThreadDump;
 import com.performizeit.mjprof.parser.ThreadInfoProps;
 import com.performizeit.mjprof.parser.ThreadInfo;
 import com.performizeit.plumbing.PipeHandler;
-
-import java.io.OutputStream;
 
 
 @Plugin(name="tree", params ={},description="combine all stack traces ")
