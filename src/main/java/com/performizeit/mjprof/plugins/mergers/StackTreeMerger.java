@@ -29,7 +29,7 @@ import java.io.OutputStream;
 
 
 @Plugin(name="tree", params ={},description="combine all stack traces ")
-public class StackTreeMerger implements Terminal,PipeHandler<ThreadDump,ThreadDump> {
+public class StackTreeMerger implements Terminal,PipeHandler<ThreadDump,String> {
     Profile st = new Profile();
 
     public void addStackDump(ThreadDump jsd) {
@@ -45,6 +45,6 @@ public class StackTreeMerger implements Terminal,PipeHandler<ThreadDump,ThreadDu
         return st.toString();
     }
 
-    @Override public ThreadDump handleMsg(ThreadDump msg) { return null;}
-    @Override public ThreadDump handleDone() {return null;}
+    @Override public String handleMsg(ThreadDump msg) { addStackDump(msg);return null;}
+    @Override public String handleDone() {return toString();}
 }
