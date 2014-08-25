@@ -59,7 +59,7 @@ public class AccumulateDumps implements DumpReducer,PipeHandler<ThreadDump,Threa
     }
 
 
-    @Override public ThreadDump handleMsg(ThreadDump msg) {return null;}
+    @Override public ThreadDump handleMsg(ThreadDump msg) {reduce(msg); return null;}
     @Override public ThreadDump handleDone() {return getResult();}
 
 
