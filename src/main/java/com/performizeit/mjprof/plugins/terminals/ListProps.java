@@ -26,32 +26,29 @@ import com.performizeit.plumbing.PipeHandler;
 import java.util.HashSet;
 
 
+@SuppressWarnings("unused")
 @Plugin(name="list", params ={},description="lists the possible stack trace attributes")
 public class ListProps implements Terminal,PipeHandler<ThreadDump,String> {
     HashSet<String> propsHash = new HashSet<String>();
-
-    public void addStackDump(ThreadDump jsd) {
-        for (ThreadInfo mss : jsd.getStacks()  ) {
-            for (String prop : mss.getProps()) {
-               propsHash.add(prop);
-            }
-        }
-
-    }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         for (String key: propsHash) {
-            sb.append(key+"//\n");
+            sb.append(key+"\n");
 
         }
         return sb.toString();
     }
 
-
     @Override public String handleMsg(ThreadDump msg) {
-        return null;}
+        for (ThreadInfo mss : msg.getStacks()  ) {
+            for (String prop : mss.getProps()) {
+                propsHash.add(prop);
+            }
+        }
+        return null;
+    }
     @Override public String handleDone() {
         return toString();
     }

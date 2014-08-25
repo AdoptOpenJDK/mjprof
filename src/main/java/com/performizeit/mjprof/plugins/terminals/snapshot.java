@@ -7,6 +7,7 @@ import com.performizeit.plumbing.PipeHandler;
 
 import java.io.*;
 
+@SuppressWarnings("unused")
 @Plugin(name="snapshot", params ={ @Param(value="filename",optional=true)}, description="Write to a file")
 public class Snapshot implements Outputer,PipeHandler {
     private final String fileName;
