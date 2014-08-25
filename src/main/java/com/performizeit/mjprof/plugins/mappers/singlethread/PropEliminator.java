@@ -16,7 +16,6 @@
 */
 
 package com.performizeit.mjprof.plugins.mappers.singlethread;
-import com.performizeit.mjprof.api.Attr;
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.parser.ThreadInfo;
