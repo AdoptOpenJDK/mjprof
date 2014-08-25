@@ -30,7 +30,7 @@ import java.util.ArrayList;
 
 
 @Plugin(name="group", params ={@Param("attr")},description="Group by an attribute")
-public class GroupByProp implements DumpMapper,Mapper ,PipeHandler<ThreadDump,ThreadDump>  {
+public class GroupByProp implements Mapper ,DumpMapper,PipeHandler<ThreadDump,ThreadDump>  {
     private final String prop;
     public GroupByProp(String prop) {
         this.prop = prop;
