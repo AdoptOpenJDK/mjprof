@@ -25,6 +25,7 @@ import com.performizeit.mjprof.model.SFNode;
 import com.performizeit.mjprof.parser.ThreadInfo;
 import  static com.performizeit.mjprof.parser.ThreadInfoProps.*;
 
+@SuppressWarnings("unused")
 @Plugin(name="pkgelim", params = {},
         description = "Eliminates package name from stack frames")
 public class PackageEliminator extends SingleThreadMapper {

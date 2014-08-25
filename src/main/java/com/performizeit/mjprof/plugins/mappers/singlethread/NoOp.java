@@ -21,6 +21,7 @@ package com.performizeit.mjprof.plugins.mappers.singlethread;
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.parser.ThreadInfo;
 
+@SuppressWarnings("unused")
 @Plugin(name="noop", params = {},
         description = "Does nothing")
 public class NoOp extends SingleThreadMapper {

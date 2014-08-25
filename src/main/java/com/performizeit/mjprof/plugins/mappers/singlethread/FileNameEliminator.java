@@ -25,6 +25,7 @@ import com.performizeit.mjprof.parser.ThreadInfo;
 
 import java.util.HashMap;
 
+@SuppressWarnings("unused")
 @Plugin(name="fnelim", params = {},
         description = "Eliminates file name from stack frames")
 public class FileNameEliminator extends SingleThreadMapper {
@@ -53,13 +54,13 @@ public class FileNameEliminator extends SingleThreadMapper {
             int fnStart = stackFrame.indexOf("(");
             int atStart = stackFrame.indexOf("at ");
             if ( atStart < 0) return stackFrame;
-            String fileName;
+         //   String fileName;
              String pkgClsMthd ;
             if (fnStart<0 ) {
-                fileName ="";
+               // fileName ="";
                 pkgClsMthd = stackFrame.substring(atStart + 3);
             } else {
-                fileName = stackFrame.substring(fnStart);
+                //fileName = stackFrame.substring(fnStart);
                 pkgClsMthd = stackFrame.substring(atStart + 3, fnStart);
             }
             String at = stackFrame.substring(0, atStart + 3);
