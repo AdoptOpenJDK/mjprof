@@ -9,11 +9,11 @@ import java.io.*;
 
 @SuppressWarnings("unused")
 @Plugin(name="snapshot", params ={ @Param(value="filename",optional=true)}, description="Write to a file")
-public class Snapshot implements Outputer,PipeHandler {
+public class SnapshotToPrintStream implements Outputer,PipeHandler {
     private final String fileName;
     private final PrintStream os;
 
-    public Snapshot(String fileName) {
+    public SnapshotToPrintStream(String fileName) {
         this.fileName = fileName;
         if (fileName == null || fileName.length() == 0)  {
             os = System.out;

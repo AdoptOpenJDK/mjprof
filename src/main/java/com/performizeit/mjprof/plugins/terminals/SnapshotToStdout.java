@@ -6,13 +6,9 @@ import com.performizeit.plumbing.PipeHandler;
 
 @SuppressWarnings("unused")
 @Plugin(name="stdout", params ={}, description="Write to stdout")
-public class StdOut implements Outputer,PipeHandler {
-    @Override public Object handleMsg(Object msg) {
-        System.out.println(msg.toString());
-        System.out.flush();
-        return msg;}
-    @Override public Object handleDone() {
+public class SnapshotToStdout extends SnapshotToPrintStream {
 
-        return null;
+    public SnapshotToStdout() {
+        super(null);
     }
 }
