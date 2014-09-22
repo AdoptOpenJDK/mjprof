@@ -17,7 +17,7 @@
 
 package com.performizeit.mjprof.plugins.mergers;
 
-import com.performizeit.mjprof.api.Terminal;
+import com.performizeit.mjprof.plugin.types.Terminal;
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.model.Profile;
 import com.performizeit.mjprof.parser.ThreadDump;
@@ -25,11 +25,9 @@ import com.performizeit.mjprof.parser.ThreadInfoProps;
 import com.performizeit.mjprof.parser.ThreadInfo;
 import com.performizeit.plumbing.PipeHandler;
 
-import java.io.OutputStream;
-
 
 @Plugin(name="tree", params ={},description="combine all stack traces ")
-public class StackTreeMerger implements Terminal,PipeHandler<ThreadDump,ThreadDump> {
+public class StackTreeMerger implements Terminal,PipeHandler<ThreadDump,String> {
     Profile st = new Profile();
 
     public void addStackDump(ThreadDump jsd) {
@@ -45,6 +43,6 @@ public class StackTreeMerger implements Terminal,PipeHandler<ThreadDump,ThreadDu
         return st.toString();
     }
 
-    @Override public ThreadDump handleMsg(ThreadDump msg) { return null;}
-    @Override public ThreadDump handleDone() {return null;}
+    @Override public String handleMsg(ThreadDump msg) { addStackDump(msg);return null;}
+    @Override public String handleDone() {return toString();}
 }

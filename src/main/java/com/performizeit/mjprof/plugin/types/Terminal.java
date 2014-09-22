@@ -15,8 +15,9 @@
         along with mjprof.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.performizeit.mjprof.api;
+package com.performizeit.mjprof.plugin.types;
 
+import com.performizeit.mjprof.api.BasePlugin;
 import com.performizeit.mjprof.parser.ThreadDump;
 
 import java.io.OutputStream;

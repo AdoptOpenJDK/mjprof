@@ -1,6 +1,6 @@
 package com.performizeit.mjprof.plugins.dataSource;
 
-import com.performizeit.mjprof.api.DataSource;
+import com.performizeit.mjprof.plugin.types.DataSource;
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.parser.ThreadDump;
@@ -55,13 +55,10 @@ public class JstackDataSourcePlugin implements DataSource, GeneratorHandler<Thre
             InputStreamReader isr = new InputStreamReader(stdin);
             BufferedReader br = new BufferedReader(isr);
             StreamDataSourcePluginBase sds = new StreamDataSourcePluginBase() {
-                @Override
-                public ArrayList<ThreadDump> getThreadDumps() {
-                    return null;
-                }
+
             };
 
-            sds.setR(br);
+            sds.setReader(br);
             ThreadDump r = new ThreadDump(sds.getStackStringFromReader());
             proc.waitFor();
             iter ++;

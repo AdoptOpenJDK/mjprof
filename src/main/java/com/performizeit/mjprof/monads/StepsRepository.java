@@ -25,10 +25,9 @@ import org.reflections.Reflections;
 import com.performizeit.mjprof.api.Plugin;
 
 public class StepsRepository {
-	//instead of StepProps
 	static HashMap<String, StepInfo> repo = new HashMap<String, StepInfo>();
 
-//	public StepReposetory() {
+
 	static {
 		Reflections reflections = new Reflections("com.performizeit");
 		Set<Class<?>> annotatedPlugin = reflections.getTypesAnnotatedWith(Plugin.class);
@@ -52,8 +51,4 @@ public class StepsRepository {
 		   return repo;
 	   }
 	
-
-
-
-
 }

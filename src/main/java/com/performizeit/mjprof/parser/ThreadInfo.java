@@ -26,10 +26,14 @@ import java.util.HashMap;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import  static com.performizeit.mjprof.parser.ThreadInfoProps.*;
+
+import static com.performizeit.mjprof.parser.ThreadInfoProps.*;
 
 
-public class ThreadInfo extends Props{
+public class ThreadInfo extends Props {
+
+    public static final String LOCKED_OWNABLE_SYNCHRONIZERS = "Locked ownable synchronizers";
+    public static final String JAVA_LANG_THREAD_STATE = "java.lang.Thread.State";
 
     public ThreadInfo(String stackTrace) {
         BufferedReader reader = new BufferedReader(new StringReader(stackTrace));
@@ -50,7 +54,7 @@ public class ThreadInfo extends Props{
                 }
                 props.put(STACK, new Profile(linesOfStack));
                 while ((s = reader.readLine()) != null) {
-                   if (s.contains("Locked ownable synchronizers"))     break;
+                    if (s.contains(LOCKED_OWNABLE_SYNCHRONIZERS)) break;
                 }
                 String linesOfLOS = "";
                 while ((s = reader.readLine()) != null) {
@@ -58,18 +62,19 @@ public class ThreadInfo extends Props{
                     linesOfLOS += s + "\n";
                 }
                 if (linesOfLOS.trim().length() > 0)
-                    props.put(LOS, new JstackLockedOwbnableSynchronizers(linesOfLOS));
-           }
+                    props.put(LOS, new ThreadLockedOwnableSynchronizers(linesOfLOS));
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
     public ThreadInfo(HashMap<String, Object> mtd) {
         super(mtd);
     }
 
     private void parseThreadState(String threadState) {
-        Pattern p = Pattern.compile("^[\\s]*java.lang.Thread.State: (.*)$");
+        Pattern p = Pattern.compile("^[\\s]*"+ JAVA_LANG_THREAD_STATE +": (.*)$");
         Matcher m = p.matcher(threadState);
         if (m.find()) {
             props.put(STATE, m.group(1));
@@ -77,31 +82,31 @@ public class ThreadInfo extends Props{
     }
 
 
-
-
-    protected String metadataProperty(String metaLine,String propertyName){
-        Pattern p = Pattern.compile(".* "+propertyName+"=([0-9a-fx]*) .*");
+    protected String metadataProperty(String metaLine, String propertyName) {
+        Pattern p = Pattern.compile(".* " + propertyName + "=([0-9a-fx]*) .*");
         Matcher m = p.matcher(metaLine);
 
         if (m.find()) {
-            return  m.group(1);
+            return m.group(1);
 
         }
         return null;
     }
-    protected void metadataKeyValProperties(String metaLine){
+
+    protected void metadataKeyValProperties(String metaLine) {
         Pattern p = Pattern.compile("(\\S+)=(\\S+)");    // a nonspace string then = and then a non space string
         Matcher m = p.matcher(metaLine);
         while (m.find()) {
-            props.put( m.group(1),m.group(2));
+            props.put(m.group(1), m.group(2));
         }
         if (props.get(TID) != null) {
-            props.put(TID+"Long", new HexaLong((String)props.get(TID)));
+            props.put(TID + "Long", new HexaLong((String) props.get(TID)));
         }
         if (props.get(NID) != null) {
-            props.put(NID+"Long", new HexaLong((String) props.get(NID)));
+            props.put(NID + "Long", new HexaLong((String) props.get(NID)));
         }
     }
+
     private void parseMetaLine(String metaLine) {
         Pattern p = Pattern.compile("^\"(.*)\".*");
         Matcher m = p.matcher(metaLine);
@@ -111,9 +116,9 @@ public class ThreadInfo extends Props{
         }
 
         extractStatus(metaLine);
-           metadataKeyValProperties(metaLine);
+        metadataKeyValProperties(metaLine);
 
-        if (metaLine.contains("\" "+DAEMON+" ")) {
+        if (metaLine.contains("\" " + DAEMON + " ")) {
             props.put(DAEMON, true);
         }
 
@@ -123,10 +128,10 @@ public class ThreadInfo extends Props{
         int idx = metaLine.lastIndexOf('=');
         if (idx != -1) {
             String lastParam = metaLine.substring(idx);
-            idx =         lastParam.indexOf(' ') ;
-            if (idx != -1 ) {
+            idx = lastParam.indexOf(' ');
+            if (idx != -1) {
 
-                lastParam = lastParam.substring(idx+1);
+                lastParam = lastParam.substring(idx + 1);
 
                 if (lastParam.length() > 0) {
                     props.put(STATUS, lastParam.trim());
@@ -141,33 +146,33 @@ public class ThreadInfo extends Props{
         StringBuilder mdStr = new StringBuilder();
 
         if (props.get(NAME) != null) {
-            mdStr.append("\"" + props.get(NAME) + "\"");
+            mdStr.append("\"").append(props.get(NAME)).append("\"");
         }
         if (props.get(COUNT) != null) {
-            mdStr.append(" "+COUNT+"=" + props.get(COUNT));
+            mdStr.append(" " + COUNT + "=").append(props.get(COUNT));
         }
         if (props.get(DAEMON) != null) {
-            mdStr.append(" "+DAEMON);
+            mdStr.append(" " + DAEMON);
         }
         if (props.get(PRIO) != null) {
-            mdStr.append(" "+PRIO+"=" + props.get(PRIO));
+            mdStr.append(" " + PRIO + "=").append(props.get(PRIO));
         }
         if (props.get(TID) != null) {
-            mdStr.append(" "+TID+"=" + props.get(TID));
+            mdStr.append(" " + TID + "=" + props.get(TID));
         }
         if (props.get(NID) != null) {
-            mdStr.append(" "+NID+"=" + props.get(NID));
+            mdStr.append(" " + NID + "=" + props.get(NID));
         }
         if (props.get(STATUS) != null) {
             mdStr.append(" " + props.get(STATUS));
         }
         if (props.get(CPU) != null) {
-            mdStr.append(" "+CPU+"=" + props.get(CPU));
+            mdStr.append(" " + CPU + "=").append(props.get(CPU));
         }
 
 
         if (props.get(STATE) != null) {
-            mdStr.append("\n   java.lang.Thread.State: ").append( props.get(STATE));
+            mdStr.append("\n   "+JAVA_LANG_THREAD_STATE+": ").append(props.get(STATE));
         }
 
         if (props.get(STACK) != null) {
@@ -175,7 +180,7 @@ public class ThreadInfo extends Props{
         }
         mdStr.append("\n");
         if (props.get(LOS) != null) {
-            mdStr.append("\n   Locked ownable synchronizers:\n").append(
+            mdStr.append("\n   "+LOCKED_OWNABLE_SYNCHRONIZERS+":\n").append(
                     props.get(LOS).toString());
         }
 

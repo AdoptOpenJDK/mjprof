@@ -1,6 +1,6 @@
 package com.performizeit.mjprof.plugins.terminals;
 
-import com.performizeit.mjprof.api.Outputer;
+import com.performizeit.mjprof.plugin.types.Outputer;
 import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.plumbing.PipeHandler;

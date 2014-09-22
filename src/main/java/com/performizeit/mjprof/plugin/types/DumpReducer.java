@@ -14,11 +14,9 @@
         You should have received a copy of the GNU General Public License
         along with mjprof.  If not, see <http://www.gnu.org/licenses/>.
 */
+package com.performizeit.mjprof.plugin.types;
 
-package com.performizeit.mjprof.parser;
+import com.performizeit.mjprof.api.BasePlugin;
 
-/**
- * Created by life on 27/2/14.
- */
-public class JStackBase {
+public interface DumpReducer extends BasePlugin {
 }

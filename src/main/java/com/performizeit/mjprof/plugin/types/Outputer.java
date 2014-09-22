@@ -14,12 +14,12 @@
         You should have received a copy of the GNU General Public License
         along with mjprof.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.performizeit.mjprof.api;
 
-import com.performizeit.mjprof.parser.ThreadDump;
+package com.performizeit.mjprof.plugin.types;
+
+import com.performizeit.mjprof.api.BasePlugin;
 
 
-public interface DumpReducer extends BasePlugin{
-    public void reduce(ThreadDump jsd);
-    public ThreadDump getResult();
+public interface Outputer extends BasePlugin {
+
 }

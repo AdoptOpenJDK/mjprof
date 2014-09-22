@@ -5,7 +5,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * pipe is a class which runs continuesly recieves msg from producers and trsfers them on after processing .
+ * pipe is a class which runs continuously receives msg from producers and transfers them on after processing .
  */
 public class Pipe<S,D> extends Thread   {
     AtomicInteger numProducers=new AtomicInteger(0);
@@ -52,25 +52,30 @@ public class Pipe<S,D> extends Thread   {
     }
     @Override
     public void run() {
-        while (numProducers.get() > 0 ) {
-            try {
-                S a = inQueue.take();
-                handleMsg(a);
+        try {
+            while (numProducers.get() > 0) {
+                try {
+                    S a = inQueue.take();
+                    handleMsg(a);
 
-            } catch (InterruptedException e) {
-                if(numProducers.get() == 0) break;
+                } catch (InterruptedException e) {
+                    if (numProducers.get() == 0) break;
+                }
             }
-        }
-        // it is stopped     get all remaining messages
-        while (true) {
-            S a = inQueue.poll();
-            if (a ==  null) break;
-            handleMsg(a);
-        }
-        D e = handler.handleDone();
-        if (outgoingPipe != null) {
-            if (e != null) outgoingPipe.send(e);
-            outgoingPipe.producerDone();
+            // it is stopped     get all remaining messages
+            while (true) {
+                S a = inQueue.poll();
+                if (a == null) break;
+                handleMsg(a);
+            }
+            D e = handler.handleDone();
+            if (outgoingPipe != null) {
+                if (e != null) outgoingPipe.send(e);
+            }
+        } finally {
+            if (outgoingPipe != null) {
+                outgoingPipe.producerDone();
+            }
         }
     }
 }

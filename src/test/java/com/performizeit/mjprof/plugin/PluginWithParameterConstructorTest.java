@@ -16,7 +16,7 @@
 */
 package com.performizeit.mjprof.plugin;
 
-import com.performizeit.mjprof.api.Mapper;
+import com.performizeit.mjprof.plugin.types.Mapper;
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.model.Profile;
 import com.performizeit.mjprof.model.ProfileNodeFilter;

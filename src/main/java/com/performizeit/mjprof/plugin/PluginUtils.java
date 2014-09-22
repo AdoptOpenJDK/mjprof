@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 import com.performizeit.mjprof.api.*;
+import com.performizeit.mjprof.plugin.types.*;
 import org.reflections.Reflections;
 
 
@@ -65,23 +66,7 @@ public class PluginUtils {
 	}
 
 
-    public static boolean isDumpMapper(Object o) {
-        return DumpMapper.class.isAssignableFrom(o.getClass());
-    }
-    public static boolean isDumpReducer(Object o) {
-        return DumpReducer.class.isAssignableFrom(o.getClass());
-    }
-	public static boolean isFilter(Object o) {
-		return Filter.class.isAssignableFrom(o.getClass());
-	}
 
-	public static boolean isTerminal(Object o) {
-		return Terminal.class.isAssignableFrom(o.getClass());
-	}
-
-	public static boolean isComparator(Object o) {
-		return ThreadInfoComparator.class.isAssignableFrom(o.getClass());
-	}
 	public static boolean isDataSource(Object o) {
 		return DataSource.class.isAssignableFrom(o.getClass());
 	}
