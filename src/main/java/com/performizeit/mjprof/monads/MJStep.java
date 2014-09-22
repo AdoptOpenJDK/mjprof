@@ -26,7 +26,6 @@ import java.util.regex.Pattern;
 public class MJStep {
     String stepName;
     List<String> stepArgs;
-    String stepVal;
 
     public MJStep(String stepString) {
 

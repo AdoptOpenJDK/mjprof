@@ -22,16 +22,17 @@ import com.performizeit.mjprof.model.JStackHeader;
 
 import java.util.ArrayList;
 
-
+/* Thread dump consists of a header and a list ThreadInfo */
 public class ThreadDump  {
     protected JStackHeader header;
+    ArrayList<ThreadInfo> stacks = new ArrayList<ThreadInfo>();
+    int JNIglobalReferences = -1;
+
+    public static String JNI_GLOBAL_REFS= "JNI global references:";
+
     public JStackHeader getHeader() {
         return header;
     }
-
-    int JNIglobalReferences = -1;
-    public static String JNI_GLOBAL_REFS= "JNI global references:";
-    ArrayList<ThreadInfo> stacks = new ArrayList<ThreadInfo>();;
     public ThreadDump(String stringRep) {
         String[] splitTraces = stringRep.split("\n\"");  // Assuming that thread stack trace starts with a new line followed by "
 
@@ -75,9 +76,6 @@ public class ThreadDump  {
 
         return s.toString();
     }
-
-
-
 
 
 

@@ -18,10 +18,10 @@
 package com.performizeit.mjprof.parser;
 
 
-public class JstackLockedOwbnableSynchronizers implements Comparable<JstackLockedOwbnableSynchronizers> {
+public class ThreadLockedOwnableSynchronizers implements Comparable<ThreadLockedOwnableSynchronizers> {
 
     String linesOfLOS;
-    public JstackLockedOwbnableSynchronizers(String linesOfLOS) {
+    public ThreadLockedOwnableSynchronizers(String linesOfLOS) {
         this.linesOfLOS = linesOfLOS;
     }
 
@@ -30,7 +30,7 @@ public class JstackLockedOwbnableSynchronizers implements Comparable<JstackLocke
         return linesOfLOS.toString();
     }
     @Override
-    public int compareTo(JstackLockedOwbnableSynchronizers o) {
+    public int compareTo(ThreadLockedOwnableSynchronizers o) {
         return linesOfLOS.compareTo(o.linesOfLOS);
     }
 }
