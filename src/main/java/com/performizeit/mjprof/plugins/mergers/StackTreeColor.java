@@ -26,16 +26,4 @@ public class StackTreeColor extends StackTreeMerger {
     }
 
 
-    private String CSI()
-    {
-        return (char)0x1b +"[";
-    }
-    private String GREEN() {
-        if (!color) return "";
-        return  CSI()+ "1;32m";
-    }
-    private String NC() {
-        if (!color) return "";
-        return CSI() + "0m";
-    }
 }
