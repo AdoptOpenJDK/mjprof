@@ -10,9 +10,10 @@ import com.performizeit.plumbing.GeneratorHandler;
 
 public abstract class StreamDataSourcePluginBase implements DataSource, GeneratorHandler<ThreadDump> {
     protected  BufferedReader reader;
-    boolean isDone = false;
 
+    String nextDump=null;
 
+    boolean isDoneFlag = false;
 
     public void setReader(BufferedReader reader) {
         this.reader = reader;
@@ -22,7 +23,9 @@ public abstract class StreamDataSourcePluginBase implements DataSource, Generato
         StringBuilder linesOfStack = new StringBuilder();
         String line;
         try {
+
             while ((line = reader.readLine()) != null) {
+              //  System.out.println(line);
                 if (line.length() > 0 && Character.isDigit(line.charAt(0))) {   //starting a new stack dump
                     if (linesOfStack.length() > 0) {
                         return linesOfStack.toString();
@@ -41,19 +44,24 @@ public abstract class StreamDataSourcePluginBase implements DataSource, Generato
         if (linesOfStack.length() > 0) {
             return linesOfStack.toString();
         }
-        isDone = true;
+
         return null;
     }
 
 
     @Override
     public ThreadDump generate() {
-        return new ThreadDump(getStackStringFromReader());
+        nextDump = getStackStringFromReader();
+        if (nextDump == null) {
+            isDoneFlag = true;
+            return null;
+        }
+        return new ThreadDump(nextDump);
     }
 
     @Override
     public boolean isDone() {
-          return isDone;
+        return isDoneFlag;
     }
 
     @Override

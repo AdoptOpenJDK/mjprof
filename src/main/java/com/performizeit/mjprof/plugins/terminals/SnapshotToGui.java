@@ -19,38 +19,41 @@ package com.performizeit.mjprof.plugins.terminals;
         import com.performizeit.mjprof.plugin.types.Outputer;
         import com.performizeit.plumbing.PipeHandler;
 
-        import javax.swing.JEditorPane;
-        import javax.swing.JFrame;
-        import javax.swing.JPanel;
-        import javax.swing.JScrollPane;
-        import javax.swing.JSplitPane;
-        import javax.swing.UIManager;
-
-        import javax.swing.JTree;
-        import javax.swing.tree.DefaultMutableTreeNode;
-        import javax.swing.tree.TreeSelectionModel;
-        import javax.swing.event.TreeSelectionEvent;
-        import javax.swing.event.TreeSelectionListener;
-
-        import java.io.*;
-        import java.net.URL;
-        import java.awt.Dimension;
-        import java.awt.GridLayout;
-
 
 @SuppressWarnings("unused")
-@Plugin(name="gui", params ={}, description="Display current state in a window")
-public class SnapshotToGui implements Outputer,PipeHandler {
+@Plugin(name="gui", params ={@Param(type = String.class,value = "title",optional=true,defaultValue = ""),
+        @Param(type = int.class,value = "maxInvocations",optional=true,defaultValue = "10")
 
-    public SnapshotToGui() {
+        }, description="Display current thread dump in a GUI window")
+public class SnapshotToGui implements Outputer,PipeHandler {
+    private int maxInvocations;
+    private int curInvocation;
+    private String title;
+    private int instanceNumber;
+    private static int snapshotToGuiInstanceNumber = 1;
+    public SnapshotToGui(String title,int maxInvocations) {
+
+        this.maxInvocations = maxInvocations;
+        curInvocation = 0;
+        this.title = title;
+        this.instanceNumber = snapshotToGuiInstanceNumber;
+        snapshotToGuiInstanceNumber++;
     }
 
     @Override public Object handleMsg(final Object msg) {
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                ThreadDumpGuiViewer.createAndShowGUI((ThreadDump) msg);
-            }
-        });
+        curInvocation++;
+        String title1 = title;
+        if (title1.isEmpty()) title1 = "MJProf "+Thread.currentThread().getName();
+        final String tit = title1;
+        if( curInvocation <= maxInvocations) {
+            final int cinv = curInvocation;
+            javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+
+                    ThreadDumpGuiViewer.createAndShowGUI((ThreadDump) msg,tit +":"+cinv);
+                }
+            });
+        }
         return msg;
     }
     @Override public Object handleDone() {

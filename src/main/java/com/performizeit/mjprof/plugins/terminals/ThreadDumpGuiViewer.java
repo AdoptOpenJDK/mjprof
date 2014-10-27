@@ -13,7 +13,6 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
-import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 
@@ -150,7 +149,7 @@ public class ThreadDumpGuiViewer  extends JPanel implements TreeSelectionListene
      * this method should be invoked from the
      * event dispatch thread.
      */
-    public static void createAndShowGUI(ThreadDump td) {
+    public static void createAndShowGUI(ThreadDump td, String title) {
         if (useSystemLookAndFeel) {
             try {
                 UIManager.setLookAndFeel(
@@ -161,7 +160,7 @@ public class ThreadDumpGuiViewer  extends JPanel implements TreeSelectionListene
         }
 
         //Create and set up the window.
-        JFrame frame = new JFrame("MJProf");
+        JFrame frame = new JFrame(title);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //Add content to the window.
@@ -177,7 +176,7 @@ public class ThreadDumpGuiViewer  extends JPanel implements TreeSelectionListene
         //creating and showing this application's GUI.
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                createAndShowGUI(null);
+                createAndShowGUI(null,"mjprof test");
             }
         });
     }
