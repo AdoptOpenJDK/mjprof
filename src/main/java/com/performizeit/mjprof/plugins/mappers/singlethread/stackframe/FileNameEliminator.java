@@ -15,13 +15,14 @@
         along with mjprof.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.performizeit.mjprof.plugins.mappers.singlethread;
+package com.performizeit.mjprof.plugins.mappers.singlethread.stackframe;
 
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.model.Profile;
 import com.performizeit.mjprof.model.ProfileVisitor;
 import com.performizeit.mjprof.model.SFNode;
 import com.performizeit.mjprof.parser.ThreadInfo;
+import com.performizeit.mjprof.plugins.mappers.singlethread.SingleThreadMapperBase;
 
 import java.util.HashMap;
 
@@ -50,34 +51,10 @@ public class FileNameEliminator extends SingleThreadMapperBase {
     }
 
     static String eliminatePackage(String stackFrame) {
-            if (stackFrame.trim().length() == 0) return stackFrame;
-            int fnStart = stackFrame.indexOf("(");
-            int atStart = stackFrame.indexOf("at ");
-            if ( atStart < 0) return stackFrame;
-         //   String fileName;
-             String pkgClsMthd ;
-            if (fnStart<0 ) {
-               // fileName ="";
-                pkgClsMthd = stackFrame.substring(atStart + 3);
-            } else {
-                //fileName = stackFrame.substring(fnStart);
-                pkgClsMthd = stackFrame.substring(atStart + 3, fnStart);
-            }
-            String at = stackFrame.substring(0, atStart + 3);
-
-
-            String method = pkgClsMthd.substring(pkgClsMthd.lastIndexOf(".") + 1);
-            pkgClsMthd = pkgClsMthd.substring(0, pkgClsMthd.lastIndexOf("."));
-            String className;
-            String pkg;
-            if (pkgClsMthd.contains(".")) {   // class name contains package
-                className = pkgClsMthd.substring(pkgClsMthd.lastIndexOf(".") + 1);
-                pkg = pkgClsMthd.substring(0, pkgClsMthd.lastIndexOf("."))+".";
-            } else {
-                className =   pkgClsMthd;
-                pkg = "";
-            }
-            return at + pkg+ className +"."+ method ;
+        StackFrame sf = new StackFrame(stackFrame);
+        sf.setLineNum("");
+        sf.setFileName("");
+        return sf.toString();
 
     }
 }
