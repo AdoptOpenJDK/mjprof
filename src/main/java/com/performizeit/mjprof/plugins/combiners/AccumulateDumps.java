@@ -18,7 +18,6 @@
 package com.performizeit.mjprof.plugins.combiners;
 
 import com.performizeit.mjprof.plugin.types.DumpReducer;
-import com.performizeit.mjprof.plugin.types.Mapper;
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.model.ThreadInfoAggregator;
 import com.performizeit.mjprof.api.Param;
@@ -32,7 +31,7 @@ import static com.performizeit.mjprof.parser.ThreadInfoProps.*;
 
 
 @Plugin(name="merge", params ={@Param("attribute")},description="Combine all dumps to a single one merge based on thread id attribute")
-public class AccumulateDumps implements Mapper,DumpReducer,PipeHandler<ThreadDump,ThreadDump> {
+public class AccumulateDumps implements DumpReducer,PipeHandler<ThreadDump,ThreadDump> {
 
     ThreadInfoAggregator tidAggr;
     int countDumps=0;

@@ -28,7 +28,7 @@ import  static com.performizeit.mjprof.parser.ThreadInfoProps.*;
 @SuppressWarnings("unused")
 @Plugin(name="pkgelim", params = {},
         description = "Eliminates package name from stack frames")
-public class PackageEliminator extends SingleThreadMapper {
+public class PackageEliminator extends SingleThreadMapperBase {
     @Override
     public ThreadInfo map(ThreadInfo stck) {
         Profile jss = (Profile) stck.getVal(STACK);

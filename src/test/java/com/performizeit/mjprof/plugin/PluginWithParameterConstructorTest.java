@@ -16,17 +16,18 @@
 */
 package com.performizeit.mjprof.plugin;
 
-import com.performizeit.mjprof.plugin.types.Mapper;
+import com.performizeit.mjprof.plugin.types.SingleThreadMapper;
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.model.Profile;
 import com.performizeit.mjprof.model.ProfileNodeFilter;
 import com.performizeit.mjprof.model.SFNode;
 import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.parser.ThreadInfo;
+
 import java.util.HashMap;
 
 @Plugin(name="test2", params = {@Param()})
-public class PluginWithParameterConstructorTest implements Mapper {
+public class PluginWithParameterConstructorTest implements SingleThreadMapper {
     private final String expr;
 
     public PluginWithParameterConstructorTest(String expr) {

@@ -1,7 +1,6 @@
 package com.performizeit.mjprof.plugins.mappers.singlethread;
 
 
-import com.performizeit.mjprof.plugin.types.Mapper;
 import com.performizeit.mjprof.parser.ThreadDump;
 import com.performizeit.mjprof.parser.ThreadInfo;
 import com.performizeit.plumbing.PipeHandler;
@@ -9,7 +8,7 @@ import com.performizeit.plumbing.PipeHandler;
 import java.util.ArrayList;
 
 
-public abstract class SingleThreadMapper implements Mapper ,PipeHandler<ThreadDump,ThreadDump> {
+public abstract class SingleThreadMapperBase implements com.performizeit.mjprof.plugin.types.SingleThreadMapper,PipeHandler<ThreadDump,ThreadDump> {
     public ThreadDump map(ThreadDump jsd) {
 
         ThreadDump that = new ThreadDump();

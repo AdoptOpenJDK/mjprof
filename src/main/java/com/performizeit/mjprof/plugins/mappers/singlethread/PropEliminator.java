@@ -25,7 +25,7 @@ import java.util.HashMap;
 @SuppressWarnings("unused")
 @Plugin(name="eliminate", params ={@Param("attr")},
         description = "Removes a certain attribute e.g. eliminate/stack/")
-public class PropEliminator extends SingleThreadMapper {
+public class PropEliminator extends SingleThreadMapperBase {
     private final String prop;
 
     public PropEliminator(String prop) {

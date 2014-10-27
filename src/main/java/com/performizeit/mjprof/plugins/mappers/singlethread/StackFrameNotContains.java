@@ -25,7 +25,7 @@ import com.performizeit.mjprof.parser.ThreadInfo;
 
 @Plugin(name="stackelim", params = {@Param()},
         description = "Eliminates stack frames from all stacks which contain string.")
-public class StackFrameNotContains extends SingleThreadMapper {
+public class StackFrameNotContains extends SingleThreadMapperBase {
     protected final String expr;
 
 

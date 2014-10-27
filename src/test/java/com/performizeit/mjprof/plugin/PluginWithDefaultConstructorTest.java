@@ -16,13 +16,13 @@
 */
 package com.performizeit.mjprof.plugin;
 
-import com.performizeit.mjprof.plugin.types.Mapper;
+import com.performizeit.mjprof.plugin.types.SingleThreadMapper;
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.parser.ThreadInfo;
 
 @Plugin(name="test1", params = {@Param()})
-public class PluginWithDefaultConstructorTest implements Mapper {
+public class PluginWithDefaultConstructorTest implements SingleThreadMapper {
     private final String expr="kk";
 
 
