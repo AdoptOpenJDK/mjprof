@@ -141,5 +141,8 @@ public class Profile {
     public void filter(ProfileNodeFilter pnf,Object context) {
         root.filterChildren(pnf,0,context);
     }
+    public int getCount() {
+        return root.getCount();
+    }
 
 }
