@@ -19,7 +19,9 @@ public class Generator<E> extends Thread {
     public void run() {
         while (!generator.isDone()) {
             E data = generator.generate();
-            if (pipe != null && data != null) pipe.send(data);
+            if (pipe != null && data != null) {
+                pipe.send(data);
+            }
             if (generator.isDone())    {
                 this.pipe.producerDone();
             }  else {

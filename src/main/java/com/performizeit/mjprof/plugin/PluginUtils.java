@@ -70,8 +70,15 @@ public class PluginUtils {
 	public static boolean isDataSource(Object o) {
 		return DataSource.class.isAssignableFrom(o.getClass());
 	}
+    public static boolean isDataSourceClass(Class c) {
+        return DataSource.class.isAssignableFrom(c);
+    }
 
     public static boolean isOutputer(Object lststp) {
         return Outputer.class.isAssignableFrom(lststp.getClass());
     }
+    public static boolean isOutputerClass(Class c) {
+        return Outputer.class.isAssignableFrom(c);
+    }
+
 }

@@ -59,8 +59,15 @@ public class JstackDataSourcePlugin implements DataSource, GeneratorHandler<Thre
             };
 
             sds.setReader(br);
-            ThreadDump r = new ThreadDump(sds.getStackStringFromReader());
-            proc.waitFor();
+            String str = sds.getStackStringFromReader();
+            ThreadDump r;
+            if (str == null) {
+              r = null;
+            } else r = new ThreadDump(str);
+            int ret = proc.waitFor();
+            if (ret !=0 ) {
+                System.err.println("Executing jstack for process "+ pid + " failed");
+            }
             iter ++;
             return r;
         } catch (Exception e) {

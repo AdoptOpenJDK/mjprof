@@ -12,6 +12,7 @@ public abstract class SortMapper  implements ThreadInfoComparator,PipeHandler<Th
     public ThreadDump map(ThreadDump jsd) {
         ThreadDump that = new ThreadDump();
         that.setHeader(jsd.getHeader());
+        that.setJNIglobalReferences(jsd.getJNIglobalReferences());
         ArrayList<ThreadInfo>stacks = jsd.cloneStacks();
         Collections.sort(stacks, this);
         that.setStacks(stacks);

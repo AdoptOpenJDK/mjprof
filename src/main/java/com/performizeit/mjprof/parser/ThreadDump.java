@@ -93,4 +93,12 @@ public class ThreadDump  {
         }
         return newStcks;
     }
+
+    public int getJNIglobalReferences() {
+        return JNIglobalReferences;
+    }
+
+    public void setJNIglobalReferences(int JNIglobalReferences) {
+        this.JNIglobalReferences = JNIglobalReferences;
+    }
 }
