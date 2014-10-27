@@ -34,15 +34,18 @@ public class GroupByProp implements DumpReducer,PipeHandler<ThreadDump,ThreadDum
     public GroupByProp(String prop) {
         this.prop = prop;
     }
-    public ThreadDump map(ThreadDump jsd ) {
+    public ThreadDump map(final ThreadDump jsd ) {
         ArrayList<String> a= new ArrayList<String>();
         a.add(prop);
         ThreadInfoAggregator aggr = new ThreadInfoAggregator(a);
         for (ThreadInfo mss : jsd.getStacks()  ) {
             aggr.accumulateThreadInfo(mss);
         }
-       jsd.setStacks(aggr.getAggrInfos());
-        return jsd;
+        ThreadDump jsd2 = new ThreadDump();
+        jsd2.setHeader(jsd.getHeader());
+        jsd2.setStacks(aggr.getAggrInfos());
+        jsd2.setJNIglobalReferences(jsd.getJNIglobalReferences());
+        return jsd2;
     }
 
     @Override public ThreadDump handleMsg(ThreadDump msg) { return map(msg);}

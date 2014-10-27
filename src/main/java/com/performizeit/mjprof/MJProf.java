@@ -32,7 +32,6 @@ import com.performizeit.mjprof.monads.StepsRepository;
 import com.performizeit.mjprof.parser.ThreadInfo;
 import com.performizeit.mjprof.plugin.PluginUtils;
 import com.performizeit.mjprof.plugin.types.*;
-import com.performizeit.mjprof.plugins.mappers.singlethread.SingleThreadMapperBase;
 import com.performizeit.plumbing.Generator;
 import com.performizeit.plumbing.GeneratorHandler;
 import com.performizeit.plumbing.Pipe;
@@ -52,8 +51,8 @@ public class MJProf {
         }
         boolean foundExplicitDataSource = false;
         for (MJStep mjstep : steps) {
-            Object obj = getObjectFromStep(mjstep);
-            if (PluginUtils.isDataSource((obj))) {
+            Class clz = getClassFromStep(mjstep);
+            if (PluginUtils.isDataSourceClass(clz)) {
                 foundExplicitDataSource = true;
             }
         }
@@ -62,8 +61,8 @@ public class MJProf {
 
         }
         MJStep lastStep = steps.get(steps.size()-1);
-        Object lststp = getObjectFromStep(lastStep);
-        if (!PluginUtils.isOutputer(lststp)) {
+        Class lststp = getClassFromStep(lastStep);
+        if (!PluginUtils.isOutputerClass(lststp)) {
             steps.add(new MJStep("stdout"));
         }
 
@@ -88,18 +87,19 @@ public class MJProf {
 
         for (MJStep step:steps) {    // create handlers
             Pipe p;
-            if (PluginUtils.isDataSource(getObjectFromStep(step))) {
+            Object stepObject = getObjectFromStep(step);
+            if (PluginUtils.isDataSource(stepObject)) {
                 MJStep noopStep = new MJStep("noop");
                 PipeHandler handler = (PipeHandler)getObjectFromStep(noopStep);
                 p = new Pipe("Pipe Thread "+step.getStepName() +i,handler);
-                GeneratorHandler genHandler = (GeneratorHandler)getObjectFromStep(step);
+                GeneratorHandler genHandler = (GeneratorHandler)stepObject;
                 Generator<ThreadInfo> g = new Generator<ThreadInfo>("Generator Thread "+step.getStepName() +i,genHandler,p);
                 generators.add(g);
 
 
             }   else {
 
-                PipeHandler<ThreadInfo,ThreadInfo> handler = (PipeHandler<ThreadInfo,ThreadInfo>)getObjectFromStep(step);
+                PipeHandler<ThreadInfo,ThreadInfo> handler = (PipeHandler<ThreadInfo,ThreadInfo>)stepObject;
                 p = new Pipe<ThreadInfo,ThreadInfo> ("Pipe Thread "+step.getStepName() +i,handler);
             }
             pipes.add(p);
@@ -120,6 +120,10 @@ public class MJProf {
         Object[] paramArgs = buildArgsArray(step.getParams(), mjstep.getStepArgs());
         Object obj = PluginUtils.initObj(step.getClazz(), step.getParamTypes(), paramArgs);
         return obj;
+    }
+    private static Class getClassFromStep(MJStep mjstep) {
+        StepInfo step = StepsRepository.getStep(mjstep.getStepName());
+        return step.getClazz();
     }
 
     private static void printSynopsisAndExit() {

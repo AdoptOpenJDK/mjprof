@@ -53,6 +53,7 @@ public class AccumulateDumps implements DumpReducer,PipeHandler<ThreadDump,Threa
     public ThreadDump getResult() {
         ThreadDump td = new ThreadDump();
         td.setHeader("Profiling session number of dumps is "+ countDumps);
+
         td.setStacks(tidAggr.getAggrInfos());
         return td;
     }

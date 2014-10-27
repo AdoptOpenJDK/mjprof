@@ -1,4 +1,4 @@
-package com.performizeit.mjprof.plugins.terminals;
+package com.performizeit.mjprof.plugins.output;
 
 
 /**
@@ -44,13 +44,16 @@ public class SnapshotToGui implements Outputer,PipeHandler {
         curInvocation++;
         String title1 = title;
         if (title1.isEmpty()) title1 = "MJProf "+Thread.currentThread().getName();
-        final String tit = title1;
+
         if( curInvocation <= maxInvocations) {
             final int cinv = curInvocation;
+            final String tit = title1;
+            final ThreadDump msg2 = (ThreadDump)msg;
+            ThreadDumpGuiViewer.createAndShowGUI( msg2,tit +":"+cinv);
             javax.swing.SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
 
-                    ThreadDumpGuiViewer.createAndShowGUI((ThreadDump) msg,tit +":"+cinv);
+
                 }
             });
         }

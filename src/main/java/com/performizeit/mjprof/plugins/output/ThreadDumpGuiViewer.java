@@ -1,4 +1,4 @@
-package com.performizeit.mjprof.plugins.terminals;
+package com.performizeit.mjprof.plugins.output;
 
 import com.performizeit.mjprof.model.Profile;
 import com.performizeit.mjprof.model.ProfileVisitor;

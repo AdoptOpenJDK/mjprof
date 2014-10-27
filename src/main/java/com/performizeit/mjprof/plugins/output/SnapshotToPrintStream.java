@@ -1,4 +1,4 @@
-package com.performizeit.mjprof.plugins.terminals;
+package com.performizeit.mjprof.plugins.output;
 
 import com.performizeit.mjprof.plugin.types.Outputer;
 import com.performizeit.mjprof.api.Param;
