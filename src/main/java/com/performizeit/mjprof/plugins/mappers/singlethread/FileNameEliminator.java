@@ -28,7 +28,7 @@ import java.util.HashMap;
 @SuppressWarnings("unused")
 @Plugin(name="fnelim", params = {},
         description = "Eliminates file name from stack frames")
-public class FileNameEliminator extends SingleThreadMapper {
+public class FileNameEliminator extends SingleThreadMapperBase {
 
 
     public FileNameEliminator() {

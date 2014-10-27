@@ -24,7 +24,7 @@ import  static com.performizeit.mjprof.parser.ThreadInfoProps.*;
 
 @Plugin(name="namesuffix", params = {},
         description = "Trim the last number from thread names")
-public class RemoveThreadNameNumericalSuffix extends SingleThreadMapper {
+public class RemoveThreadNameNumericalSuffix extends SingleThreadMapperBase {
     public RemoveThreadNameNumericalSuffix() {
     }
 

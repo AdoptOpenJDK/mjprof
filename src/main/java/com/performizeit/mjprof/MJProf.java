@@ -32,6 +32,7 @@ import com.performizeit.mjprof.monads.StepsRepository;
 import com.performizeit.mjprof.parser.ThreadInfo;
 import com.performizeit.mjprof.plugin.PluginUtils;
 import com.performizeit.mjprof.plugin.types.*;
+import com.performizeit.mjprof.plugins.mappers.singlethread.SingleThreadMapperBase;
 import com.performizeit.plumbing.Generator;
 import com.performizeit.plumbing.GeneratorHandler;
 import com.performizeit.plumbing.Pipe;
@@ -132,11 +133,18 @@ public class MJProf {
         List<String> keys = new ArrayList<String>(StepsRepository.getRepository().keySet());
         Collections.sort(keys);
         sb.append("\nData sources:\n");
+
         getSynopsisContent(sb, keys, DataSource.class);
+
+        sb.append("\nOutput:\n");
+        getSynopsisContent(sb, keys,Outputer.class);
+
         sb.append("\nFilters:\n");
         getSynopsisContent(sb, keys, Filter.class);
-        sb.append("\nMappers:\n");
-        getSynopsisContent(sb, keys,Mapper.class);
+        sb.append("\nSingle thread mappers:\n");
+        getSynopsisContent(sb, keys, SingleThreadMapper.class);
+
+        sb.append("\nFull dump mappers:\n");
         getSynopsisContent(sb, keys,DumpReducer.class);
         getSynopsisContent(sb, keys,ThreadInfoComparator.class);
         sb.append("\nTerminals:\n");

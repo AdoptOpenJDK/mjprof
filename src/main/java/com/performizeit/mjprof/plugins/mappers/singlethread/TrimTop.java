@@ -27,7 +27,7 @@ import com.performizeit.mjprof.parser.ThreadInfo;
 
 @Plugin(name="keepbot", params = {@Param(type=int.class)},
         description = "Returns at most n bottom stack frames of the stack")
-public class TrimTop extends SingleThreadMapper  {
+public class TrimTop extends SingleThreadMapperBase {
     private final int count;
 
     public TrimTop(int count) {

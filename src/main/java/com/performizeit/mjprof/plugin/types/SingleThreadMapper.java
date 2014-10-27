@@ -20,5 +20,5 @@ import com.performizeit.mjprof.api.BasePlugin;
 import com.performizeit.mjprof.parser.ThreadInfo;
 
 
-public interface Mapper extends BasePlugin {
+public interface SingleThreadMapper extends BasePlugin {
 }

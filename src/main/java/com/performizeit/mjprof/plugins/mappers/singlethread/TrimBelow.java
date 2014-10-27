@@ -26,7 +26,7 @@ import com.performizeit.mjprof.parser.ThreadInfo;
 
 @Plugin(name="trimbelow", params = {@Param()},
         description = "Trim all stack frames below the first occurrence of string")
-public class TrimBelow extends SingleThreadMapper  {
+public class TrimBelow extends SingleThreadMapperBase {
     protected final String expr;
 
     public TrimBelow(String expr) {

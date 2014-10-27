@@ -24,7 +24,7 @@ import com.performizeit.mjprof.parser.ThreadInfo;
 @SuppressWarnings("unused")
 @Plugin(name="noop", params = {},
         description = "Does nothing")
-public class NoOp extends SingleThreadMapper {
+public class NoOp extends SingleThreadMapperBase {
     @Override
     public ThreadInfo map(ThreadInfo threadInfo) {
 
