@@ -28,7 +28,7 @@ import com.performizeit.mjprof.plugins.mappers.singlethread.SingleThreadMapperBa
 import static com.performizeit.mjprof.parser.ThreadInfoProps.STACK;
 
 @SuppressWarnings("unused")
-@Plugin(name="pkgelim", params = {},
+@Plugin(name="atelim", params = {},
         description = "Eliminates package name from stack frames")
 public class AtEliminator extends SingleThreadMapperBase {
     @Override

@@ -102,7 +102,7 @@ public class ThreadDumpGuiViewer  extends JPanel implements TreeSelectionListene
         public void visit(SFNode stackframe, int level) {
             if (level ==0) return;
             DefaultMutableTreeNode parent = parents.get(level-1);
-            DefaultMutableTreeNode me = new DefaultMutableTreeNode(stackframe.getCount()+" "+stackframe.getStackFrame()) ;
+            DefaultMutableTreeNode me = new DefaultMutableTreeNode("["+stackframe.getCount()+"] "+stackframe.getStackFrame()) ;
             parent.add(me);
             parents.put(level,me);
 

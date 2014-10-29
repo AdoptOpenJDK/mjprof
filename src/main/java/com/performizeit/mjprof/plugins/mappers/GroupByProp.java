@@ -28,7 +28,7 @@ import com.performizeit.plumbing.PipeHandler;
 import java.util.ArrayList;
 
 
-@Plugin(name="group", params ={@Param("attr")},description="Group by an attribute")
+@Plugin(name="group", params ={@Param(type = String.class,value = "attr",optional=true,defaultValue = "")},description="Group a single thread dump by an attribute. If not attribute is specified all dump is merged")
 public class GroupByProp implements DumpReducer,PipeHandler<ThreadDump,ThreadDump>  {
     private final String prop;
     public GroupByProp(String prop) {
