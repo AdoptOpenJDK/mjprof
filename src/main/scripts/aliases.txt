@@ -1,1 +1,0 @@
-nj|No java system threads|jstack/20719/.ncontains/name,GC task thread/.ncontains/name,Finalizer/.ncontains/name,CompilerThread/.ncontains/name,Finalizer/.ncontains/name,VM Thread/.ncontains/name,VM Periodic Task Thread/.ncontains/name,Service Thread/.ncontains/name,Reference Handler/.ncontains/name,Attach Listener/.ncontains/name,AWT-AppKit/
