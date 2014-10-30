@@ -19,6 +19,7 @@ package com.performizeit.mjprof;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,6 +28,7 @@ import com.performizeit.mjprof.api.Attr;
 import com.performizeit.mjprof.api.ThreadInfoComparator;
 import com.performizeit.mjprof.monads.MJStep;
 import com.performizeit.mjprof.api.Param;
+import com.performizeit.mjprof.monads.Macros;
 import com.performizeit.mjprof.monads.StepInfo;
 import com.performizeit.mjprof.monads.StepsRepository;
 import com.performizeit.mjprof.parser.ThreadInfo;
@@ -134,6 +136,8 @@ public class MJProf {
     public static String getSynopsisString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Synopsis\nA list of the following monads concatenated with . \n");
+        sb.append("\nExpanded Expression:\n");
+        sb.append(expandedExpressionstr+"\n");
         List<String> keys = new ArrayList<String>(StepsRepository.getRepository().keySet());
         Collections.sort(keys);
         sb.append("\nData sources:\n");
@@ -155,6 +159,9 @@ public class MJProf {
         getSynopsisContent(sb, keys,Terminal.class);
 
         sb.append("\n  help                                  -Prints this message");
+        sb.append("\nMacros:\n");
+        Macros.getInstance().getSynopsisContent(sb);
+
         return sb.toString();
     }
 
@@ -183,10 +190,10 @@ public class MJProf {
                 }
                 lineLength += appendAndCount(sb, "/");
             }
-            for (int j = 0; j < (60 - lineLength); j++) {
+            for (int j = 0; j < (70 - lineLength); j++) {
                 sb.append(" ");
             }
-            sb.append("-");
+            sb.append("- ");
             sb.append(stepInfo.getDescription());
             sb.append("\n");
         }
@@ -225,10 +232,29 @@ public class MJProf {
         argParts.add(argPart);
         return argParts;
     }
-
+    static String expandedExpressionstr="";
     static ArrayList<MJStep> parseCommandLine(String concatArgs) {
 
         ArrayList<String> argParts = splitCommandLine(concatArgs);
+        ArrayList<String> finalArgsParts = new ArrayList<String>();
+        for (String argPart : argParts) {
+            String expand = Macros.getInstance().getProperty(argPart);
+            if (expand != null) {
+                ArrayList<String> expandParts = splitCommandLine(expand);
+                finalArgsParts.addAll(expandParts);
+            } else {
+                finalArgsParts.add(argPart);
+            }
+
+        }
+        argParts = finalArgsParts;
+        StringBuilder expandedExpression = new StringBuilder();
+        for(int i = 0;i<argParts.size();i++ )    {
+
+            expandedExpression.append(argParts.get(i));
+            if (i<argParts.size()-1)    expandedExpression .append(".");
+        }
+        expandedExpressionstr = expandedExpression.toString();
         ArrayList<MJStep> mjsteps = new ArrayList<MJStep>();
         for (String s : argParts) {
             if (s.equalsIgnoreCase("help")) {

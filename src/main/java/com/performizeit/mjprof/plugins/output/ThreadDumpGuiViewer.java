@@ -21,12 +21,7 @@ import java.util.HashMap;
  */
 public class ThreadDumpGuiViewer  extends JPanel implements TreeSelectionListener{
     ThreadDump toDisplay;
-
-
-    private JEditorPane htmlPane;
     private JTree tree;
-    private URL helpURL;
-    private static boolean DEBUG = false;
 
     //Optionally play with line styles.  Possible values are
     //"Angled" (the default), "Horizontal", and "None".
@@ -51,7 +46,9 @@ public class ThreadDumpGuiViewer  extends JPanel implements TreeSelectionListene
 
         //Listen for when the selection changes.
         tree.addTreeSelectionListener(this);
-
+        for (int i = 0; i < tree.getRowCount(); i++) {
+            tree.expandRow(i);
+        }
         if (playWithLineStyle) {
             System.out.println("line style = " + lineStyle);
             tree.putClientProperty("JTree.lineStyle", lineStyle);
@@ -64,7 +61,9 @@ public class ThreadDumpGuiViewer  extends JPanel implements TreeSelectionListene
 
         Dimension minimumSize = new Dimension(1000, 800);
         this.setMinimumSize(minimumSize);
-        this.setSize(new Dimension(1000, 800));
+        this.setSize(minimumSize);
+        treeView.setMaximumSize(minimumSize);
+        treeView.setSize(minimumSize);
 
 
         //Add the split pane to this panel.
@@ -79,41 +78,15 @@ public class ThreadDumpGuiViewer  extends JPanel implements TreeSelectionListene
         if (node == null) return;
 
         Object nodeInfo = node.getUserObject();
-  /*      if (node.isLeaf()) {
-            BookInfo book = (BookInfo)nodeInfo;
-            displayURL(book.bookURL);
-            if (DEBUG) {
-                System.out.print(book.bookURL + ":  \n    ");
-            }
-        } else {
-            displayURL(helpURL);
-        }
-        if (DEBUG) {
-            System.out.println(nodeInfo.toString());
-        }  */
+
     }
 
-    private class BookInfo {
-        public String bookName;
-        public URL bookURL;
 
-        public BookInfo(String book, String filename) {
-            bookName = book;
-            bookURL = getClass().getResource(filename);
-            if (bookURL == null) {
-                System.err.println("Couldn't find file: "
-                        + filename);
-            }
-        }
-
-        public String toString() {
-            return bookName;
-        }
-    }
 
     private void createNodes(DefaultMutableTreeNode top) {
         for (ThreadInfo ti : toDisplay.getStacks())  {
             DefaultMutableTreeNode tgui = createThreadProfile(ti);
+
             top.add(tgui) ;
         }
 
@@ -129,7 +102,7 @@ public class ThreadDumpGuiViewer  extends JPanel implements TreeSelectionListene
         public void visit(SFNode stackframe, int level) {
             if (level ==0) return;
             DefaultMutableTreeNode parent = parents.get(level-1);
-            DefaultMutableTreeNode me = new DefaultMutableTreeNode(stackframe.getCount()+" "+stackframe.getStackFrame()) ;
+            DefaultMutableTreeNode me = new DefaultMutableTreeNode("["+stackframe.getCount()+"] "+stackframe.getStackFrame()) ;
             parent.add(me);
             parents.put(level,me);
 

@@ -5,8 +5,12 @@ import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.parser.ThreadDump;
 import com.performizeit.plumbing.GeneratorHandler;
+import com.sun.tools.attach.VirtualMachine;
+import com.sun.tools.attach.AttachNotSupportedException;
+import sun.tools.attach.HotSpotVirtualMachine;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -44,30 +48,33 @@ public class JstackDataSourcePlugin implements DataSource, GeneratorHandler<Thre
         }
         return dumps;
     }
+    public String runjStackCommandLine() throws IOException, InterruptedException {
+        String[] commands = {System.getProperty("java.home") + "/../bin/jstack", Integer.toString(pid)};
+        Runtime rt = Runtime.getRuntime();
+        Process proc = rt.exec(commands);
+        InputStream stdin = proc.getInputStream();
+        InputStreamReader isr = new InputStreamReader(stdin);
+        BufferedReader br = new BufferedReader(isr);
+        StreamDataSourcePluginBase sds = new StreamDataSourcePluginBase() {};
+
+        sds.setReader(br);
+        int ret = proc.waitFor();
+        if (ret !=0 ) {
+            System.err.println("Executing jstack for process "+ pid + " failed");
+        }
+        return sds.getStackStringFromReader();
+
+    }
 
     private ThreadDump getThreadDump() {
         long iterStart = System.currentTimeMillis();
         try {
-            String[] commands = {System.getProperty("java.home") + "/../bin/jstack", Integer.toString(pid)};
-            Runtime rt = Runtime.getRuntime();
-            Process proc = rt.exec(commands);
-            InputStream stdin = proc.getInputStream();
-            InputStreamReader isr = new InputStreamReader(stdin);
-            BufferedReader br = new BufferedReader(isr);
-            StreamDataSourcePluginBase sds = new StreamDataSourcePluginBase() {
-
-            };
-
-            sds.setReader(br);
-            String str = sds.getStackStringFromReader();
+            String str = runjStackCommandLine();
             ThreadDump r;
             if (str == null) {
               r = null;
             } else r = new ThreadDump(str);
-            int ret = proc.waitFor();
-            if (ret !=0 ) {
-                System.err.println("Executing jstack for process "+ pid + " failed");
-            }
+
             iter ++;
             return r;
         } catch (Exception e) {
@@ -99,4 +106,59 @@ public class JstackDataSourcePlugin implements DataSource, GeneratorHandler<Thre
             }
 
     }
+
+
+
+    private static void runThreadDump(String pid, String args[]) throws Exception {
+        VirtualMachine vm = null;
+        try {
+            vm = VirtualMachine.attach(pid);
+        } catch (Exception x) {
+            String msg = x.getMessage();
+            if (msg != null) {
+                System.err.println(pid + ": " + msg);
+            } else {
+                x.printStackTrace();
+            }
+            if ((x instanceof AttachNotSupportedException) &&
+                    (loadSAClass() != null)) {
+                System.err.println("The -F option can be used when the target " +
+                        "process is not responding");
+            }
+            System.exit(1);
+        }
+
+
+        // Cast to HotSpotVirtualMachine as this is implementation specific
+        // method.
+        InputStream in = ((HotSpotVirtualMachine)vm).remoteDataDump((Object[])args);
+
+        // read to EOF and just print output
+        byte b[] = new byte[256];
+        int n;
+        do {
+            n = in.read(b);
+            if (n > 0) {
+                String s = new String(b, 0, n, "UTF-8");
+                System.out.print(s);
+            }
+        } while (n > 0);
+        in.close();
+        vm.detach();
+    }
+    private static Class loadSAClass() {
+        //
+        // Attempt to load JStack class - we specify the system class
+        // loader so as to cater for development environments where
+        // this class is on the boot class path but sa-jdi.jar is on
+        // the system class path. Once the JDK is deployed then both
+        // tools.jar and sa-jdi.jar are on the system class path.
+        //
+        try {
+            return Class.forName("sun.jvm.hotspot.tools.JStack", true,
+                    ClassLoader.getSystemClassLoader());
+        } catch (Exception x)  { }
+        return null;
+    }
+
 }
