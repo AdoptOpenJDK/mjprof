@@ -1,12 +1,11 @@
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.performizeit</groupId>
     <artifactId>mjprof</artifactId>
     <version>1.0</version>
-    <packaging>jar</packaging> 
+    <packaging>jar</packaging>
 
     <name>mjprof</name>
     <url>http://maven.apache.org</url>
@@ -32,7 +31,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>libs/</classpathPrefix>
-                            <mainClass>com.performizeit.mjstack.MJStack</mainClass>
+                            <mainClass>com.performizeit.mjprof.MJProf</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -79,7 +78,8 @@
                 <executions>
                     <execution>
                         <id>make-assembly</id>
-                        <phase>package</phase> <!-- bind to the packaging phase -->
+                        <phase>package</phase>
+                        <!-- bind to the packaging phase -->
                         <goals>
                             <goal>single</goal>
                         </goals>
@@ -107,7 +107,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    
+
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -116,10 +116,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
- 	   <groupId>org.reflections</groupId>
-    	   <artifactId>reflections</artifactId>
-   	   <version>0.9.9-RC1</version>
-           </dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.9.9-RC1</version>
+        </dependency>
         <dependency>
             <groupId>com.sun</groupId>
             <artifactId>tools</artifactId>
@@ -128,5 +128,5 @@
             <systemPath>${java.home}/../lib/tools.jar</systemPath>
         </dependency>
     </dependencies>
-    
+
 </project>

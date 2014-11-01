@@ -98,11 +98,16 @@ public class JMXConnection {
         userName = uName;
         userPassword = passwd;
         host = serverUrl;
+        port="";
+
         int colonIndex = serverUrl.lastIndexOf(":");
-        port = serverUrl.substring(colonIndex + 1);
+        if (colonIndex >0 ) {
+            port = serverUrl.substring(colonIndex + 1);
+            host = serverUrl.substring(0,colonIndex );
+        }
         connectURL = host + ":" + port;
         //    System.out.println("[" + host + "] [" + port + "] [" + userName + "] [" + userPassword + "]");
-        serviceURL = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + host + ":" + port + "/jmxrmi");
+        serviceURL = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + serverUrl + "/jmxrmi");
     }
     MBeanServerConnection server = null;
 
@@ -114,7 +119,7 @@ public class JMXConnection {
         if (server == null) {
 
             Map env = new HashMap();
-            if (userName != null && userPassword != null && userName.length() > 0) {
+            if (userName != null && userPassword != null && userName.trim().length() > 0) {
                 String[] creds = {userName, userPassword};
                 env.put(JMXConnector.CREDENTIALS, creds);
             }
@@ -213,20 +218,20 @@ public class JMXConnection {
         try {
             return com.sun.tools.attach.VirtualMachine.class;
         } catch (Throwable t) {
-            System.out.println("tools.jar not in class path from"+ System.getProperty("java.home"));
+            System.err.println("tools.jar not in class path from"+ System.getProperty("java.home"));
             File toolsJar = new File(System.getProperty("java.home") + "/lib/tools.jar"); //when jdk
-            System.out.println("try:" + toolsJar);
+            System.err.println("try:" + toolsJar);
             if (toolsJar.exists()) {
                 addURL(toolsJar);
-                System.out.println(toolsJar);
+                System.err.println(toolsJar);
             } else {
                 toolsJar = new File(System.getProperty("java.home") + "/../lib/tools.jar"); // when jre part of jdk
                 System.out.println("try:" + toolsJar);
                 if (toolsJar.exists()) {
                     addURL(toolsJar);
-                    System.out.println("Found:"+toolsJar);
+                    System.err.println("Found:"+toolsJar);
                 } else {
-                    System.out.println("Unable to locate tools.jar pls add it to classpath");
+                    System.err.println("Unable to locate tools.jar pls add it to classpath");
                 }
             }
         }
