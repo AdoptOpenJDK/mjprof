@@ -33,13 +33,53 @@ public class Profile {
             parseMulti(parseString);
         }   else {
             parseSingle(parseString);
-
         }
 
     }
-    public  void parseSingle(String stackTrace) {
-        addSingle(stackTrace);
+    
+    public  Profile(String parseString, String methodName) {
+        this();
+        String newStackTrace = preperStackTrace(parseString,methodName);
+        if (parseString.contains("]\\ ")) {
+            parseMulti(newStackTrace);
+        }   else {
+            parseSingle(newStackTrace);
+        }
 
+    }
+    
+    private String preperStackTrace(String stackTrace, String methodName) {
+    	String[] sf = stackTrace.split("\n");
+    	 for (int i=sf.length-1;i>=0;i--) {
+             String sfi = sf[i].trim();
+             if (sfi.isEmpty()) continue;
+             //if we get to a line that our method equle to - we want the next frame?
+             //check recursive 
+         if(sfi.equals(methodName)){
+           String stack =  printthatpart(sf, i);
+            return stack;
+            }
+             }
+		return methodName;
+
+         }
+    	
+	
+	private String getMethodName(String sfi) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	private String printthatpart(String[] sf, int j) {
+		StringBuilder sb = new StringBuilder();
+		 for (int i=sf.length-1;i>=j;i--) {
+			 sb.append(sf[i]);
+			 sb.append("\n");
+		 }
+		 return sb.toString();
+		
+	}
+	public  void parseSingle(String stackTrace) {
+        addSingle(stackTrace);
     }
 
 
@@ -104,6 +144,7 @@ public class Profile {
     public void addMulti(Profile p) {
         root.mergeToNode(p.root);
     }
+      
     @Override
     public String toString() {
         return root.toString();

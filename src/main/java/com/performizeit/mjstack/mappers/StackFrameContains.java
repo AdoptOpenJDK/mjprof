@@ -23,6 +23,7 @@ import com.performizeit.mjstack.model.Profile;
 import com.performizeit.mjstack.model.ProfileNodeFilter;
 import com.performizeit.mjstack.model.SFNode;
 import com.performizeit.mjstack.parser.ThreadInfo;
+
 import  static com.performizeit.mjstack.parser.ThreadInfoProps.*;
 
 @Plugin(name="stackkeep",paramTypes = {String.class},
@@ -36,7 +37,7 @@ public class StackFrameContains implements JStackMapper {
 
     @Override
     public ThreadInfo map(ThreadInfo stck) {
-        Profile p = (Profile)stck.getVal(STACK);
+         Profile p = (Profile)stck.getVal(STACK);
         p.filter(new ProfileNodeFilter() {
             @Override
             public boolean accept(SFNode node, int level,Object context) {
@@ -45,4 +46,5 @@ public class StackFrameContains implements JStackMapper {
         },null) ;
         return stck;
     }
+    
 }
