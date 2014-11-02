@@ -16,13 +16,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Set;
+
 
 @SuppressWarnings("unused")
 @Plugin(name = "jstack", params = {@Param(type = String.class, value = "pid|mainClassName"),
         @Param(type = int.class, value = "count", optional = true, defaultValue = "1"),
-        @Param(type = int.class, value = "sleep", optional = true, defaultValue = "1000")},
+        @Param(type = int.class, value = "sleep", optional = true, defaultValue = "5000")},
         description = "Generate dumps using jstack")
 public class JstackDataSourcePlugin implements DataSource, GeneratorHandler<ThreadDump> {
     private final int count;
@@ -36,7 +35,7 @@ public class JstackDataSourcePlugin implements DataSource, GeneratorHandler<Thre
              this.pid = Integer.parseInt(pidStr);
          } catch (NumberFormatException e) {
              try {
-                 pid = lookupProcessId(pidStr);
+                 pid = JPSUtil.lookupProcessId(pidStr);
                  if (pid == -1) {
                      System.err.println("Process id for main class '"+pidStr + "' could not be resolved");
                      System.exit(1);
@@ -187,29 +186,10 @@ public class JstackDataSourcePlugin implements DataSource, GeneratorHandler<Thre
         return null;
     }
 
-    public static int lookupProcessId(String lookForMainClass) throws MonitorException, URISyntaxException {
-        HostIdentifier hostId = new HostIdentifier("local://localhost");
-        MonitoredHost monitoredHost =
-                MonitoredHost.getMonitoredHost(hostId);
 
-        // get the set active JVMs on the specified host.
-        Set jvms = monitoredHost.activeVms();
-        for (Iterator j = jvms.iterator(); j.hasNext(); /* empty */ ) {
-            int lvmid = ((Integer) j.next()).intValue();
-            MonitoredVm vm = null;
-            String vmidString = "//" + lvmid + "?mode=r";
-            VmIdentifier id = new VmIdentifier(vmidString);
-            vm = monitoredHost.getMonitoredVm(id, 0);
-            String mainClass = MonitoredVmUtil.mainClass(vm,
-                    false);
-            if (mainClass.equals(lookForMainClass)) return lvmid;
-        }
-        return -1;
-
-    }
 
     public static void main(String[] args) throws MonitorException, URISyntaxException {
-        System.out.println((lookupProcessId("My4tApp")));
+        System.out.println((JPSUtil.lookupProcessId("My4tApp")));
     }
 
 }
