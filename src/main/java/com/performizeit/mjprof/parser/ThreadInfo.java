@@ -166,8 +166,14 @@ public class ThreadInfo extends Props {
         if (props.get(STATUS) != null) {
             mdStr.append(" " + props.get(STATUS));
         }
-        if (props.get(CPU) != null) {
-            mdStr.append(" " + CPU + "=").append(props.get(CPU));
+        if (props.get(CPUNS) != null) {
+            mdStr.append(" " + CPUNS + "=").append(props.get(CPUNS));
+        }
+        if (props.get(WALL) != null) {
+            mdStr.append(" " + WALL + "=").append(props.get(WALL));
+        }
+        if (props.get(CPU_PREC) != null) {
+            mdStr.append(" " + CPU_PREC + "=").append(props.get(CPU_PREC));
         }
 
 

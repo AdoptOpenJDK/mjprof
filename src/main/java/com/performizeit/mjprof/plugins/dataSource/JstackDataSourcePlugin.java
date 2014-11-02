@@ -7,18 +7,21 @@ import com.performizeit.mjprof.parser.ThreadDump;
 import com.performizeit.plumbing.GeneratorHandler;
 import com.sun.tools.attach.VirtualMachine;
 import com.sun.tools.attach.AttachNotSupportedException;
+import sun.jvmstat.monitor.*;
 import sun.tools.attach.HotSpotVirtualMachine;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 
+
 @SuppressWarnings("unused")
-@Plugin(name = "jstack", params = {@Param(type = int.class, value = "pid"),
+@Plugin(name = "jstack", params = {@Param(type = String.class, value = "pid|mainClassName"),
         @Param(type = int.class, value = "count", optional = true, defaultValue = "1"),
-        @Param(type = int.class, value = "sleep", optional = true, defaultValue = "1000")},
+        @Param(type = int.class, value = "sleep", optional = true, defaultValue = "5000")},
         description = "Generate dumps using jstack")
 public class JstackDataSourcePlugin implements DataSource, GeneratorHandler<ThreadDump> {
     private final int count;
@@ -27,8 +30,22 @@ public class JstackDataSourcePlugin implements DataSource, GeneratorHandler<Thre
     private long lastIterTime=0;
     int pid;
 
-    public JstackDataSourcePlugin(int pid, int count, int sleep) {
-        this.pid = pid;
+    public JstackDataSourcePlugin(String pidStr, int count, int sleep) {
+         try {
+             this.pid = Integer.parseInt(pidStr);
+         } catch (NumberFormatException e) {
+             try {
+                 pid = JPSUtil.lookupProcessId(pidStr);
+                 if (pid == -1) {
+                     System.err.println("Process id for main class '"+pidStr + "' could not be resolved");
+                     System.exit(1);
+                 }
+             } catch(Exception ne){
+                 System.err.println("Process id for main class '"+pidStr + "' could not be resolved");
+                 System.exit(1);
+             }
+         }
+
         this.count = count;
         this.sleep = sleep;
     }
@@ -69,7 +86,11 @@ public class JstackDataSourcePlugin implements DataSource, GeneratorHandler<Thre
     private ThreadDump getThreadDump() {
         long iterStart = System.currentTimeMillis();
         try {
-            String str = runjStackCommandLine();
+         //   long start = System.currentTimeMillis();
+            //     String str = runjStackCommandLine();
+            String [] params = {"-;l"} ;
+            String str = runThreadDump((new Integer(pid)).toString(),params);
+           // System.err.println("tm ="+ (System.currentTimeMillis()-start));
             ThreadDump r;
             if (str == null) {
               r = null;
@@ -109,7 +130,8 @@ public class JstackDataSourcePlugin implements DataSource, GeneratorHandler<Thre
 
 
 
-    private static void runThreadDump(String pid, String args[]) throws Exception {
+    private static String runThreadDump(String pid, String args[]) throws Exception {
+        StringBuilder sb = new StringBuilder();
         VirtualMachine vm = null;
         try {
             vm = VirtualMachine.attach(pid);
@@ -134,17 +156,20 @@ public class JstackDataSourcePlugin implements DataSource, GeneratorHandler<Thre
         InputStream in = ((HotSpotVirtualMachine)vm).remoteDataDump((Object[])args);
 
         // read to EOF and just print output
+
         byte b[] = new byte[256];
         int n;
         do {
             n = in.read(b);
             if (n > 0) {
                 String s = new String(b, 0, n, "UTF-8");
-                System.out.print(s);
+                sb.append(s);
+
             }
         } while (n > 0);
         in.close();
         vm.detach();
+        return sb.toString();
     }
     private static Class loadSAClass() {
         //
@@ -159,6 +184,12 @@ public class JstackDataSourcePlugin implements DataSource, GeneratorHandler<Thre
                     ClassLoader.getSystemClassLoader());
         } catch (Exception x)  { }
         return null;
+    }
+
+
+
+    public static void main(String[] args) throws MonitorException, URISyntaxException {
+        System.out.println((JPSUtil.lookupProcessId("My4tApp")));
     }
 
 }
