@@ -19,7 +19,6 @@ package com.performizeit.mjprof;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -209,14 +208,17 @@ public class MJProf {
     static int findNextSeperator(String str) {
         boolean insideArgList = false;
         for (int i = 0; i < str.length(); i++) {
+            if (!insideArgList ) {
+                if (str.charAt(i) == '/') insideArgList = true;   // / starts arg list
 
-            if (str.charAt(i) == '/') {
-                if (i<str.length()-1 && insideArgList && str.charAt(i+1) !='.'  && str.charAt(i+1) !=' ' && str.charAt(i+1) !='/') {
-                    //do nothing
-                } else {
-                    insideArgList = !insideArgList;
+            } else {
+                if (str.charAt(i) == '/') {   // / will end arg list
+                    if (i<str.length()-1 && insideArgList && str.charAt(i+1) !='.'  && str.charAt(i+1) !=' ') {
+                        // but we have to have a space or . afterwards otherwise it is part of the arguments
+                    }  else insideArgList = false;
                 }
             }
+
             if ((str.charAt(i) == '.' || str.charAt(i) == ' ') && !insideArgList) return i;
         }
         return -1;
