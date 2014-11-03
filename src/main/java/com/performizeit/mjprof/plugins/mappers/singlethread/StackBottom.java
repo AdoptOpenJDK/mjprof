@@ -24,27 +24,29 @@ import com.performizeit.mjprof.model.SFNode;
 import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.parser.ThreadInfo;
 
-
-@Plugin(name="keepbot", params = {@Param(type=int.class)},
+@SuppressWarnings("unused")
+@Plugin(name="bottom", params = {@Param(type=int.class)},
         description = "Returns at most n bottom stack frames of the stack")
-public class TrimTop extends SingleThreadMapperBase {
+public class StackBottom extends SingleThreadMapperBase {
     private final int count;
 
-    public TrimTop(int count) {
+    public StackBottom(int count) {
         this.count = count;
     }
 
 
 
-    @Override
-    public ThreadInfo map(ThreadInfo stck) {
-        Profile p = (Profile)stck.getVal("stack");
-        p.filter(new ProfileNodeFilter() {
-            @Override
-            public boolean accept(SFNode node, int level,Object context) {
-                return level > count;
-            }
-        },null) ;
-        return stck;
+        @Override
+        public ThreadInfo map(ThreadInfo stck) {
+            Profile p = (Profile)stck.getVal("stack");
+
+            p.filter(new ProfileNodeFilter() {
+                @Override
+                public boolean accept(SFNode node, int level,Object context) {
+
+                    return level < count;
+                }
+            },null) ;
+            return stck;
+        }
     }
-}

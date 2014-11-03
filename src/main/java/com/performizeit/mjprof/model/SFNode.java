@@ -177,4 +177,15 @@ public class SFNode {
     public int getCount() {
         return count;
     }
+
+    public int depthBelow() {
+        int depthB = Integer.MAX_VALUE;
+        for (SFNode child : children.values()) {
+            int depthBnew = child.depthBelow()+1;
+            if (depthBnew < depthB ) depthB = depthBnew;
+
+        }
+        if (depthB == Integer.MAX_VALUE) depthB = 0;
+        return depthB;
+    }
 }
