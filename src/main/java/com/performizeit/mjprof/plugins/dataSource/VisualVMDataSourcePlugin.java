@@ -14,7 +14,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Element;
 import java.io.File;
-@Plugin(name="visualvm", params ={@Param("path")},description = "Read profiling session from xml export of VisualVM")
+@Plugin(name="visualvm", params ={@Param("path")},description = "Read profiling session from xml export of VisualVM(not implemented yet)")
 public class VisualVMDataSourcePlugin implements DataSource, GeneratorHandler<ThreadDump> {
     String fileName;
 

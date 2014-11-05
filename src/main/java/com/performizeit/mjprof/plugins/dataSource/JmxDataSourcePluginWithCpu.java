@@ -20,7 +20,7 @@ import static com.performizeit.mjprof.parser.ThreadInfoProps.*;
         @Param(type = int.class,value="sleep",optional=true,defaultValue = "5000"),
         @Param(value="username",optional=true),
         @Param(value="passwd",optional=true)
-        }, description = "Generates thread dumps dumps via JMX and collect sper thread CPU")
+        }, description = "Generates thread dumps dumps via JMX and collects per thread CPU")
 public class JmxDataSourcePluginWithCpu extends JmxDataSourcePlugin implements DataSource, GeneratorHandler<ThreadDump> {
     protected boolean collectCPU = true;
 
