@@ -22,7 +22,7 @@ import java.util.ArrayList;
 @Plugin(name = "jstack", params = {@Param(type = String.class, value = "pid|mainClassName"),
         @Param(type = int.class, value = "count", optional = true, defaultValue = "1"),
         @Param(type = int.class, value = "sleep", optional = true, defaultValue = "5000")},
-        description = "Generate dumps using jstack")
+        description = "Generates dumps using jstack")
 public class JstackDataSourcePlugin implements DataSource, GeneratorHandler<ThreadDump> {
     private final int count;
     private int iter =0;

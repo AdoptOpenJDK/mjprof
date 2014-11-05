@@ -28,8 +28,8 @@ import com.performizeit.mjprof.plugins.mappers.singlethread.SingleThreadMapperBa
 import static com.performizeit.mjprof.parser.ThreadInfoProps.STACK;
 
 @SuppressWarnings("unused")
-@Plugin(name="atelim", params = {},
-        description = "Eliminates package name from stack frames")
+@Plugin(name="-at", params = {},
+        description = "Eliminates the 'at' from the beginning of stack frames")
 public class AtEliminator extends SingleThreadMapperBase {
     @Override
     public ThreadInfo map(ThreadInfo stck) {

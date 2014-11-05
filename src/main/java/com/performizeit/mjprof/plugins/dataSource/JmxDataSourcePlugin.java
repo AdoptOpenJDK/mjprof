@@ -22,7 +22,7 @@ import static com.performizeit.mjprof.parser.ThreadInfoProps.*;
         @Param(type = int.class,value="sleep",optional=true,defaultValue = "5000"),
             @Param(value="username",optional=true),
             @Param(value="passwd",optional=true)
-            }, description = "Generate dumps via JMX ")
+            }, description = "Generates thread dumps via JMX ")
 public class JmxDataSourcePlugin implements DataSource, GeneratorHandler<ThreadDump> {
     protected final int sleep;
     protected final int count;

@@ -9,13 +9,13 @@ import java.util.Set;
 
 import com.performizeit.mjprof.MJProf;
 import com.performizeit.mjprof.plugins.mappers.GroupByProp;
+import com.performizeit.mjprof.plugins.mappers.singlethread.StackTop;
 import com.performizeit.mjprof.plugins.terminals.ListProps;
 import org.junit.Test;
 import org.reflections.Reflections;
 
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.plugins.mappers.singlethread.StackFrameContains;
-import com.performizeit.mjprof.plugins.mappers.singlethread.TrimTop;
 import com.performizeit.mjprof.monads.StepInfo;
 
 public class PluginTest {
@@ -55,8 +55,8 @@ public class PluginTest {
 	@Test
 	public void testInitObject()  throws Exception{
 		Object[] intObjArray = new Object[]{1};
-		Object obj = PluginUtils.initObj(TrimTop.class, new Class[]{int.class},intObjArray);
-		assertEquals(TrimTop.class ,obj.getClass());
+		Object obj = PluginUtils.initObj(StackTop.class, new Class[]{int.class},intObjArray);
+		assertEquals(StackTop.class ,obj.getClass());
 
 		Object[] strObjArray = new Object[]{new String("cc")};
 		obj = PluginUtils.initObj(StackFrameContains.class, new Class[]{String.class},strObjArray);

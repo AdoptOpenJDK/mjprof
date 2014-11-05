@@ -22,7 +22,7 @@ import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.parser.ThreadInfo;
 
 @SuppressWarnings("unused")
-@Plugin(name="ncontains", params ={@Param("attr"),@Param("str")},
+@Plugin(name="-contains", params ={@Param("attr"),@Param("value")},
         description = "Returns only threads which do not contain the string (regexp not supported)")
 public class JStackFilterFieldNotContains extends JStackFilterFieldContains {
     public JStackFilterFieldNotContains(String attr, String valNotContained) {
