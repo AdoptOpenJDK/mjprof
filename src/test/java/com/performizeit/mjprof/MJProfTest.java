@@ -103,6 +103,18 @@ public class MJProfTest {
     }
 
     @Test
+    public void pathWithSlashAndBackslash() throws Exception {
+        String args =  "path//tmp/bn.txt/.path/c:\\hello\\myfolder\\myfile.txt/";
+        ArrayList<MJStep> steps = MJProf.parseCommandLine(args);
+        assertNotNull(steps);
+        assertEquals(steps.size(),2);
+        assertEquals(steps.get(0).getStepName(), "path");
+        assertEquals(steps.get(0).getStepArgs(), Arrays.asList("/tmp/bn.txt"));
+        assertEquals(steps.get(1).getStepName(), "path");
+        assertEquals(steps.get(1).getStepArgs(), Arrays.asList("c:\\hello\\myfolder\\myfile.txt"));
+    }
+
+    @Test
     public void argListContainsSpaces() throws Exception {
         String args =  "contains/key.k,val.,,val/.contains/stack,com performizeit/";
         ArrayList<MJStep> steps = MJProf.parseCommandLine(args);
