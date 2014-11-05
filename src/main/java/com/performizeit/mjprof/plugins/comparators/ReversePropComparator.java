@@ -20,7 +20,7 @@ import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.parser.ThreadInfo;
 
-@Plugin(name = "sortd", params = {@Param() },description="Sorts based on an attribute (descending order)")
+@Plugin(name = "-sort", params = {@Param() },description="Sorts based on an attribute (descending order)")
 public class ReversePropComparator extends PropComparator {
     public ReversePropComparator(String prop) {
         super(prop);

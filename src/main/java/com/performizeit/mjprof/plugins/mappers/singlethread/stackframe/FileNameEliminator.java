@@ -27,8 +27,8 @@ import com.performizeit.mjprof.plugins.mappers.singlethread.SingleThreadMapperBa
 import java.util.HashMap;
 
 @SuppressWarnings("unused")
-@Plugin(name="fnelim", params = {},
-        description = "Eliminates file name from stack frames")
+@Plugin(name="-fn", params = {},
+        description = "Eliminates file name and line from stack frames")
 public class FileNameEliminator extends SingleThreadMapperBase {
 
 

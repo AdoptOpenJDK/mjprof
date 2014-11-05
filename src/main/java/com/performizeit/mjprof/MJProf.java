@@ -20,6 +20,7 @@ package com.performizeit.mjprof;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -132,13 +133,22 @@ public class MJProf {
         System.exit(1);
     }
 
+
     public static String getSynopsisString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Synopsis\nA list of the following monads concatenated with . \n");
         sb.append("\nExpanded Expression:\n");
         sb.append(expandedExpressionstr+"\n");
         List<String> keys = new ArrayList<String>(StepsRepository.getRepository().keySet());
-        Collections.sort(keys);
+        Collections.sort(keys,new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                if (o1.startsWith("-"))  o1 = o1.substring(1)+"-";
+                if (o2.startsWith("-"))  o2 = o2.substring(1)+"-";
+                return o1.compareTo(o2);
+
+            }
+        });
         sb.append("\nData sources:\n");
 
         getSynopsisContent(sb, keys, DataSource.class);
@@ -158,7 +168,7 @@ public class MJProf {
         getSynopsisContent(sb, keys,Terminal.class);
 
         sb.append("\n  help                                  -Prints this message");
-        sb.append("\nMacros:\n");
+        sb.append("\n\nMacros:\n");
         Macros.getInstance().getSynopsisContent(sb);
 
         return sb.toString();

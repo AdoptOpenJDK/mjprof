@@ -23,7 +23,7 @@ import com.performizeit.mjprof.parser.ThreadInfo;
 import java.util.HashMap;
 
 @SuppressWarnings("unused")
-@Plugin(name="eliminate", params ={@Param("attr")},
+@Plugin(name="-prop", params ={@Param("attr")},
         description = "Removes a certain attribute e.g. eliminate/stack/")
 public class PropEliminator extends SingleThreadMapperBase {
     private final String prop;

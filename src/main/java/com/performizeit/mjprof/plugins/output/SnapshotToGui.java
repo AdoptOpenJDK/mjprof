@@ -24,7 +24,7 @@ package com.performizeit.mjprof.plugins.output;
 @Plugin(name="gui", params ={@Param(type = String.class,value = "title",optional=true,defaultValue = ""),
         @Param(type = int.class,value = "maxInvocations",optional=true,defaultValue = "10")
 
-        }, description="Display current thread dump in a GUI window")
+        }, description="Displays current thread dump in a GUI window")
 public class SnapshotToGui implements Outputer,PipeHandler {
     private int maxInvocations;
     private int curInvocation;
