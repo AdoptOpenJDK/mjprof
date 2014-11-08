@@ -1,0 +1,17 @@
+2014-10-25 21:35:47
+Full thread dump Java HotSpot(TM) 64-Bit Server VM (20.45-b01 mixed mode):
+
+
+"*" count=2 prio=6 tid=* nid=* *
+   java.lang.Thread.State: TIMED_WAITING (on object monitor)
+100.00%     [2/2]X at org.eclipse.core.internal.jobs.WorkerPool.test(WorkerPool.java:220)
+ 50.00%     [1/2]|\ at org.eclipse.core.internal.jobs.WorkerPool.startJob(WorkerPool.java:220)
+ 50.00%     [1/2]| \ - locked <0x00000000e1330470> (a org.eclipse.core.internal.jobs.WorkerPool)
+ 50.00%     [1/2]|  \ at org.eclipse.core.internal.jobs.WorkerPool.sleep(WorkerPool.java:188)
+ 50.00%     [1/2]|   \ - waiting on <0x00000000e1330470> (a org.eclipse.core.internal.jobs.WorkerPool)
+ 50.00%     [1/2]|    V at java.lang.Object.wait(Native Method)
+ 50.00%     [1/2] \ at org.eclipse.core.internal.jobs.WorkerPool.startJob3(WorkerPool.java:220)
+ 50.00%     [1/2]  \ - locked <0x00000000e1330470> (a org.eclipse.core.internal.jobs.WorkerPool)
+ 50.00%     [1/2]   \ at org.eclipse.core.internal.jobs.WorkerPool.sleep(WorkerPool.java:188)
+ 50.00%     [1/2]    \ - waiting on <0x00000000e1330470> (a org.eclipse.core.internal.jobs.WorkerPool)
+ 50.00%     [1/2]     V at java.lang.Object.wait(Native Method)
