@@ -110,7 +110,7 @@ public class ThreadDumpGuiViewer  extends JPanel implements TreeSelectionListene
     }
     private DefaultMutableTreeNode createThreadProfile( ThreadInfo ti) {
         Profile p = (Profile) ti.getVal(ThreadInfoProps.STACK);
-        DefaultMutableTreeNode thread = new DefaultMutableTreeNode(p.getCount()+" "+ti.getVal(ThreadInfoProps.NAME));
+        DefaultMutableTreeNode thread = new DefaultMutableTreeNode(p.getCount()+" "+ti.getVal(ThreadInfoProps.NAME)+ " "+ ti.getVal(ThreadInfoProps.STATE));
 
 
         p.visit(new Vis(thread));
