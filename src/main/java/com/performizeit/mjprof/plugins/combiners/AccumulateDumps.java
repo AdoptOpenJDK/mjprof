@@ -25,20 +25,22 @@ import com.performizeit.mjprof.parser.ThreadDump;
 import com.performizeit.mjprof.parser.ThreadInfo;
 import com.performizeit.plumbing.PipeHandler;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import static com.performizeit.mjprof.parser.ThreadInfoProps.*;
 
 
-@Plugin(name="merge", params ={@Param("attribute")},description="Combine all dumps to a single one merge based on thread id attribute")
+@Plugin(name="merge", params ={@Param(type = String.class,value = "attr",optional=true,defaultValue = "tid")},description="Combine all dumps to a single one merge based on an attribute (thread id is the default attribute)")
 public class AccumulateDumps implements DumpReducer,PipeHandler<ThreadDump,ThreadDump> {
 
     ThreadInfoAggregator tidAggr;
     int countDumps=0;
 
     public AccumulateDumps(String prop) {
-        String[] a = {TID};
-        tidAggr =new ThreadInfoAggregator(Arrays.asList(a));
+        ArrayList<String> a= new ArrayList<String>();
+        a.add(prop);
+        tidAggr =new ThreadInfoAggregator(a);
     }
 
     public void reduce(ThreadDump td) {

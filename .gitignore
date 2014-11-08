@@ -3,3 +3,6 @@
 .DS_Store
 tools.jar
 mjprof.iml
+.settings
+.project
+
