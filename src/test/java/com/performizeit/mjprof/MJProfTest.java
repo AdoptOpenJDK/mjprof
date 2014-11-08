@@ -68,10 +68,10 @@ public class MJProfTest {
     }
     @Test
     public void argWhichContainsSlashSplit2() throws Exception {
-        String args =  "path/lib/dd//.kk/.list";
+        String args =  "path/lib/dd/a.txt/.list";
         ArrayList<String> steps = MJProf.splitCommandLine(args);
         assertNotNull(steps);
-        assertEquals(steps.get(0), "path/lib/dd//.kk/");
+        assertEquals(steps.get(0), "path/lib/dd/a.txt/");
         assertEquals(steps.get(1), "list");
 
     }
@@ -85,6 +85,33 @@ public class MJProfTest {
         assertEquals(steps.get(0).getStepArgs(), Arrays.asList("key.k", "val.,val"));
         assertEquals(steps.get(1).getStepName(), "contains");
         assertEquals(steps.get(1).getStepArgs(), Arrays.asList("stack", "com.performizeit"));
+    }
+
+
+    @Test
+    public void pathWithSlash() throws Exception {
+        String args =  "path//tmp/bn.txt/.contains/name,Timer/.bottom/3/";
+        ArrayList<MJStep> steps = MJProf.parseCommandLine(args);
+        assertNotNull(steps);
+        assertEquals(steps.size(),3);
+        assertEquals(steps.get(0).getStepName(), "path");
+        assertEquals(steps.get(0).getStepArgs(), Arrays.asList("/tmp/bn.txt"));
+        assertEquals(steps.get(1).getStepName(), "contains");
+        assertEquals(steps.get(1).getStepArgs(), Arrays.asList("name", "Timer"));
+        assertEquals(steps.get(2).getStepName(), "bottom");
+        assertEquals(steps.get(2).getStepArgs(), Arrays.asList("3"));
+    }
+
+    @Test
+    public void pathWithSlashAndBackslash() throws Exception {
+        String args =  "path//tmp/bn.txt/.path/c:\\hello\\myfolder\\myfile.txt/";
+        ArrayList<MJStep> steps = MJProf.parseCommandLine(args);
+        assertNotNull(steps);
+        assertEquals(steps.size(),2);
+        assertEquals(steps.get(0).getStepName(), "path");
+        assertEquals(steps.get(0).getStepArgs(), Arrays.asList("/tmp/bn.txt"));
+        assertEquals(steps.get(1).getStepName(), "path");
+        assertEquals(steps.get(1).getStepArgs(), Arrays.asList("c:\\hello\\myfolder\\myfile.txt"));
     }
 
     @Test

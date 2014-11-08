@@ -99,10 +99,10 @@ public class ThreadInfo extends Props {
         while (m.find()) {
             props.put(m.group(1), m.group(2));
         }
-        if (props.get(TID) != null) {
+        if (props.get(TID) != null && !props.get(TID).equals("*")) {
             props.put(TID + "Long", new HexaLong((String) props.get(TID)));
         }
-        if (props.get(NID) != null) {
+        if (props.get(NID) != null && !props.get(NID).equals("*")) {
             props.put(NID + "Long", new HexaLong((String) props.get(NID)));
         }
     }
@@ -166,8 +166,14 @@ public class ThreadInfo extends Props {
         if (props.get(STATUS) != null) {
             mdStr.append(" " + props.get(STATUS));
         }
-        if (props.get(CPU) != null) {
-            mdStr.append(" " + CPU + "=").append(props.get(CPU));
+        if (props.get(CPUNS) != null) {
+            mdStr.append(" " + CPUNS + "=").append(props.get(CPUNS));
+        }
+        if (props.get(WALL) != null) {
+            mdStr.append(" " + WALL + "=").append(props.get(WALL));
+        }
+        if (props.get(CPU_PREC) != null) {
+            mdStr.append(" " + CPU_PREC + "=").append(props.get(CPU_PREC));
         }
 
 

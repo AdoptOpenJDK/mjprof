@@ -8,7 +8,7 @@ import com.performizeit.mjprof.api.Param;
 
 
 @SuppressWarnings("unused")
-@Plugin(name="path", params ={@Param("path")},description = "Read thread dump from file")
+@Plugin(name="path", params ={@Param("path")},description = "Reads thread dump from a file")
 public class PathDataSourcePlugin extends StreamDataSourcePluginBase {
     String fileName;
 

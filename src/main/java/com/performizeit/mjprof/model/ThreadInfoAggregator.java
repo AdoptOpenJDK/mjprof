@@ -26,6 +26,7 @@ public class ThreadInfoAggregator {
         } else {
             mergeProfiles(target, threadInfo);
             mergeCounts(target, threadInfo);
+            mergeCPU(target, threadInfo);
             mergeNonKeyProps(target, threadInfo);
         }
     }
@@ -42,6 +43,32 @@ public class ThreadInfoAggregator {
         countTarget += count;
         target.setVal(COUNT, countTarget);
     }
+    private double percentDouble(long nom,long denom) {
+        return ((double)(nom*100*100/denom))/ 100.0;
+
+    }
+    private void mergeCPU(ThreadInfo target, ThreadInfo threadInfo) {
+        Long cpuTarget = (Long) target.getVal(CPUNS);
+        Long cpu = (Long) threadInfo.getVal(CPUNS);
+        if (cpu != null && cpuTarget!= null) { // no cpu enrichment
+            if (cpu == null) cpu = 0l;
+            if (cpuTarget == null) cpuTarget = 0l;
+            cpuTarget += cpu;
+            target.setVal(CPUNS, cpuTarget);
+        }
+
+        Long wallTarget = (Long) target.getVal(WALL);
+        Long wall = (Long) threadInfo.getVal(WALL);
+        if (wall != null || wallTarget != null) {
+            if (wall == null) wall = 0l;
+            if (wallTarget == null) wallTarget = 0l;
+            if (wallTarget < wall) wallTarget = wall;
+            target.setVal(WALL, wallTarget);
+        }
+        if ((wall != null || wallTarget != null)  &&  (cpu != null && cpuTarget!= null) && wallTarget>0) {
+            target.setVal(CPU_PREC, percentDouble(cpuTarget, (wallTarget * 1000 * 1000)));
+        }
+    }
 
     private void mergeProfiles(ThreadInfo target, ThreadInfo threadInfo) {
         Profile targetProfile = (Profile) target.getVal(STACK);
@@ -55,7 +82,8 @@ public class ThreadInfoAggregator {
     public void mergeNonKeyProps(ThreadInfo target, ThreadInfo threadInfo) {
         ArrayList<String> keys = new ArrayList<String>(threadInfo.getProps());
         for (String prop1 : keys) {
-            if (prop1.equals(STACK) || prop1.equals(COUNT) || propsMap.contains(prop1))
+            if (prop1.equals(STACK) || prop1.equals(COUNT) || prop1.equals(CPUNS) ||
+                    prop1.equals(WALL)|| prop1.equals(CPU_PREC) || propsMap.contains(prop1))
                 continue; //    already merged to specially
             if (propsMap.contains(prop1)) continue; //     key properties are not merged
 

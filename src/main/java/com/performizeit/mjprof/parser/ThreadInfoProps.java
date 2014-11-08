@@ -20,7 +20,9 @@ package com.performizeit.mjprof.parser;
 public interface ThreadInfoProps {
     public static final String NAME = "name";     // the name of the thread
     public static final String PRIO = "prio";     //priority
-    public static final String CPU = "cpu";       // amount of cpu consumed by thread
+    public static final String CPUNS = "cpu_ns";       // amount of cpu consumed by thread
+    public static final String WALL = "wall_ms";       // amount of cpu consumed by thread
+    public static final String CPU_PREC = "%cpu";
     public static final String TID = "tid";       // java thread id
     public static final String NID = "nid";       //  native thread id
     public static final String STACK = "stack";   //  the stack of the thread or the profile of more than one thread

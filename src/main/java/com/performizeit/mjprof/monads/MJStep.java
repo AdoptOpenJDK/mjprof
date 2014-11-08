@@ -31,27 +31,24 @@ public class MJStep {
 
         stepArgs = new ArrayList<String>();
 
-
-        Pattern p = Pattern.compile("(.*)/(.*)/");
-        Matcher m = p.matcher(stepString);
-        if (m.find()) {
-            stepName = m.group(1);
-            MJStep mjStep = new MJStep(m.group(1));
-            // System.out.println((m.group(1)));
-            String params = m.group(2);
-            if (params.trim().length() > 0) {
-                params = params.replaceAll(",,", "__DOUBLE_COMMA__xxxxxxx");
-                for (String q : params.split(",")) {
-                    //    System.out.println(q);
-                    addStepArg(q.replaceAll("__DOUBLE_COMMA__xxxxxxx", ","));
+        if (!stepString.contains("/")) {
+            stepName = stepString;
+        } else {
+            int firstSlash = stepString.indexOf('/');
+            int lastSlash = stepString.lastIndexOf('/');
+            stepName = stepString.substring(0,firstSlash);
+            if (firstSlash<lastSlash) {
+                String params = stepString.substring(firstSlash + 1, lastSlash);
+                if (params.trim().length() > 0) {
+                    params = params.replaceAll(",,", "__DOUBLE_COMMA__xxxxxxx");
+                    for (String q : params.split(",")) {
+                        addStepArg(q.replaceAll("__DOUBLE_COMMA__xxxxxxx", ","));
+                    }
                 }
             }
 
-        } else {
-            stepName = stepString;
         }
-
-    }
+   }
 
     public String getStepName() {
         return stepName;

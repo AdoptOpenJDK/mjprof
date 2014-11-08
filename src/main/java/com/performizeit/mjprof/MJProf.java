@@ -19,8 +19,8 @@ package com.performizeit.mjprof;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -133,13 +133,22 @@ public class MJProf {
         System.exit(1);
     }
 
+
     public static String getSynopsisString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Synopsis\nA list of the following monads concatenated with . \n");
         sb.append("\nExpanded Expression:\n");
         sb.append(expandedExpressionstr+"\n");
         List<String> keys = new ArrayList<String>(StepsRepository.getRepository().keySet());
-        Collections.sort(keys);
+        Collections.sort(keys,new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                if (o1.startsWith("-"))  o1 = o1.substring(1)+"-";
+                if (o2.startsWith("-"))  o2 = o2.substring(1)+"-";
+                return o1.compareTo(o2);
+
+            }
+        });
         sb.append("\nData sources:\n");
 
         getSynopsisContent(sb, keys, DataSource.class);
@@ -159,7 +168,7 @@ public class MJProf {
         getSynopsisContent(sb, keys,Terminal.class);
 
         sb.append("\n  help                                  -Prints this message");
-        sb.append("\nMacros:\n");
+        sb.append("\n\nMacros:\n");
         Macros.getInstance().getSynopsisContent(sb);
 
         return sb.toString();
@@ -209,14 +218,17 @@ public class MJProf {
     static int findNextSeperator(String str) {
         boolean insideArgList = false;
         for (int i = 0; i < str.length(); i++) {
+            if (!insideArgList ) {
+                if (str.charAt(i) == '/') insideArgList = true;   // / starts arg list
 
-            if (str.charAt(i) == '/') {
-                if (i<str.length()-1 && insideArgList && str.charAt(i+1) !='.'  && str.charAt(i+1) !=' ' && str.charAt(i+1) !='/') {
-                    //do nothing
-                } else {
-                    insideArgList = !insideArgList;
+            } else {
+                if (str.charAt(i) == '/') {   // / will end arg list
+                    if (i<str.length()-1 && insideArgList && str.charAt(i+1) !='.'  && str.charAt(i+1) !=' ') {
+                        // but we have to have a space or . afterwards otherwise it is part of the arguments
+                    }  else insideArgList = false;
                 }
             }
+
             if ((str.charAt(i) == '.' || str.charAt(i) == ' ') && !insideArgList) return i;
         }
         return -1;

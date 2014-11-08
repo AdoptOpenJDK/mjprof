@@ -28,7 +28,7 @@ import com.performizeit.mjprof.plugins.mappers.singlethread.SingleThreadMapperBa
 import  static com.performizeit.mjprof.parser.ThreadInfoProps.*;
 
 @SuppressWarnings("unused")
-@Plugin(name="pkgelim", params = {},
+@Plugin(name="-pkg", params = {},
         description = "Eliminates package name from stack frames")
 public class PackageEliminator extends SingleThreadMapperBase {
     @Override
