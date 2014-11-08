@@ -27,19 +27,21 @@ public class Profile {
         root.setColor(color);
         root.sf = null;
     }
+    
+    public String test(){
+    	return root.sf;
+    }
     public  Profile(String parseString) {
         this();
         if (parseString.contains("]\\ ")) {
             parseMulti(parseString);
         }   else {
             parseSingle(parseString);
-
         }
+    }  
 
-    }
-    public  void parseSingle(String stackTrace) {
+	public  void parseSingle(String stackTrace) {
         addSingle(stackTrace);
-
     }
 
 
@@ -95,12 +97,9 @@ public class Profile {
 
     private int nextFrame(int parentPehIndent,SFNode parent,  String[] lines, int curLine) {
         while (curLine < lines.length) {
-//            System.out.println("curLine="+curLine + lines[curLine]);
             String line = lines[curLine];
 
             ProfileEntryHelper peh = new ProfileEntryHelper(line);
-
-//            System.out.println("ind="+peh.indentation);
             if (peh.indentation <= parentPehIndent) {
                 return curLine;
             } else if (peh.indentation > parentPehIndent) {
@@ -119,20 +118,16 @@ public class Profile {
         return curLine;
 
     }
-
-
-
+    
     public void addMulti(Profile p) {
         root.mergeToNode(p.root);
     }
+      
     @Override
     public String toString() {
         return root.toString();
 
     }
-
-
-
 
     public void visit(ProfileVisitor pv) {
          root.visitChildren(pv,0);
@@ -144,5 +139,13 @@ public class Profile {
     public int getCount() {
         return root.getCount();
     }
+
+	public void filterDown(ProfileNodeFilter profileNodeFilter, Object context) {
+		  root.filterDownChildren(profileNodeFilter,0,context);		
+	}
+	
+	public void filterUp(ProfileNodeFilter profileNodeFilter, Object context) {	
+		  root.filterUpChildren(profileNodeFilter,0,context);		
+	}
 
 }
