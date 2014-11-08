@@ -17,44 +17,57 @@
 
 package com.performizeit.mjprof.plugins.mappers;
 
-import com.performizeit.mjprof.plugin.types.DumpReducer;
-import com.performizeit.mjprof.plugins.mappers.singlethread.stackframe.FileNameEliminator;
-import com.performizeit.mjprof.api.Plugin;
-import com.performizeit.mjprof.model.Profile;
-import com.performizeit.mjprof.model.ThreadInfoAggregator;
-import com.performizeit.mjprof.api.Param;
-import com.performizeit.mjprof.parser.ThreadDump;
-import com.performizeit.mjprof.parser.ThreadInfo;
-import com.performizeit.plumbing.PipeHandler;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
+
+import com.performizeit.mjprof.api.Param;
+import com.performizeit.mjprof.api.Plugin;
+import com.performizeit.mjprof.model.Profile;
+import com.performizeit.mjprof.model.ProfileNodeFilter;
+import com.performizeit.mjprof.model.SFNode;
+import com.performizeit.mjprof.model.ThreadInfoAggregator;
+import com.performizeit.mjprof.parser.ThreadDump;
+import com.performizeit.mjprof.parser.ThreadInfo;
+import com.performizeit.mjprof.plugin.types.DumpReducer;
+import com.performizeit.plumbing.PipeHandler;
 
 
-@Plugin(name="group", params ={@Param(type = String.class,value = "attr",optional=true,defaultValue = "")},description="Group a single thread dump by an attribute. If not attribute is specified all dump is merged")
+
+@Plugin(name="merge", params ={@Param(type = String.class,value = "attr",optional=true,defaultValue = "")},description="merged callees for a particular method, i.e. all call traces started from this method.")
 public class MergedCallees implements DumpReducer,PipeHandler<ThreadDump,ThreadDump>  {
+	private static final String STACK = "stack";
 	private final String methodName;
 	public MergedCallees(String methodName) {
 		this.methodName = methodName;
 	}
 	public ThreadDump map(final ThreadDump jsd ) {
 		ArrayList<String> a= new ArrayList<String>();
-		a.add("stack");
-		Profile pro= new Profile();
+		a.add(methodName);
 		ThreadInfoAggregator aggr = new ThreadInfoAggregator(a);
 		for (ThreadInfo mss : jsd.getStacks()  ) {
-			//    	Profile p = (Profile)mss.getVal("stack");
-			String p =  preperStackTrace(mss.getVal("stack").toString());
-			if(p!=null){
-				pro.addMulti(new Profile(p));
-				mss.setVal("stack", new Profile(p));
-				aggr.accumulateThreadInfo(mss);
-			}
+			Profile p = (Profile)mss.getVal(STACK);
+
+//			p.filterUp(new ProfileNodeFilter() {
+//				@Override
+//				public boolean accept(SFNode node, int level,Object context) {
+//					return node.contains(methodName);
+//				}
+//			},null) ;
+//			
+
+			p.filterDown(new ProfileNodeFilter() {
+				@Override
+				public boolean accept(SFNode node, int level,Object context) {
+					return node.getStackFrame().contains(methodName);
+				}
+			},null) ;
+
+			mss.setVal(STACK, p); 		
+			aggr.accumulateThreadInfo(mss);
+
 		}
-		System.out.println(pro);
 		ThreadDump jsd2 = new ThreadDump();
 		jsd2.setHeader(jsd.getHeader());
 		jsd2.setStacks(aggr.getAggrInfos());
@@ -65,60 +78,5 @@ public class MergedCallees implements DumpReducer,PipeHandler<ThreadDump,ThreadD
 	@Override public ThreadDump handleMsg(ThreadDump msg) { return map(msg);}
 	@Override public ThreadDump handleDone() {return null;}
 
-	private String preperStackTrace(String stackTrace) {
-		String[] sf = stackTrace.split("\n");
-		for (int i=sf.length-1;i>=0;i--) {
-			String sfi = sf[i].trim();
-			if (sfi.isEmpty()) continue;
-			// String newSfi = FileNameEliminator.eliminatePackage(sfi);
-			//todo anat
-			if(sfi.contains(methodName)){
-				String stack =  printthatpart(sf, i);
-				return stack;
-			}
-		}
-		return null;
-
-	}
-
-
-	private String printthatpart(String[] sf, int j) {
-		StringBuilder sb = new StringBuilder();
-		for (int i=sf.length-1;i>=j;i--) {
-			sb.append(sf[i]);
-			sb.append("\n");
-		}
-		return sb.toString();
-
-	}
-
-
-	public static void main(String[] args) throws IOException {
-		MergedCallees g = new MergedCallees("org.eclipse.core.internal.jobs.WorkerPool.test");
-		//	ThreadDump dump = new ThreadDump(readFromFile("C:/Users/8/Desktop/mjprof/src/test/java/test1.txt"));
-		ThreadDump dump = new ThreadDump(readFromFile("C:/Program Files/Java/jdk1.6.0_45/bin/test1.txt"));
-
-		System.out.println(g.map(dump));
-	}
-
-	private static String readFromFile(String fileName) throws IOException {
-		BufferedReader br = new BufferedReader(new FileReader(fileName));
-		try {
-			StringBuilder sb = new StringBuilder();
-			String line = br.readLine();
-
-			while (line != null) {
-				sb.append(line);
-				sb.append("\n");
-				line = br.readLine();
-			}
-			String everything = sb.toString();
-			return everything; //+ "\n";
-
-
-		} finally {
-			br.close();
-		}
-	}
 
 }

@@ -81,8 +81,7 @@ public class ThreadInfoAggregator {
     ArrayList<Object> generateKey(ThreadInfo threadInfo) {
         ArrayList<Object> key = new ArrayList<Object>();
         for (String prop : props) {
-            key.add(threadInfo.getVal(prop));
-
+               key.add(threadInfo.getVal(prop));
         }
         return key;
 

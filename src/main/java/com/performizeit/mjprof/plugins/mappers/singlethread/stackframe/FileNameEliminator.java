@@ -50,7 +50,7 @@ public class FileNameEliminator extends SingleThreadMapperBase {
         return stck;
     }
 
-    static String eliminatePackage(String stackFrame) {
+    public static String eliminatePackage(String stackFrame) {
         StackFrame sf = new StackFrame(stackFrame);
         sf.setLineNum("");
         sf.setFileName("");

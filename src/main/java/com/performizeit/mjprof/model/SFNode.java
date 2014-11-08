@@ -136,7 +136,77 @@ public class SFNode {
 
         }
     }
+    
+    public void filterUpChildren(ProfileNodeFilter pnf,int level, Object context) {
+        ArrayList<String> keysToRemove = new ArrayList<String>();
+    
+        for (String childKey : children.keySet()) {
+        	SFNode child =    children.get(childKey);
 
+        	boolean acceptNode = pnf.accept(child, level,context);
+        	if (acceptNode ) {
+        	//	child.filterUpChildren(pnf, level+1,context);    // first filter out the children
+        	}
+        	else{
+        		keysToRemove.add(childKey);
+        	}
+        	child.filterUpChildren(pnf, level+1,context);  
+
+
+        }
+
+  
+        // if we are about to remove this child then we take all its children and fuse them to this node....
+        for (String key: keysToRemove) {
+            SFNode child = children.get(key);
+            children.remove(key);
+            for (String grandchildKey :child.children.keySet())  {
+                if (children.get(grandchildKey) == null) {/// there is no child with grandchildKey
+                    children.put(grandchildKey, child.children.get(grandchildKey));
+                } else {
+                    SFNode newChild = children.get(grandchildKey);
+                    newChild.mergeToNode(child.children.get(grandchildKey));
+                }
+
+            }
+
+            System.out.println("+++++++++++++++ " + level + " " + child);
+
+        }
+    }
+    
+    public void filterDownChildren(ProfileNodeFilter pnf,int level, Object context) {
+        ArrayList<String> keysToRemove = new ArrayList<String>();
+
+        for (String childKey : children.keySet()) {
+            SFNode child =    children.get(childKey);
+          //  System.out.println("+++++++++++++++ " + level + " " + child);
+            boolean acceptNode = pnf.accept(child, level,context);
+            //if acceptNode==true we want to save it and all childern
+            if ( !acceptNode) {
+               keysToRemove.add(childKey);
+               child.filterDownChildren(pnf, level + 1,context);    // first filter out the children
+            }
+        }
+        // if we are about to remove this child then we take all its children and fuse them to this node....
+        for (String key: keysToRemove) {
+            SFNode child = children.get(key);
+            children.remove(key);
+            for (String grandchildKey :child.children.keySet())  {
+                if (children.get(grandchildKey) == null) {/// there is no child with grandchildKey
+                    children.put(grandchildKey, child.children.get(grandchildKey));
+                } else {
+                    SFNode newChild = children.get(grandchildKey);
+                    newChild.mergeToNode(child.children.get(grandchildKey));
+                }
+
+            }
+
+
+        }
+    }
+
+    
     public void mergeToNode(SFNode that) {
         this.count+= that.count;
         //merge children
@@ -177,4 +247,21 @@ public class SFNode {
     public int getCount() {
         return count;
     }
+    
+    public boolean isNull(){
+    	return sf==null;
+    }
+
+	public boolean contains(String exp) {
+		if(sf.contains(exp))
+			return true;
+		 for (String key : children.keySet()) {
+			 SFNode thisChild = this.children.get(key);
+			 if(thisChild.sf.contains(exp))
+				 return true;
+			 else
+				 return thisChild.contains(exp);
+	        }
+		return false;
+	}
 }

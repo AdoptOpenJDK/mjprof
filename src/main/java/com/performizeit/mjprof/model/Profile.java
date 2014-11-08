@@ -27,6 +27,10 @@ public class Profile {
         root.setColor(color);
         root.sf = null;
     }
+    
+    public String test(){
+    	return root.sf;
+    }
     public  Profile(String parseString) {
         this();
         if (parseString.contains("]\\ ")) {
@@ -65,10 +69,7 @@ public class Profile {
          }
     	
 	
-	private String getMethodName(String sfi) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
 	private String printthatpart(String[] sf, int j) {
 		StringBuilder sb = new StringBuilder();
 		 for (int i=sf.length-1;i>=j;i--) {
@@ -135,6 +136,33 @@ public class Profile {
 
     private int nextFrame(int parentPehIndent,SFNode parent,  String[] lines, int curLine) {
         while (curLine < lines.length) {
+           System.out.println("curLine="+curLine + lines[curLine]);
+            String line = lines[curLine];
+
+            ProfileEntryHelper peh = new ProfileEntryHelper(line);
+
+            System.out.println("ind="+peh.indentation);
+            if (peh.indentation <= parentPehIndent) {
+                return curLine;
+            } else if (peh.indentation > parentPehIndent) {
+                SFNode node;
+                node = parent.children.get(peh.description);
+                if (node == null) {
+                    node = new SFNode();
+                    node.sf = peh.description;
+                    parent.children.put(peh.description, node);
+                }
+                node.count += peh.count;
+                if (peh.indentation ==0) parent.count += peh.count;
+                curLine = nextFrame(peh.indentation, node, lines, curLine + 1);
+            }
+        }
+        return curLine;
+
+    }
+    
+    private int nextRelevanteFrame(int parentPehIndent,SFNode parent,  String[] lines, int curLine) {
+        while (curLine < lines.length) {
 //            System.out.println("curLine="+curLine + lines[curLine]);
             String line = lines[curLine];
 
@@ -185,5 +213,17 @@ public class Profile {
     public int getCount() {
         return root.getCount();
     }
+ 
+    public boolean hasChildren() {
+        return  root.children.size()==0;
+    }
+    
+	public void filterDown(ProfileNodeFilter profileNodeFilter, Object context) {
+		  root.filterDownChildren(profileNodeFilter,0,context);		
+	}
+	
+	public void filterUp(ProfileNodeFilter profileNodeFilter, Object context) {	
+		  root.filterUpChildren(profileNodeFilter,0,context);		
+	}
 
 }
