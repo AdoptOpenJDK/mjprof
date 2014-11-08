@@ -36,7 +36,7 @@ public class StackFrameContains extends SingleThreadMapperBase {
 
     @Override
     public ThreadInfo map(ThreadInfo stck) {
-        Profile p = (Profile)stck.getVal(STACK);
+         Profile p = (Profile)stck.getVal(STACK);
         p.filter(new ProfileNodeFilter() {
             @Override
             public boolean accept(SFNode node, int level,Object context) {
@@ -45,4 +45,5 @@ public class StackFrameContains extends SingleThreadMapperBase {
         },null) ;
         return stck;
     }
+    
 }
