@@ -38,47 +38,8 @@ public class Profile {
         }   else {
             parseSingle(parseString);
         }
+    }  
 
-    }
-    
-    public  Profile(String parseString, String methodName) {
-        this();
-        String newStackTrace = preperStackTrace(parseString,methodName);
-        if (parseString.contains("]\\ ")) {
-            parseMulti(newStackTrace);
-        }   else {
-            parseSingle(newStackTrace);
-        }
-
-    }
-    
-    private String preperStackTrace(String stackTrace, String methodName) {
-    	String[] sf = stackTrace.split("\n");
-    	 for (int i=sf.length-1;i>=0;i--) {
-             String sfi = sf[i].trim();
-             if (sfi.isEmpty()) continue;
-             //if we get to a line that our method equle to - we want the next frame?
-             //check recursive 
-         if(sfi.equals(methodName)){
-           String stack =  printthatpart(sf, i);
-            return stack;
-            }
-             }
-		return methodName;
-
-         }
-    	
-	
-
-	private String printthatpart(String[] sf, int j) {
-		StringBuilder sb = new StringBuilder();
-		 for (int i=sf.length-1;i>=j;i--) {
-			 sb.append(sf[i]);
-			 sb.append("\n");
-		 }
-		 return sb.toString();
-		
-	}
 	public  void parseSingle(String stackTrace) {
         addSingle(stackTrace);
     }
@@ -213,11 +174,7 @@ public class Profile {
     public int getCount() {
         return root.getCount();
     }
- 
-    public boolean hasChildren() {
-        return  root.children.size()==0;
-    }
-    
+
 	public void filterDown(ProfileNodeFilter profileNodeFilter, Object context) {
 		  root.filterDownChildren(profileNodeFilter,0,context);		
 	}

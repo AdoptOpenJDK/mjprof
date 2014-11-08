@@ -17,11 +17,7 @@
 
 package com.performizeit.mjprof.plugins.mappers;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
-
 import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.model.Profile;
@@ -35,7 +31,7 @@ import com.performizeit.plumbing.PipeHandler;
 
 
 
-@Plugin(name="merge", params ={@Param(type = String.class,value = "attr",optional=true,defaultValue = "")},description="merged callees for a particular method, i.e. all call traces started from this method.")
+@Plugin(name="mergedCallees", params ={@Param(type = String.class,value = "methodName",optional=true,defaultValue = "")},description="merged callees for a particular method, i.e. all call traces started from this method.")
 public class MergedCallees implements DumpReducer,PipeHandler<ThreadDump,ThreadDump>  {
 	private static final String STACK = "stack";
 	private final String methodName;
