@@ -5,4 +5,4 @@ tools.jar
 mjprof.iml
 .settings
 .project
-
+.classpath
