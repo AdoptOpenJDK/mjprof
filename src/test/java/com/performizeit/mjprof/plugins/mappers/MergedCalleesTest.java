@@ -20,9 +20,9 @@ public class MergedCalleesTest {
 		//    MergedCallees g = new MergedCallees("org.eclipse.core.internal.jobs.WorkerPool.startJob");
 
 		//	GroupByProp g = new GroupByProp("org.eclipse.core.internal.jobs.WorkerPool.test");
-		//	ThreadDump dump = new ThreadDump(readFromFile("testDumps/test1.txt"));
-		ThreadDump dump = new ThreadDump(readFromFile("testDumps/test2.txt"));
-//		ThreadDump resDump = new ThreadDump(readFromFile("testDumps/resTest2.txt"));
+		//	ThreadDump dump = new ThreadDump(readFromFile("src/test/res/test1.txt"));
+		ThreadDump dump = new ThreadDump(readFromFile("src/test/res/test2.txt"));
+//		ThreadDump resDump = new ThreadDump(readFromFile("src/test/res/resTest2.txt"));
 
 System.out.println(g.map(dump).getStacks());
 
