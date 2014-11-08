@@ -97,12 +97,9 @@ public class Profile {
 
     private int nextFrame(int parentPehIndent,SFNode parent,  String[] lines, int curLine) {
         while (curLine < lines.length) {
-           System.out.println("curLine="+curLine + lines[curLine]);
             String line = lines[curLine];
 
             ProfileEntryHelper peh = new ProfileEntryHelper(line);
-
-            System.out.println("ind="+peh.indentation);
             if (peh.indentation <= parentPehIndent) {
                 return curLine;
             } else if (peh.indentation > parentPehIndent) {
@@ -122,35 +119,6 @@ public class Profile {
 
     }
     
-    private int nextRelevanteFrame(int parentPehIndent,SFNode parent,  String[] lines, int curLine) {
-        while (curLine < lines.length) {
-//            System.out.println("curLine="+curLine + lines[curLine]);
-            String line = lines[curLine];
-
-            ProfileEntryHelper peh = new ProfileEntryHelper(line);
-
-//            System.out.println("ind="+peh.indentation);
-            if (peh.indentation <= parentPehIndent) {
-                return curLine;
-            } else if (peh.indentation > parentPehIndent) {
-                SFNode node;
-                node = parent.children.get(peh.description);
-                if (node == null) {
-                    node = new SFNode();
-                    node.sf = peh.description;
-                    parent.children.put(peh.description, node);
-                }
-                node.count += peh.count;
-                if (peh.indentation ==0) parent.count += peh.count;
-                curLine = nextFrame(peh.indentation, node, lines, curLine + 1);
-            }
-        }
-        return curLine;
-
-    }
-
-
-
     public void addMulti(Profile p) {
         root.mergeToNode(p.root);
     }
@@ -160,9 +128,6 @@ public class Profile {
         return root.toString();
 
     }
-
-
-
 
     public void visit(ProfileVisitor pv) {
          root.visitChildren(pv,0);

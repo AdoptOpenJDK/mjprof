@@ -177,7 +177,6 @@ public class SFNode {
 
         for (String childKey : children.keySet()) {
             SFNode child =    children.get(childKey);
-          //  System.out.println("+++++++++++++++ " + level + " " + child);
             boolean acceptNode = pnf.accept(child, level,context);
             //if acceptNode==true we want to save it and all childern
             if ( !acceptNode) {
