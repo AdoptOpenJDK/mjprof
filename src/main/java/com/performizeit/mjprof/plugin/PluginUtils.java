@@ -30,55 +30,50 @@ import org.reflections.Reflections;
 public class PluginUtils {
 
 
-	public static Object initObj(Class<?> clazz, Class[] paramTypes,Object[] paramArgs) {
-        try {
-        	Constructor<?>  constructor = clazz.getConstructor(paramTypes);
-        	return constructor.newInstance(paramArgs);
-        } catch (Exception e) {
-       	    throw new RuntimeException(e );
-        }
-	}
-
-
-
-
-	//conParameter - constructor parameters
-	public static HashMap<Class,Class> getAllPlugins() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, ClassNotFoundException{
-		HashMap<Class,Class> map = new HashMap<Class,Class>();
-		//TODO
-		Reflections reflections = new Reflections("com.performizeit");
-		Set<Class<?>> annotatedPlugin = reflections.getTypesAnnotatedWith(Plugin.class);
-
-		for(Class cla :annotatedPlugin){
-			if(BasePlugin.class.isAssignableFrom(cla)){
-				String helpLine=invokeGetHelpLine(cla);	
-				map.put(cla, cla);
-			}else{
-				System.out.println("ERROR: class " + cla.getName() + " needs to extend BasePlugin child");
-			}
-		}
-		return map;
-	}
-
-	private static String invokeGetHelpLine(Class<?> cla)  {
-	    Plugin pluginAnnotation = cla.getAnnotation(Plugin.class);
-        return pluginAnnotation.description();
-	}
-
-
-
-	public static boolean isDataSource(Object o) {
-		return DataSource.class.isAssignableFrom(o.getClass());
-	}
-    public static boolean isDataSourceClass(Class c) {
-        return DataSource.class.isAssignableFrom(c);
+  public static Object initObj(Class<?> clazz, Class[] paramTypes, Object[] paramArgs) {
+    try {
+      Constructor<?> constructor = clazz.getConstructor(paramTypes);
+      return constructor.newInstance(paramArgs);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
+  }
 
-    public static boolean isOutputer(Object lststp) {
-        return Outputer.class.isAssignableFrom(lststp.getClass());
+
+  //conParameter - constructor parameters
+  public static HashMap<Class, Class> getAllPlugins() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, ClassNotFoundException {
+    HashMap<Class, Class> map = new HashMap<>();
+    //TODO
+    Reflections reflections = new Reflections("com.performizeit");
+    Set<Class<?>> annotatedPlugin = reflections.getTypesAnnotatedWith(Plugin.class);
+
+    for (Class cla : annotatedPlugin) {
+      if (BasePlugin.class.isAssignableFrom(cla)) {
+        invokeGetHelpLine(cla);
+        map.put(cla, cla);
+      } else {
+        System.out.println("ERROR: class " + cla.getName() + " needs to extend BasePlugin child");
+      }
     }
-    public static boolean isOutputerClass(Class c) {
-        return Outputer.class.isAssignableFrom(c);
-    }
+    return map;
+  }
+
+  private static String invokeGetHelpLine(Class<?> cla) {
+    Plugin pluginAnnotation = cla.getAnnotation(Plugin.class);
+    return pluginAnnotation.description();
+  }
+
+
+  public static boolean isDataSource(Object o) {
+    return DataSource.class.isAssignableFrom(o.getClass());
+  }
+
+  public static boolean isDataSourceClass(Class c) {
+    return DataSource.class.isAssignableFrom(c);
+  }
+
+  public static boolean isOutputerClass(Class c) {
+    return Outputer.class.isAssignableFrom(c);
+  }
 
 }

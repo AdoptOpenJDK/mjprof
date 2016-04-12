@@ -25,24 +25,29 @@ import com.performizeit.mjprof.parser.ThreadInfoProps;
 import com.performizeit.mjprof.parser.ThreadInfo;
 import com.performizeit.plumbing.PipeHandler;
 
+@Plugin(name = "tree", params = {}, description = "combine all stack traces ")
+public class StackTreeMerger implements Terminal, PipeHandler<ThreadDump, String> {
+  protected Profile st = new Profile();
 
-@Plugin(name="tree", params ={},description="combine all stack traces ")
-public class StackTreeMerger implements Terminal,PipeHandler<ThreadDump,String> {
-    Profile st = new Profile();
-
-    public void addStackDump(ThreadDump jsd) {
-        for (ThreadInfo mss : jsd.getStacks()  ) {
-            st.addMulti((Profile) mss.getVal(ThreadInfoProps.STACK));      // System.out.println();
-        }
+  public void addStackDump(ThreadDump jsd) {
+    for (ThreadInfo mss : jsd.getStacks()) {
+      st.addMulti((Profile) mss.getVal(ThreadInfoProps.STACK));      // System.out.println();
     }
+  }
 
+  @Override
+  public String toString() {
+    return st.toString();
+  }
 
+  @Override
+  public String handleMsg(ThreadDump msg) {
+    addStackDump(msg);
+    return null;
+  }
 
-    @Override
-    public String toString() {
-        return st.toString();
-    }
-
-    @Override public String handleMsg(ThreadDump msg) { addStackDump(msg);return null;}
-    @Override public String handleDone() {return toString();}
+  @Override
+  public String handleDone() {
+    return toString();
+  }
 }

@@ -16,6 +16,7 @@
 */
 
 package com.performizeit.mjprof.plugins.mappers.singlethread;
+
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.parser.ThreadInfo;
@@ -23,20 +24,21 @@ import com.performizeit.mjprof.parser.ThreadInfo;
 import java.util.HashMap;
 
 @SuppressWarnings("unused")
-@Plugin(name="-prop", params ={@Param("attr")},
-        description = "Removes a certain attribute e.g. eliminate/stack/")
+@Plugin(name = "-prop", params = {@Param("attr")},
+  description = "Removes a certain attribute e.g. eliminate/stack/")
 public class PropEliminator extends SingleThreadMapperBase {
-    private final String prop;
+  private final String prop;
 
-    public PropEliminator(String prop) {
-        this.prop = prop;
-    }
-    @Override
-    public ThreadInfo map(ThreadInfo stck) {
+  public PropEliminator(String prop) {
+    this.prop = prop;
+  }
 
-        HashMap<String,Object> mtd = stck.cloneMetaData();
-        mtd.remove(prop);
-        return      new ThreadInfo(mtd);
+  @Override
+  public ThreadInfo map(ThreadInfo threadInfo) {
 
-    }
+    HashMap<String, Object> mtd = threadInfo.cloneMetaData();
+    mtd.remove(prop);
+    return new ThreadInfo(mtd);
+
+  }
 }

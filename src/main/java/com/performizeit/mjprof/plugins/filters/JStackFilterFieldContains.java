@@ -21,22 +21,20 @@ import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.parser.ThreadInfo;
 
-@Plugin(name="contains", params ={@Param("attr"),@Param("value")},
-        description = "Returns only threads which contain the string in certain attribute (regexp not supported)")
+@Plugin(name = "contains", params = {@Param("attr"), @Param("value")},
+  description = "Returns only threads which contain the string in certain attribute (regexp not supported)")
 public class JStackFilterFieldContains extends SingleThreadFilter {
-    private final String attrName;
-    private final String valContained;
+  private final String attrName;
+  private final String valContained;
 
-    public JStackFilterFieldContains(String attrName, String valContained) {
-        this.attrName = attrName;
-        this.valContained = valContained;
-    }
+  public JStackFilterFieldContains(String attrName, String valContained) {
+    this.attrName = attrName;
+    this.valContained = valContained;
+  }
 
-    @Override
-    public boolean filter(ThreadInfo stck) {
-        Object o = stck.getVal(attrName);
-        if (o == null) {return false; }
-        return o.toString().contains(valContained);
-
-    }
+  @Override
+  public boolean filter(ThreadInfo stck) {
+    Object o = stck.getVal(attrName);
+    return o != null && o.toString().contains(valContained);
+  }
 }

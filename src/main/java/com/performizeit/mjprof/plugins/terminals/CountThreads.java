@@ -25,18 +25,21 @@ import com.performizeit.plumbing.PipeHandler;
 
 
 @SuppressWarnings("unused")
-@Plugin(name="count", params ={}, description="counts number of threads")
-public class CountThreads implements Terminal ,PipeHandler<ThreadDump,String> {
-    @Override public String handleMsg(ThreadDump msg) {
-        int count=0;
-        for (ThreadInfo mss : msg.getStacks()  ) {
-            int inc = (Integer)mss.getVal("count") == null ? 1 : (Integer)mss.getVal("count");
+@Plugin(name = "count", params = {}, description = "counts number of threads")
+public class CountThreads implements Terminal, PipeHandler<ThreadDump, String> {
+  @Override
+  public String handleMsg(ThreadDump msg) {
+    int count = 0;
+    for (ThreadInfo mss : msg.getStacks()) {
+      int inc = mss.getVal("count") == null ? 1 : (Integer) mss.getVal("count");
 
-            count+= inc;
-        }
-        return msg.getHeader() + "\n" +    "Total number of threads is "+ count + "\n";
+      count += inc;
     }
-    @Override public String handleDone() {
-        return null;
-    }
+    return msg.getHeader() + "\n" + "Total number of threads is " + count + "\n";
+  }
+
+  @Override
+  public String handleDone() {
+    return null;
+  }
 }

@@ -13,45 +13,49 @@ import com.performizeit.plumbing.GeneratorHandler;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Element;
+
 import java.io.File;
-@Plugin(name="visualvm", params ={@Param("path")},description = "Read profiling session from xml export of VisualVM(not implemented yet)")
+
+@Plugin(name = "visualvm", params = {@Param("path")}, description = "Read profiling session from xml export of VisualVM(not implemented yet)")
 public class VisualVMDataSourcePlugin implements DataSource, GeneratorHandler<ThreadDump> {
-    String fileName;
+  String fileName;
 
-    public VisualVMDataSourcePlugin(String fileName) {
-        this.fileName = fileName;
-    }
-	public ArrayList<ThreadDump> getThreadDumps() {
-        File fXmlFile = new File(fileName);
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        try {
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(fXmlFile);
-            //ExportedView tree node
-            Element e = doc.getDocumentElement();
-            NodeList nl = e.getChildNodes();
-            for (int i=0; i<nl.getLength(); i++) {
-                System.out.println("aa["+nl.item(i).getNodeName()+"]");
-            }
+  public VisualVMDataSourcePlugin(String fileName) {
+    this.fileName = fileName;
+  }
 
-            //doc.getDocumentElement()
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+  public ArrayList<ThreadDump> getThreadDumps() {
+    File fXmlFile = new File(fileName);
+    DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+    try {
+      DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+      Document doc = dBuilder.parse(fXmlFile);
+      //ExportedView tree node
+      Element e = doc.getDocumentElement();
+      NodeList nl = e.getChildNodes();
+      for (int i = 0; i < nl.getLength(); i++) {
+        System.out.println("aa[" + nl.item(i).getNodeName() + "]");
+      }
 
-		return new ArrayList<ThreadDump>();
-	}
-    @Override
-    public ThreadDump generate() {
-        return null;
+      //doc.getDocumentElement()
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
 
-    @Override
-    public boolean isDone() {
-        return true;
-    }
+    return new ArrayList<>();
+  }
 
-    @Override
-    public void sleepBetweenIteration() {
-    }
+  @Override
+  public ThreadDump generate() {
+    return null;
+  }
+
+  @Override
+  public boolean isDone() {
+    return true;
+  }
+
+  @Override
+  public void sleepBetweenIteration() {
+  }
 }

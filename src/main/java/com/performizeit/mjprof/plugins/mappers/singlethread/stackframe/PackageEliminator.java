@@ -20,34 +20,29 @@ package com.performizeit.mjprof.plugins.mappers.singlethread.stackframe;
 
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.model.Profile;
-import com.performizeit.mjprof.model.ProfileVisitor;
-import com.performizeit.mjprof.model.SFNode;
 import com.performizeit.mjprof.parser.ThreadInfo;
 import com.performizeit.mjprof.plugins.mappers.singlethread.SingleThreadMapperBase;
 
-import  static com.performizeit.mjprof.parser.ThreadInfoProps.*;
+import static com.performizeit.mjprof.parser.ThreadInfoProps.STACK;
 
 @SuppressWarnings("unused")
-@Plugin(name="-pkg", params = {},
-        description = "Eliminates package name from stack frames")
+@Plugin(name = "-pkg", params = {},
+  description = "Eliminates package name from stack frames")
 public class PackageEliminator extends SingleThreadMapperBase {
-    @Override
-    public ThreadInfo map(ThreadInfo stck) {
-        Profile jss = (Profile) stck.getVal(STACK);
-        jss.visit(new ProfileVisitor() {
-            @Override
-            public void visit(SFNode sf,int level) {
-                if (sf.getStackFrame() == null) return;
-                sf.setStackFrame(eliminatePackage(sf.getStackFrame()));
-            }
-        });
-        return stck;
-    }
+  @Override
+  public ThreadInfo map(ThreadInfo stck) {
+    Profile jss = (Profile) stck.getVal(STACK);
+    jss.visit((sf, level) -> {
+      if (sf.getStackFrame() == null) return;
+      sf.setStackFrame(eliminatePackage(sf.getStackFrame()));
+    });
+    return stck;
+  }
 
-    static String eliminatePackage(String stackFrame) {
-        StackFrame sf = new StackFrame(stackFrame);
-        sf.setPackageName("");
-        return sf.toString();
+  static String eliminatePackage(String stackFrame) {
+    StackFrame sf = new StackFrame(stackFrame);
+    sf.setPackageName("");
+    return sf.toString();
 
-    }
+  }
 }

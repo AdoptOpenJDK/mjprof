@@ -24,56 +24,56 @@ import java.util.regex.Pattern;
 
 
 public class MJStep {
-    String stepName;
-    List<String> stepArgs;
+  String stepName;
+  List<String> stepArgs;
 
-    public MJStep(String stepString) {
+  public MJStep(String stepString) {
 
-        stepArgs = new ArrayList<String>();
+    stepArgs = new ArrayList<String>();
 
-        if (!stepString.contains("/")) {
-            stepName = stepString;
-        } else {
-            int firstSlash = stepString.indexOf('/');
-            int lastSlash = stepString.lastIndexOf('/');
-            stepName = stepString.substring(0,firstSlash);
-            if (firstSlash<lastSlash) {
-                String params = stepString.substring(firstSlash + 1, lastSlash);
-                if (params.trim().length() > 0) {
-                    params = params.replaceAll(",,", "__DOUBLE_COMMA__xxxxxxx");
-                    for (String q : params.split(",")) {
-                        addStepArg(q.replaceAll("__DOUBLE_COMMA__xxxxxxx", ","));
-                    }
-                }
-            }
-
+    if (!stepString.contains("/")) {
+      stepName = stepString;
+    } else {
+      int firstSlash = stepString.indexOf('/');
+      int lastSlash = stepString.lastIndexOf('/');
+      stepName = stepString.substring(0, firstSlash);
+      if (firstSlash < lastSlash) {
+        String params = stepString.substring(firstSlash + 1, lastSlash);
+        if (params.trim().length() > 0) {
+          params = params.replaceAll(",,", "__DOUBLE_COMMA__xxxxxxx");
+          for (String q : params.split(",")) {
+            addStepArg(q.replaceAll("__DOUBLE_COMMA__xxxxxxx", ","));
+          }
         }
-   }
+      }
 
-    public String getStepName() {
-        return stepName;
     }
+  }
 
-    public List<String> getStepArgs() {
-        return stepArgs;
-    }
+  public String getStepName() {
+    return stepName;
+  }
 
-    public String getStepArg(int i) {
-        return stepArgs.get(i);
-    }
+  public List<String> getStepArgs() {
+    return stepArgs;
+  }
 
-    public void addStepArg(String arg) {
-        stepArgs.add(arg);
-    }
+  public String getStepArg(int i) {
+    return stepArgs.get(i);
+  }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(stepName).append("/");
-        for (String stepV : stepArgs) {
-            sb.append(stepV).append(",");
-        }
-        sb.append("/");
-        return sb.toString();
+  public void addStepArg(String arg) {
+    stepArgs.add(arg);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append(stepName).append("/");
+    for (String stepV : stepArgs) {
+      sb.append(stepV).append(",");
     }
+    sb.append("/");
+    return sb.toString();
+  }
 }

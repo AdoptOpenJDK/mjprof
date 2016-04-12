@@ -27,28 +27,36 @@ import com.performizeit.plumbing.PipeHandler;
 
 import java.util.ArrayList;
 
+@Plugin(name = "group", params = {@Param(type = String.class, value = "attr", optional = true, defaultValue = "")}, description = "Group a single thread dump by an attribute. If not attribute is specified all dump is merged")
+public class GroupByProp implements DumpReducer, PipeHandler<ThreadDump, ThreadDump> {
+  private final String prop;
 
-@Plugin(name="group", params ={@Param(type = String.class,value = "attr",optional=true,defaultValue = "")},description="Group a single thread dump by an attribute. If not attribute is specified all dump is merged")
-public class GroupByProp implements DumpReducer,PipeHandler<ThreadDump,ThreadDump>  {
-    private final String prop;
-    public GroupByProp(String prop) {
-        this.prop = prop;
-    }
-    public ThreadDump map(final ThreadDump jsd ) {
-        ArrayList<String> a= new ArrayList<String>();
-        a.add(prop);
-        ThreadInfoAggregator aggr = new ThreadInfoAggregator(a);
-        for (ThreadInfo mss : jsd.getStacks()  ) {
-            aggr.accumulateThreadInfo(mss);
-        }
-        ThreadDump jsd2 = new ThreadDump();
-        jsd2.setHeader(jsd.getHeader());
-        jsd2.setStacks(aggr.getAggrInfos());
-        jsd2.setJNIglobalReferences(jsd.getJNIglobalReferences());
-        return jsd2;
-    }
+  public GroupByProp(String prop) {
+    this.prop = prop;
+  }
 
-    @Override public ThreadDump handleMsg(ThreadDump msg) { return map(msg);}
-    @Override public ThreadDump handleDone() {return null;}
+  public ThreadDump map(final ThreadDump jsd) {
+    ArrayList<String> a = new ArrayList<>();
+    a.add(prop);
+    ThreadInfoAggregator aggr = new ThreadInfoAggregator(a);
+    for (ThreadInfo mss : jsd.getStacks()) {
+      aggr.accumulateThreadInfo(mss);
+    }
+    ThreadDump jsd2 = new ThreadDump();
+    jsd2.setHeader(jsd.getHeader());
+    jsd2.setStacks(aggr.getAggrInfos());
+    jsd2.setJNIglobalReferences(jsd.getJNIglobalReferences());
+    return jsd2;
+  }
+
+  @Override
+  public ThreadDump handleMsg(ThreadDump msg) {
+    return map(msg);
+  }
+
+  @Override
+  public ThreadDump handleDone() {
+    return null;
+  }
 
 }

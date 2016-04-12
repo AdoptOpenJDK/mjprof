@@ -22,24 +22,29 @@ import java.util.Set;
 
 
 public class Props {
-    HashMap<String, Object> props;
-    public Props(HashMap<String, Object> mtd) {
-        props =mtd;
-    }
-    public Props() {
-        props = new HashMap<String, Object>();
-    }
-    public HashMap<String, Object> cloneMetaData() {
-        return (HashMap<String, Object>) props.clone();
-    }
-    public Object getVal(String key) {
-        return props.get(key);
-    }
-    public Object setVal(String key,Object val) {
-        return props.put(key,val);
-    }
+  HashMap<String, Object> props;
 
-    public Set<String> getProps() {
-        return props.keySet();
-    }
+  public Props(HashMap<String, Object> mtd) {
+    props = mtd;
+  }
+
+  public Props() {
+    props = new HashMap<>();
+  }
+
+  public HashMap<String, Object> cloneMetaData() {
+    return (HashMap<String, Object>) props.clone();
+  }
+
+  public Object getVal(String key) {
+    return props.get(key);
+  }
+
+  public Object setVal(String key, Object val) {
+    return props.put(key, val);
+  }
+
+  public Set<String> getProps() {
+    return props.keySet();
+  }
 }

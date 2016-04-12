@@ -20,24 +20,25 @@ package com.performizeit.mjprof.plugins.mappers.singlethread;
 
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.parser.ThreadInfo;
-import  static com.performizeit.mjprof.parser.ThreadInfoProps.*;
 
-@Plugin(name="-namesuffix", params = {},
-        description = "Trim the last number from thread names helps grouping thread pool threads together")
+import static com.performizeit.mjprof.parser.ThreadInfoProps.*;
+
+@Plugin(name = "-namesuffix", params = {},
+  description = "Trim the last number from thread names helps grouping thread pool threads together")
 public class RemoveThreadNameNumericalSuffix extends SingleThreadMapperBase {
-    public RemoveThreadNameNumericalSuffix() {
-    }
+  public RemoveThreadNameNumericalSuffix() {
+  }
 
-    @Override
-    public ThreadInfo map(ThreadInfo stck) {
-        String tName = (String)stck.getVal(NAME);
-        int idx = tName.length()-1;
-        for (;;idx--) {
-            Character c = tName.charAt(idx);
-            if (!Character.isDigit(c)) break;
-        }
-        tName = tName.substring(0,idx+1);
-        stck.setVal(NAME,tName);
-        return stck;
+  @Override
+  public ThreadInfo map(ThreadInfo stck) {
+    String tName = (String) stck.getVal(NAME);
+    int idx = tName.length() - 1;
+    for (; ; idx--) {
+      Character c = tName.charAt(idx);
+      if (!Character.isDigit(c)) break;
     }
+    tName = tName.substring(0, idx + 1);
+    stck.setVal(NAME, tName);
+    return stck;
+  }
 }

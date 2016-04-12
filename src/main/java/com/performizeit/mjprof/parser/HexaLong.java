@@ -18,32 +18,33 @@
 package com.performizeit.mjprof.parser;
 
 
-public class HexaLong implements Comparable<HexaLong>{
-    long value;
-    public HexaLong(long val) {
-        value = val;
+public class HexaLong implements Comparable<HexaLong> {
+  long value;
 
+  public HexaLong(long val) {
+    value = val;
+
+  }
+
+  public HexaLong(String s) throws NumberFormatException {
+    if (s.startsWith("0x")) {
+      s = s.substring(2);
     }
+    value = Long.parseLong(s, 16);
 
-    public HexaLong(String s) throws NumberFormatException {
-        if (s.startsWith("0x")) {
-            s=s.substring(2);
-        }
-        value = Long.parseLong(s, 16) ;
+  }
 
-    }
+  @Override
+  public String toString() {
+    return String.format("%x", value);
+  }
 
-    @Override
-    public String toString() {
-        return String.format("%x",value);
-    }
+  @Override
+  public int compareTo(HexaLong o) {
+    return new Long(value).compareTo(o.value);
+  }
 
-    @Override
-    public int compareTo(HexaLong o) {
-        return new Long(value).compareTo(o.value);
-    }
-
-    public long getValue() {
-        return value;
-    }
+  public long getValue() {
+    return value;
+  }
 }

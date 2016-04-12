@@ -20,73 +20,75 @@ package com.performizeit.mjprof.monads;
 import com.performizeit.mjprof.api.Param;
 
 public class StepInfo {
-    private final Class pluginType;
-    private Class clazz;
-	private Param[] params;
-	private String description;
-	
-	public StepInfo(Class clazz, Param[] params,String description) {
-		this.clazz=clazz;
-		this.params=params;
-		this.description=description;
-        this.pluginType =   getPluginType(clazz);
-      //  System.out.println(clazz.getSimpleName() +" "+ (pluginType != null ?pluginType.getSimpleName():"null"));
-	}
-    Class getPluginType(Class clazz) {
-        Class interfaces[] = clazz.getInterfaces();
-        if (interfaces.length == 0 ) {
-            Class superc = clazz.getSuperclass();
-            if (superc == null)  return null;
-            return getPluginType(superc);
-        }
-        for (Class i : interfaces) {
-         // todo    if (i.isAssignableFrom(BasePlugin.class)) return i;
-            return i;
-        }
-        Class superc = clazz.getSuperclass();
-        if (superc == null)  return null;
-        return getPluginType(superc);
+  private final Class pluginType;
+  private Class clazz;
+  private Param[] params;
+  private String description;
+
+  public StepInfo(Class clazz, Param[] params, String description) {
+    this.clazz = clazz;
+    this.params = params;
+    this.description = description;
+    this.pluginType = getPluginType(clazz);
+    //  System.out.println(clazz.getSimpleName() +" "+ (pluginType != null ?pluginType.getSimpleName():"null"));
+  }
+
+  Class getPluginType(Class clazz) {
+    Class interfaces[] = clazz.getInterfaces();
+    if (interfaces.length == 0) {
+      Class superc = clazz.getSuperclass();
+      if (superc == null) return null;
+      return getPluginType(superc);
     }
-
-	public Class getClazz() {
-		return clazz;
-	}
-
-	public Class[] getParamTypes() {
-		Class[] paramTypes = new Class[params.length];
-
-        for (int i=0;i<params.length;i++)    {
-            paramTypes[i]  = params[i].type();
-        }
-        return paramTypes;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-	
-	public int getArgNum(){
-		return params.length;
-	}
-    public int getMinArgNum(){
-        int minNum =  params.length;
-        for (Param param:params) {
-            if (param.optional()) minNum--;
-
-        }
-        return minNum;
+    for (Class i : interfaces) {
+      // todo    if (i.isAssignableFrom(BasePlugin.class)) return i;
+      return i;
     }
-	
-	@Override
-	public String toString() {
-		return "name "+ clazz + " description " + description + " param " + params;
-	}
+    Class superc = clazz.getSuperclass();
+    if (superc == null) return null;
+    return getPluginType(superc);
+  }
 
-    public Class getPluginType() {
-        return pluginType;
-    }
+  public Class getClazz() {
+    return clazz;
+  }
 
-    public Param[] getParams() {
-        return params;
+  public Class[] getParamTypes() {
+    Class[] paramTypes = new Class[params.length];
+
+    for (int i = 0; i < params.length; i++) {
+      paramTypes[i] = params[i].type();
     }
+    return paramTypes;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public int getArgNum() {
+    return params.length;
+  }
+
+  public int getMinArgNum() {
+    int minNum = params.length;
+    for (Param param : params) {
+      if (param.optional()) minNum--;
+
+    }
+    return minNum;
+  }
+
+  @Override
+  public String toString() {
+    return "name " + clazz + " description " + description + " param " + params;
+  }
+
+  public Class getPluginType() {
+    return pluginType;
+  }
+
+  public Param[] getParams() {
+    return params;
+  }
 }

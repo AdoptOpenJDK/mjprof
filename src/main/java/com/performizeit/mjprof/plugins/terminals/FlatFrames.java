@@ -17,37 +17,32 @@
 
 package com.performizeit.mjprof.plugins.terminals;
 
-import com.performizeit.mjprof.plugin.types.Terminal;
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.model.Profile;
-import com.performizeit.mjprof.model.ProfileVisitor;
-import com.performizeit.mjprof.model.SFNode;
 import com.performizeit.mjprof.parser.ThreadDump;
 import com.performizeit.mjprof.parser.ThreadInfo;
+import com.performizeit.mjprof.plugin.types.Terminal;
 import com.performizeit.plumbing.PipeHandler;
 import java.util.HashMap;
-import static com.performizeit.mjprof.parser.ThreadInfoProps.*;
+import static com.performizeit.mjprof.parser.ThreadInfoProps.STACK;
 
 @SuppressWarnings("unused")
 @Plugin(name="flat", params ={}, description="Shows flat histogram of the profiles")
 public class FlatFrames implements Terminal,PipeHandler<ThreadDump,String> {
-    HashMap<String,Integer> methods = new HashMap<String,Integer>();
+    HashMap<String,Integer> methods = new HashMap<>();
 
 
     public void addStackDump(ThreadDump jsd) {
         for (ThreadInfo mss : jsd.getStacks()  ) {
             Profile p = (Profile) mss.getVal(STACK);
-            p.visit(new ProfileVisitor() {
-                @Override
-                public void visit(SFNode stackframe, int level) {
-                    if (stackframe.getNumChildren() ==0 && stackframe.getStackFrame() != null) {
-                        Integer cnt = methods.get(stackframe.getStackFrame()) ;
-                        if (cnt == null) {
-                            cnt = 0;
-                        }
-                        cnt += stackframe.getCount();
-                        methods.put(stackframe.getStackFrame(),cnt);
+            p.visit((stackframe, level) -> {
+                if (stackframe.getNumChildren() ==0 && stackframe.getStackFrame() != null) {
+                    Integer cnt = methods.get(stackframe.getStackFrame()) ;
+                    if (cnt == null) {
+                        cnt = 0;
                     }
+                    cnt += stackframe.getCount();
+                    methods.put(stackframe.getStackFrame(),cnt);
                 }
             });
         }
@@ -62,8 +57,6 @@ public class FlatFrames implements Terminal,PipeHandler<ThreadDump,String> {
         }
         return sb.toString();
     }
-
-
 
     @Override public String handleMsg(ThreadDump msg) {
         addStackDump(msg);

@@ -18,5 +18,4 @@
 package com.performizeit.mjprof.api;
 
 public interface BasePlugin {
-
 }

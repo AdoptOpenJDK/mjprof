@@ -105,7 +105,7 @@ public class MJProf {
                 p = new Pipe<ThreadInfo,ThreadInfo> ("Pipe Thread "+step.getStepName() +i,handler);
             }
             pipes.add(p);
-            if (i>0) {     //connect to previous pipe
+            if (i > 0) {     //connect to previous pipe
               Pipe  prevPipe = pipes.get(i-1);
                 prevPipe.setOutgoingPipe(p);
             }
@@ -181,13 +181,13 @@ public class MJProf {
             lineLength = 0;
             stepInfo = StepsRepository.getStep(stepName);
             if (!stepInfo.getPluginType().equals(pluginType))  continue;
-            lineLength += appendAndCount(sb, "  "+stepName);
+            lineLength += appendAndCount(sb, "  " + stepName);
             if (stepInfo.getArgNum() > 0) {
                 lineLength += appendAndCount(sb, "/");
                 Param[] params = stepInfo.getParams();
                 for (int i = 0; i < stepInfo.getArgNum(); i++) {
                     String paramName = params[i].value();
-                    if (paramName == null || paramName.length() ==0)   // the default paramter name is ""
+                    if (paramName == null || paramName.length() == 0)   // the default paramter name is ""
                         paramName = params[i].type().getSimpleName().toLowerCase();
                     if (params[i].optional()) {
                         paramName = "["+paramName+"]";
