@@ -18,6 +18,7 @@
 package com.performizeit.mjprof.plugins.mappers;
 
 import java.util.ArrayList;
+
 import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.model.Profile;
@@ -30,20 +31,21 @@ import com.performizeit.mjprof.plugin.types.DumpReducer;
 import com.performizeit.plumbing.PipeHandler;
 
 
+@Plugin(name = "mergedCallees", params = {@Param(type = String.class, value = "methodName", optional = true, defaultValue = "")}, description = "merged callees for a particular method, i.e. all call traces started from this method.")
+public class MergedCallees implements DumpReducer, PipeHandler<ThreadDump, ThreadDump> {
+  private static final String STACK = "stack";
+  private final String methodName;
 
-@Plugin(name="mergedCallees", params ={@Param(type = String.class,value = "methodName",optional=true,defaultValue = "")},description="merged callees for a particular method, i.e. all call traces started from this method.")
-public class MergedCallees implements DumpReducer,PipeHandler<ThreadDump,ThreadDump>  {
-	private static final String STACK = "stack";
-	private final String methodName;
-	public MergedCallees(String methodName) {
-		this.methodName = methodName;
-	}
-	public ThreadDump map(final ThreadDump jsd ) {
-		ArrayList<String> a= new ArrayList<String>();
-		a.add(methodName);
-		ThreadInfoAggregator aggr = new ThreadInfoAggregator(a);
-		for (ThreadInfo mss : jsd.getStacks()  ) {
-			Profile p = (Profile)mss.getVal(STACK);
+  public MergedCallees(String methodName) {
+    this.methodName = methodName;
+  }
+
+  public ThreadDump map(final ThreadDump jsd) {
+    ArrayList<String> a = new ArrayList<>();
+    a.add(methodName);
+    ThreadInfoAggregator aggr = new ThreadInfoAggregator(a);
+    for (ThreadInfo mss : jsd.getStacks()) {
+      Profile p = (Profile) mss.getVal(STACK);
 
 //			p.filterUp(new ProfileNodeFilter() {
 //				@Override
@@ -53,26 +55,28 @@ public class MergedCallees implements DumpReducer,PipeHandler<ThreadDump,ThreadD
 //			},null) ;
 //			
 
-			p.filterDown(new ProfileNodeFilter() {
-				@Override
-				public boolean accept(SFNode node, int level,Object context) {
-					return node.getStackFrame().contains(methodName);
-				}
-			},null) ;
+      p.filterDown((node, level, context) -> node.getStackFrame().contains(methodName), null);
 
-			mss.setVal(STACK, p); 		
-			aggr.accumulateThreadInfo(mss);
+      mss.setVal(STACK, p);
+      aggr.accumulateThreadInfo(mss);
 
-		}
-		ThreadDump jsd2 = new ThreadDump();
-		jsd2.setHeader(jsd.getHeader());
-		jsd2.setStacks(aggr.getAggrInfos());
-		jsd2.setJNIglobalReferences(jsd.getJNIglobalReferences());
-		return jsd2;
-	}
+    }
+    ThreadDump jsd2 = new ThreadDump();
+    jsd2.setHeader(jsd.getHeader());
+    jsd2.setStacks(aggr.getAggrInfos());
+    jsd2.setJNIglobalReferences(jsd.getJNIglobalReferences());
+    return jsd2;
+  }
 
-	@Override public ThreadDump handleMsg(ThreadDump msg) { return map(msg);}
-	@Override public ThreadDump handleDone() {return null;}
+  @Override
+  public ThreadDump handleMsg(ThreadDump msg) {
+    return map(msg);
+  }
+
+  @Override
+  public ThreadDump handleDone() {
+    return null;
+  }
 
 
 }

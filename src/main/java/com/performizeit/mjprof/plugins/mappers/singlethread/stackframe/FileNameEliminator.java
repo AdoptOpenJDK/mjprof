@@ -19,42 +19,37 @@ package com.performizeit.mjprof.plugins.mappers.singlethread.stackframe;
 
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.model.Profile;
-import com.performizeit.mjprof.model.ProfileVisitor;
-import com.performizeit.mjprof.model.SFNode;
 import com.performizeit.mjprof.parser.ThreadInfo;
 import com.performizeit.mjprof.plugins.mappers.singlethread.SingleThreadMapperBase;
 
 import java.util.HashMap;
 
 @SuppressWarnings("unused")
-@Plugin(name="-fn", params = {},
-        description = "Eliminates file name and line from stack frames")
+@Plugin(name = "-fn", params = {},
+  description = "Eliminates file name and line from stack frames")
 public class FileNameEliminator extends SingleThreadMapperBase {
 
 
-    public FileNameEliminator() {
+  public FileNameEliminator() {
 
-    }
+  }
 
-    @Override
-    public ThreadInfo map(ThreadInfo stck) {
-        HashMap<String,Object> mtd = stck.cloneMetaData();
-        Profile jss = (Profile) stck.getVal("stack");
-        jss.visit(new ProfileVisitor() {
-            @Override
-            public void visit(SFNode sf,int level) {
-                if (sf.getStackFrame()==null) return;
-                sf.setStackFrame(eliminatePackage(sf.getStackFrame()));
-            }
-        });
-        return stck;
-    }
+  @Override
+  public ThreadInfo map(ThreadInfo threadInfo) {
+    HashMap<String, Object> mtd = threadInfo.cloneMetaData();
+    Profile jss = (Profile) threadInfo.getVal("stack");
+    jss.visit((sf, level) -> {
+      if (sf.getStackFrame() == null) return;
+      sf.setStackFrame(eliminatePackage(sf.getStackFrame()));
+    });
+    return threadInfo;
+  }
 
-    public static String eliminatePackage(String stackFrame) {
-        StackFrame sf = new StackFrame(stackFrame);
-        sf.setLineNum("");
-        sf.setFileName("");
-        return sf.toString();
+  public static String eliminatePackage(String stackFrame) {
+    StackFrame sf = new StackFrame(stackFrame);
+    sf.setLineNum("");
+    sf.setFileName("");
+    return sf.toString();
 
-    }
+  }
 }

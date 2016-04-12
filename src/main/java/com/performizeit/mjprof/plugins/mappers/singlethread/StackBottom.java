@@ -25,28 +25,20 @@ import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.parser.ThreadInfo;
 
 @SuppressWarnings("unused")
-@Plugin(name="bottom", params = {@Param(type=int.class)},
-        description = "Returns at most n bottom stack frames of the stack")
+@Plugin(name = "bottom", params = {@Param(type = int.class)},
+  description = "Returns at most n bottom stack frames of the stack")
 public class StackBottom extends SingleThreadMapperBase {
-    private final int count;
+  private final int count;
 
-    public StackBottom(int count) {
-        this.count = count;
-    }
+  public StackBottom(int count) {
+    this.count = count;
+  }
 
+  @Override
+  public ThreadInfo map(ThreadInfo stck) {
+    Profile p = (Profile) stck.getVal("stack");
 
-
-        @Override
-        public ThreadInfo map(ThreadInfo stck) {
-            Profile p = (Profile)stck.getVal("stack");
-
-            p.filter(new ProfileNodeFilter() {
-                @Override
-                public boolean accept(SFNode node, int level,Object context) {
-
-                    return level < count;
-                }
-            },null) ;
-            return stck;
-        }
-    }
+    p.filter((node, level, context) -> level < count, null);
+    return stck;
+  }
+}

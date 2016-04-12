@@ -20,13 +20,14 @@ import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.parser.ThreadInfo;
 
-@Plugin(name = "-sort", params = {@Param() },description="Sorts based on an attribute (descending order)")
+@Plugin(name = "-sort", params = {@Param()}, description = "Sorts based on an attribute (descending order)")
 public class ReversePropComparator extends PropComparator {
-    public ReversePropComparator(String prop) {
-        super(prop);
-    }
-    @Override
-    public int compare(ThreadInfo o1, ThreadInfo o2) {
-        return -super.compare(o1,o2);
-    }
+  public ReversePropComparator(String prop) {
+    super(prop);
+  }
+
+  @Override
+  public int compare(ThreadInfo o1, ThreadInfo o2) {
+    return -super.compare(o1, o2);
+  }
 }

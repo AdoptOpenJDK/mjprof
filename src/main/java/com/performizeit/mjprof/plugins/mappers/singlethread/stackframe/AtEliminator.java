@@ -28,27 +28,24 @@ import com.performizeit.mjprof.plugins.mappers.singlethread.SingleThreadMapperBa
 import static com.performizeit.mjprof.parser.ThreadInfoProps.STACK;
 
 @SuppressWarnings("unused")
-@Plugin(name="-at", params = {},
-        description = "Eliminates the 'at' from the beginning of stack frames")
+@Plugin(name = "-at", params = {},
+  description = "Eliminates the 'at' from the beginning of stack frames")
 public class AtEliminator extends SingleThreadMapperBase {
-    @Override
-    public ThreadInfo map(ThreadInfo stck) {
-        Profile jss = (Profile) stck.getVal(STACK);
-        jss.visit(new ProfileVisitor() {
-            @Override
-            public void visit(SFNode sf,int level) {
-                if (sf.getStackFrame() == null) return;
-                sf.setStackFrame(eliminateAt(sf.getStackFrame()));
-            }
-        });
-        return stck;
-    }
+  @Override
+  public ThreadInfo map(ThreadInfo stck) {
+    Profile jss = (Profile) stck.getVal(STACK);
+    jss.visit((sf, level) -> {
+      if (sf.getStackFrame() == null) return;
+      sf.setStackFrame(eliminateAt(sf.getStackFrame()));
+    });
+    return stck;
+  }
 
-    static String eliminateAt(String stackFrame) {
-        StackFrame sf = new StackFrame(stackFrame);
-        sf.setAt("");
+  static String eliminateAt(String stackFrame) {
+    StackFrame sf = new StackFrame(stackFrame);
+    sf.setAt("");
 
-        return sf.toString();
+    return sf.toString();
 
-    }
+  }
 }

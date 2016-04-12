@@ -23,27 +23,23 @@ import com.performizeit.mjprof.model.ProfileNodeFilter;
 import com.performizeit.mjprof.model.SFNode;
 import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.parser.ThreadInfo;
-import  static com.performizeit.mjprof.parser.ThreadInfoProps.*;
 
-@Plugin(name="frame", params = {@Param()},
-        description = "Eliminates stack frames from all stacks which do not contain string.")
+import static com.performizeit.mjprof.parser.ThreadInfoProps.*;
+
+@Plugin(name = "frame", params = {@Param()},
+  description = "Eliminates stack frames from all stacks which do not contain string.")
 public class StackFrameContains extends SingleThreadMapperBase {
-    protected final String expr;
+  protected final String expr;
 
-    public StackFrameContains(String expr) {
-        this.expr = expr;
-    }
+  public StackFrameContains(String expr) {
+    this.expr = expr;
+  }
 
-    @Override
-    public ThreadInfo map(ThreadInfo stck) {
-         Profile p = (Profile)stck.getVal(STACK);
-        p.filter(new ProfileNodeFilter() {
-            @Override
-            public boolean accept(SFNode node, int level,Object context) {
-                return node.getStackFrame().contains(expr);
-            }
-        },null) ;
-        return stck;
-    }
-    
+  @Override
+  public ThreadInfo map(ThreadInfo stck) {
+    Profile p = (Profile) stck.getVal(STACK);
+    p.filter((node, level, context) -> node.getStackFrame().contains(expr), null);
+    return stck;
+  }
+
 }

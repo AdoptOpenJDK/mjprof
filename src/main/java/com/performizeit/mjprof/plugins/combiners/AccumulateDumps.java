@@ -17,52 +17,57 @@
 
 package com.performizeit.mjprof.plugins.combiners;
 
-import com.performizeit.mjprof.plugin.types.DumpReducer;
+import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.model.ThreadInfoAggregator;
-import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.parser.ThreadDump;
 import com.performizeit.mjprof.parser.ThreadInfo;
+import com.performizeit.mjprof.plugin.types.DumpReducer;
 import com.performizeit.plumbing.PipeHandler;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-
-import static com.performizeit.mjprof.parser.ThreadInfoProps.*;
 
 
-@Plugin(name="merge", params ={@Param(type = String.class,value = "attr",optional=true,defaultValue = "tid")},description="Combine all dumps to a single one merge based on an attribute (thread id is the default attribute)")
-public class AccumulateDumps implements DumpReducer,PipeHandler<ThreadDump,ThreadDump> {
+@Plugin(name = "merge", params = {@Param(type = String.class, value = "attr", optional = true, defaultValue = "tid")}, description = "Combine all dumps to a single one merge based on an attribute (thread id is the default attribute)")
+public class AccumulateDumps implements DumpReducer, PipeHandler<ThreadDump, ThreadDump> {
 
-    ThreadInfoAggregator tidAggr;
-    int countDumps=0;
+  ThreadInfoAggregator tidAggr;
+  int countDumps = 0;
 
-    public AccumulateDumps(String prop) {
-        ArrayList<String> a= new ArrayList<String>();
-        a.add(prop);
-        tidAggr =new ThreadInfoAggregator(a);
+  public AccumulateDumps(String prop) {
+    ArrayList<String> a = new ArrayList<String>();
+    a.add(prop);
+    tidAggr = new ThreadInfoAggregator(a);
+  }
+
+  public void reduce(ThreadDump td) {
+    for (ThreadInfo ti : td.getStacks()) {
+      tidAggr.accumulateThreadInfo(ti);
     }
-
-    public void reduce(ThreadDump td) {
-        for (ThreadInfo ti :td.getStacks()) {
-            tidAggr.accumulateThreadInfo(ti);
-        }
-        countDumps++;
+    countDumps++;
 
 
-    }
+  }
 
-    public ThreadDump getResult() {
-        ThreadDump td = new ThreadDump();
-        td.setHeader("Profiling session number of dumps is "+ countDumps);
+  public ThreadDump getResult() {
+    ThreadDump td = new ThreadDump();
+    td.setHeader("Profiling session number of dumps is " + countDumps);
 
-        td.setStacks(tidAggr.getAggrInfos());
-        return td;
-    }
+    td.setStacks(tidAggr.getAggrInfos());
+    return td;
+  }
 
 
-    @Override public ThreadDump handleMsg(ThreadDump msg) {reduce(msg); return null;}
-    @Override public ThreadDump handleDone() {return getResult();}
+  @Override
+  public ThreadDump handleMsg(ThreadDump msg) {
+    reduce(msg);
+    return null;
+  }
+
+  @Override
+  public ThreadDump handleDone() {
+    return getResult();
+  }
 
 
 }

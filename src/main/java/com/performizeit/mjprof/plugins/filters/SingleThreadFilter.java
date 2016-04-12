@@ -9,32 +9,32 @@ import java.util.ArrayList;
 
 public abstract class SingleThreadFilter implements Filter, PipeHandler<ThreadDump, ThreadDump> {
 
-    public ThreadDump map(ThreadDump jsd) {
+  public ThreadDump map(ThreadDump jsd) {
 
-        ThreadDump that = new ThreadDump();
-        that.setHeader(jsd.getHeader());
-        that.setJNIglobalReferences(jsd.getJNIglobalReferences());
-        ArrayList<ThreadInfo> stcks = new ArrayList<ThreadInfo>();
-        for (ThreadInfo stk : jsd.getStacks()) {
-            if (filter(stk))
-                stcks.add(stk);
-        }
-        that.setStacks(stcks);
-        return that;
-
-
+    ThreadDump that = new ThreadDump();
+    that.setHeader(jsd.getHeader());
+    that.setJNIglobalReferences(jsd.getJNIglobalReferences());
+    ArrayList<ThreadInfo> stcks = new ArrayList<>();
+    for (ThreadInfo stk : jsd.getStacks()) {
+      if (filter(stk))
+        stcks.add(stk);
     }
+    that.setStacks(stcks);
+    return that;
 
-    @Override
-    abstract public boolean filter(ThreadInfo stck);
 
-    @Override
-    public ThreadDump handleMsg(ThreadDump msg) {
-        return map(msg);
-    }
+  }
 
-    @Override
-    public ThreadDump handleDone() {
-        return null;
-    }
+  @Override
+  abstract public boolean filter(ThreadInfo stck);
+
+  @Override
+  public ThreadDump handleMsg(ThreadDump msg) {
+    return map(msg);
+  }
+
+  @Override
+  public ThreadDump handleDone() {
+    return null;
+  }
 }

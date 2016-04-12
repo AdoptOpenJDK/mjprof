@@ -17,10 +17,8 @@
 
 package com.performizeit.mjprof.plugin.types;
 
-import java.util.ArrayList;
-
 import com.performizeit.mjprof.api.BasePlugin;
-import com.performizeit.mjprof.parser.ThreadDump;
+
 /**
  * Created by life on 22/2/14.
  */

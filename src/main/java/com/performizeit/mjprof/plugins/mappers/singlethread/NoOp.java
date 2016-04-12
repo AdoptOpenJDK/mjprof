@@ -22,13 +22,13 @@ import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.parser.ThreadInfo;
 
 @SuppressWarnings("unused")
-@Plugin(name="noop", params = {},
-        description = "Does nothing")
+@Plugin(name = "noop", params = {},
+  description = "Does nothing")
 public class NoOp extends SingleThreadMapperBase {
-    @Override
-    public ThreadInfo map(ThreadInfo threadInfo) {
+  @Override
+  public ThreadInfo map(ThreadInfo threadInfo) {
 
-        return threadInfo;
-    }
+    return threadInfo;
+  }
 
 }

@@ -26,30 +26,32 @@ import com.performizeit.plumbing.PipeHandler;
 import java.util.HashSet;
 
 
+@Plugin(name = "list", params = {}, description = "lists the possible stack trace attributes")
+public class ListProps implements Terminal, PipeHandler<ThreadDump, String> {
+  HashSet<String> propsHash = new HashSet<>();
 
-@Plugin(name="list", params ={},description="lists the possible stack trace attributes")
-public class ListProps implements Terminal,PipeHandler<ThreadDump,String> {
-    HashSet<String> propsHash = new HashSet<String>();
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    for (String key : propsHash) {
+      sb.append(key).append("\n");
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        for (String key: propsHash) {
-            sb.append(key).append("\n");
-
-        }
-        return sb.toString();
     }
+    return sb.toString();
+  }
 
-    @Override public String handleMsg(ThreadDump msg) {
-        for (ThreadInfo mss : msg.getStacks()  ) {
-            for (String prop : mss.getProps()) {
-                propsHash.add(prop);
-            }
-        }
-        return null;
+  @Override
+  public String handleMsg(ThreadDump threadDump) {
+    for (ThreadInfo threadInfo : threadDump.getStacks()) {
+      for (String prop : threadInfo.getProps()) {
+        propsHash.add(prop);
+      }
     }
-    @Override public String handleDone() {
-        return toString();
-    }
+    return null;
+  }
+
+  @Override
+  public String handleDone() {
+    return toString();
+  }
 }

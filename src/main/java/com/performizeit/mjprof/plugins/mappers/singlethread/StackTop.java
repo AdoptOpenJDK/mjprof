@@ -25,27 +25,25 @@ import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.parser.ThreadInfo;
 
 
-@Plugin(name="top", params = {@Param(type=int.class)},
-        description = "Returns at most n top stack frames of the stack")
+@Plugin(name = "top", params = {@Param(type = int.class)},
+  description = "Returns at most n top stack frames of the stack")
 public class StackTop extends SingleThreadMapperBase {
-    private final int count;
+  private final int count;
 
-    public StackTop(int count) {
-        this.count = count;
-    }
+  public StackTop(int count) {
+    this.count = count;
+  }
 
-
-
-    @Override
-    public ThreadInfo map(ThreadInfo stck) {
-        Profile p = (Profile)stck.getVal("stack");
-        p.filter(new ProfileNodeFilter() {
-            @Override
-            public boolean accept(SFNode node, int level,Object context) {
-                int depthBelow = node.depthBelow();
-                return depthBelow < count;
-            }
-        },null) ;
-        return stck;
-    }
+  @Override
+  public ThreadInfo map(ThreadInfo stck) {
+    Profile p = (Profile) stck.getVal("stack");
+    p.filter(new ProfileNodeFilter() {
+      @Override
+      public boolean accept(SFNode node, int level, Object context) {
+        int depthBelow = node.depthBelow();
+        return depthBelow < count;
+      }
+    }, null);
+    return stck;
+  }
 }

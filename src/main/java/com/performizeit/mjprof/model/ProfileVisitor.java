@@ -17,5 +17,5 @@
 package com.performizeit.mjprof.model;
 
 public interface ProfileVisitor {
-    void visit(SFNode stackframe,int level);
+  void visit(SFNode stackframe, int level);
 }

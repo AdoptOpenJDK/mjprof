@@ -25,30 +25,29 @@ import org.reflections.Reflections;
 import com.performizeit.mjprof.api.Plugin;
 
 public class StepsRepository {
-	static HashMap<String, StepInfo> repo = new HashMap<String, StepInfo>();
+  static HashMap<String, StepInfo> repo = new HashMap<>();
 
+  static {
+    Reflections reflections = new Reflections("com.performizeit");
+    Set<Class<?>> annotatedPlugin = reflections.getTypesAnnotatedWith(Plugin.class);
+    for (Class cla : annotatedPlugin) {
+      Plugin pluginAnnotation = (Plugin) cla.getAnnotation(Plugin.class);
+      StepInfo stepInit = new StepInfo(cla, pluginAnnotation.params(), pluginAnnotation.description());
+      repo.put(pluginAnnotation.name(), stepInit);
+    }
+  }
 
-	static {
-		Reflections reflections = new Reflections("com.performizeit");
-		Set<Class<?>> annotatedPlugin = reflections.getTypesAnnotatedWith(Plugin.class);
-		for(Class cla: annotatedPlugin){
-			Plugin pluginAnnotation = (Plugin) cla.getAnnotation(Plugin.class);
-			StepInfo stepInit = new StepInfo(cla, pluginAnnotation.params(),pluginAnnotation.description());
-			repo.put(pluginAnnotation.name(), stepInit);
-		}
-		}
-	
-	   public static boolean stepValid(MJStep a) {
-	        StepInfo pr = repo.get(a.getStepName());
-	        return pr != null && (a.stepArgs.size() <= pr.getArgNum()) && (a.stepArgs.size() >= pr.getMinArgNum());
-	    }
-	   
-	   public static StepInfo getStep(String stepName) {
-	        return  repo.get(stepName);
-	    }
-	   
-	   public static HashMap<String, StepInfo> getRepository(){
-		   return repo;
-	   }
-	
+  public static boolean stepValid(MJStep a) {
+    StepInfo pr = repo.get(a.getStepName());
+    return pr != null && (a.stepArgs.size() <= pr.getArgNum()) && (a.stepArgs.size() >= pr.getMinArgNum());
+  }
+
+  public static StepInfo getStep(String stepName) {
+    return repo.get(stepName);
+  }
+
+  public static HashMap<String, StepInfo> getRepository() {
+    return repo;
+  }
+
 }
