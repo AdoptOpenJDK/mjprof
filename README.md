@@ -134,8 +134,8 @@ Count threads
 Building MJProf
 =============
 mjprof uses maven for compilation. In order to build mjprof use the following command line:  
-`mvn clean install assembly:assembly`
-This will create a zip file in `target/dist/mjprof1.0-bin.zip` which contains everything you need.
+`mvn clean package`
+This will create a zip file in `target/mjprof1.0-bin.zip` which contains everything you need.
 
 
 Writing a plugin

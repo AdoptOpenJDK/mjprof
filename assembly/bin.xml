@@ -15,18 +15,8 @@
             <directory>target</directory>
             <outputDirectory></outputDirectory>
             <includes>
-                <include>*.jar</include>
+                <include>mjprof-${project.version}-jar-with-dependencies.jar</include>
             </includes>
-        </fileSet>
-        <fileSet>
-            <directory>target/libs</directory>
-            <outputDirectory>libs</outputDirectory>
-            <includes>
-                <include>*.jar</include>
-
-            </includes>
-
-
         </fileSet>
         <fileSet>
             <directory>src/main/scripts</directory>
@@ -38,7 +28,7 @@
             </outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>src/main/scripts</directory>
+            <directory>./</directory>
             <includes>
                 <include></include>
             </includes>
