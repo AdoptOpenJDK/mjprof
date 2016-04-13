@@ -4,6 +4,3 @@ jdk:
   - oraclejdk8
   - openjdk8
 
-install:
-  - mvn clean install assembly:assembly
-
