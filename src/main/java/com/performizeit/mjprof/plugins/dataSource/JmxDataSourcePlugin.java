@@ -10,7 +10,6 @@ import com.performizeit.mjprof.parser.ThreadInfo;
 import com.performizeit.plumbing.GeneratorHandler;
 
 import javax.management.openmbean.CompositeData;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -18,7 +17,7 @@ import static com.performizeit.mjprof.parser.ThreadInfoProps.*;
 
 // host:port or pid , freq,period       ,user,pass
 @SuppressWarnings("unused")
-@Plugin(name = "jmx", params = {@Param("host:port|MainClass|pid"),
+@Plugin(name = "jmx", params = {@Param("host:port"),
   @Param(type = int.class, value = "count", optional = true, defaultValue = "1"),
   @Param(type = int.class, value = "sleep", optional = true, defaultValue = "5000"),
   @Param(value = "username", optional = true),
@@ -29,37 +28,20 @@ public class JmxDataSourcePlugin implements DataSource, GeneratorHandler<ThreadD
   protected final int count;
   protected int iter = 0;
 
-  protected String hostPortPid;
-  protected JMXConnection server = null;
+  protected String hostPort;
+  protected JMXConnection server;
   protected long lastIterTime = 0;
 
-  public JmxDataSourcePlugin(String hostPortPid, int count, int sleep, String user, String pass) {
-    this.hostPortPid = hostPortPid;
+  public JmxDataSourcePlugin(String hostPort, int count, int sleep, String user, String pass) {
+    this.hostPort = hostPort;
     this.count = count;
     this.sleep = sleep;
     user = user.trim().isEmpty() ? null : user;
     pass = pass.trim().isEmpty() ? null : pass;
     try {
-      try {
-        Integer.parseInt(hostPortPid);
-
-        server = new JMXConnection(hostPortPid);
-      } catch (NumberFormatException e) {
-        if (!hostPortPid.contains(":")) {
-          int pid = JPSUtil.lookupProcessId(hostPortPid);
-          if (pid == -1) {
-            System.err.println("Process id for main class '" + hostPortPid + "' could not be resolved");
-            System.exit(1);
-          } else {
-            server = new JMXConnection(Integer.toString(pid));
-          }
-        } else {
-
-          server = new JMXConnection(hostPortPid, user, pass);
-        }
-      }
+      server = new JMXConnection(hostPort, user, pass);
     } catch (Exception e) {
-      System.err.println("ERROR: Unable to open JMX connection for" + hostPortPid);
+      System.err.println("ERROR: Unable to open JMX connection for" + hostPort);
       System.exit(1);
       server = null;
 
@@ -72,7 +54,7 @@ public class JmxDataSourcePlugin implements DataSource, GeneratorHandler<ThreadD
     long iterStart = System.currentTimeMillis();
     try {
 
-      threadDump.setHeader((new Date()).toString() + "\nThread dump via JMX of process " + hostPortPid);
+      threadDump.setHeader((new Date()) + "\nThread dump via JMX of process " + hostPort);
       long[] threadsIds = server.getThreadIds();
 
 
@@ -99,7 +81,7 @@ public class JmxDataSourcePlugin implements DataSource, GeneratorHandler<ThreadD
   }
 
   protected HashMap<String, Object> getProps(CompositeData thread) {
-    HashMap<String, Object> props = new HashMap<String, Object>();
+    HashMap<String, Object> props = new HashMap<>();
     props.put(NAME, thread.get("threadName"));
     props.put(TID, thread.get("threadId"));
     props.put(STATE, thread.get("threadState"));

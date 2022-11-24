@@ -24,8 +24,8 @@ import static com.performizeit.mjprof.parser.ThreadInfoProps.*;
 public class JmxDataSourcePluginWithCpu extends JmxDataSourcePlugin implements DataSource, GeneratorHandler<ThreadDump> {
   protected boolean collectCPU = true;
 
-  public JmxDataSourcePluginWithCpu(String hostPortPid, int count, int sleep, String user, String pass) {
-    super(hostPortPid, count, sleep, user, pass);
+  public JmxDataSourcePluginWithCpu(String hostPort, int count, int sleep, String user, String pass) {
+    super(hostPort, count, sleep, user, pass);
   }
 
   private double percentDouble(long nom, long denom) {
@@ -39,7 +39,7 @@ public class JmxDataSourcePluginWithCpu extends JmxDataSourcePlugin implements D
     long iterStart = System.currentTimeMillis();
     try {
 
-      threadDump.setHeader((new Date()).toString() + "\nThread dump via JMX of process " + hostPortPid);
+      threadDump.setHeader((new Date()) + "\nThread dump via JMX of process " + hostPort);
       long[] threadsIds = server.getThreadIds();
       long pre = 0;
       long post = 0;
@@ -91,7 +91,6 @@ public class JmxDataSourcePluginWithCpu extends JmxDataSourcePlugin implements D
 
   @Override
   public void sleepBetweenIteration() {
-    return;
   }
 
 }

@@ -19,8 +19,8 @@
   </developers>
 
   <properties>
-    <java.compiler.source>1.8</java.compiler.source>
-    <java.compiler.target>1.8</java.compiler.target>
+    <java.compiler.source>17</java.compiler.source>
+    <java.compiler.target>17</java.compiler.target>
   </properties>
 
   <build>
@@ -91,13 +91,6 @@
       <groupId>org.reflections</groupId>
       <artifactId>reflections</artifactId>
       <version>0.9.12</version>
-    </dependency>
-    <dependency>
-      <groupId>com.sun</groupId>
-      <artifactId>tools</artifactId>
-      <version>7.0</version>
-      <scope>system</scope>
-      <systemPath>${java.home}/../lib/tools.jar</systemPath>
     </dependency>
   </dependencies>
 

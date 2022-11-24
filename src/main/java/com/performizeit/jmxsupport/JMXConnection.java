@@ -16,10 +16,6 @@
  */
 package com.performizeit.jmxsupport;
 
-import com.sun.tools.attach.AgentInitializationException;
-import com.sun.tools.attach.AgentLoadException;
-import com.sun.tools.attach.AttachNotSupportedException;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -45,12 +41,10 @@ import javax.management.remote.JMXServiceURL;
 public class JMXConnection {
   String host;
   String port;
-  String userName = "";
-  String userPassword = "";
+  String userName;
+  String userPassword;
   JMXServiceURL serviceURL;
-  private static final String CONNECTOR_ADDRESS =
-    "com.sun.management.jmxremote.localConnectorAddress";
-  private String connectURL;
+  private final String connectURL;
   private boolean originalThreadContentionEnabledValue;
 
   public boolean isOriginalThreadContentionEnabledValue() {
@@ -61,40 +55,8 @@ public class JMXConnection {
     this.originalThreadContentionEnabledValue = originalThreadContentionEnabledValue;
   }
 
-  public JMXConnection(String pid) throws AttachNotSupportedException, IOException, AgentLoadException, AgentInitializationException {
-    addToolsJar();
-    connectURL = pid;
-    // attach to the target application
-    com.sun.tools.attach.VirtualMachine vm =
-      com.sun.tools.attach.VirtualMachine.attach(pid);
-    JMXServiceURL u;
-    try {
-      // get the connector address
-      String connectorAddress =
-        vm.getAgentProperties().getProperty(CONNECTOR_ADDRESS);
 
-      // no connector address, so we start the JMX agent
-      if (connectorAddress == null) {
-        String agent = vm.getSystemProperties().getProperty("java.home")
-          + File.separator + "lib" + File.separator
-          + "management-agent.jar";
-        vm.loadAgent(agent);
-
-        // agent is started, get the connector address
-        connectorAddress =
-          vm.getAgentProperties().getProperty(CONNECTOR_ADDRESS);
-      }
-
-      // establish connection to connector server
-      // System.out.println(connectorAddress);
-      serviceURL = new JMXServiceURL(connectorAddress);
-
-    } finally {
-      vm.detach();
-    }
-  }
-
-  public JMXConnection(String serverUrl, String uName, String passwd) throws MalformedURLException {
+public JMXConnection(String serverUrl, String uName, String passwd) throws MalformedURLException {
     userName = uName;
     userPassword = passwd;
     host = serverUrl;
@@ -150,15 +112,7 @@ public class JMXConnection {
 
       l = (Long) getServerConnection().getAttribute(JMXConnection.RUNTIME, "Uptime");
 
-    } catch (MBeanException ex) {
-      Logger.getLogger(JMXConnection.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (AttributeNotFoundException ex) {
-      Logger.getLogger(JMXConnection.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (InstanceNotFoundException ex) {
-      Logger.getLogger(JMXConnection.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (ReflectionException ex) {
-      Logger.getLogger(JMXConnection.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (IOException ex) {
+    } catch (MBeanException | AttributeNotFoundException | InstanceNotFoundException | ReflectionException | IOException ex) {
       Logger.getLogger(JMXConnection.class.getName()).log(Level.SEVERE, null, ex);
     }
     return l;
@@ -176,24 +130,21 @@ public class JMXConnection {
   public CompositeData[] getThreads(long[] thIds, int stackTraceEntriesNo) throws Exception {
     String[] signature = {"[J", "int"};
     Object[] params = {thIds, stackTraceEntriesNo};
-    CompositeData[] threads = (CompositeData[]) server.invoke(THREADING, "getThreadInfo", params, signature);
-    return threads;
+    return (CompositeData[]) server.invoke(THREADING, "getThreadInfo", params, signature);
   }
 
   public long[] getThreadsCPU(long[] thIds) throws Exception {
 
     String[] signature = {"[J"};
     Object[] params = {thIds};
-    long[] threadsCPU = (long[]) server.invoke(THREADING, "getThreadCpuTime", params, signature);
-    return threadsCPU;
+    return (long[]) server.invoke(THREADING, "getThreadCpuTime", params, signature);
   }
 
   public long getThreadCPU(long thId) throws Exception {
 
     String[] signature = {"long"};
     Object[] params = {thId};
-    long threadCPU = (Long) server.invoke(THREADING, "getThreadCpuTime", params, signature);
-    return threadCPU;
+    return (long) (Long) server.invoke(THREADING, "getThreadCpuTime", params, signature);
 
   }
 
