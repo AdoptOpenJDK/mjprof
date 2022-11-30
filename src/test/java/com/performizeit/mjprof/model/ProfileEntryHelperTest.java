@@ -1,8 +1,9 @@
 package com.performizeit.mjprof.model;
 
 
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ProfileEntryHelperTest {
     static String root = "100.00%     [3/3]\\ at com.akkka.aaa.bbb.rest.FileSystemFactory.provide(FlsFactory.java:44)" ;

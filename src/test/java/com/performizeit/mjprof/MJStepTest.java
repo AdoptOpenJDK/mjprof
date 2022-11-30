@@ -16,52 +16,51 @@
 */
 package com.performizeit.mjprof;
 
-
-import static org.junit.Assert.*;
-
 import com.performizeit.mjprof.monads.MJStep;
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 public class MJStepTest  {
     @Test
-    public void twoArgs() throws Exception {
+    public void twoArgs() {
         MJStep step = new MJStep("contains/key,val/");
         assertEquals(step.getStepName(), "contains");
         assertEquals(step.getStepArgs(), Arrays.asList("key", "val"));
     }
     @Test
-    public void oneArg() throws Exception {
+    public void oneArg() {
         MJStep step = new MJStep("contains/key/");
         assertEquals(step.getStepName(), "contains");
-        assertEquals(step.getStepArgs(), Arrays.asList("key"));
+        assertEquals(step.getStepArgs(), List.of("key"));
     }
 
     @Test
-    public void noArgs() throws Exception {
+    public void noArgs() {
         MJStep step = new MJStep("contains//");
         assertEquals(step.getStepName(), "contains");
         assertEquals(0,step.getStepArgs().size());
 
     }
     @Test
-    public void noArgs2() throws Exception {
+    public void noArgs2() {
         MJStep step = new MJStep("contains");
         assertEquals(step.getStepName(), "contains");
         assertEquals(step.getStepArgs().size(), 0);
 
     }
     @Test
-    public void doubleCommas() throws Exception {
+    public void doubleCommas() {
         MJStep step = new MJStep("contains/key,,k,val,,val/");
         assertEquals(step.getStepName(), "contains");
         assertEquals(step.getStepArgs(), Arrays.asList("key,k", "val,val"));
     }
 
     @Test
-    public void argWhichContainsPeriod() throws Exception {
+    public void argWhichContainsPeriod() {
         MJStep step = new MJStep("contains/key.k,val.val/");
         assertEquals(step.getStepName(), "contains");
         assertEquals(step.getStepArgs(), Arrays.asList("key.k", "val.val"));

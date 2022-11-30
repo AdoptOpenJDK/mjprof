@@ -1,9 +1,7 @@
 package com.performizeit.mjprof.plugins.mappers.singlethread.stackframe;
 
-import com.performizeit.mjprof.plugins.mappers.singlethread.stackframe.StackFrame;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class StackFrameTest {
     @Test
@@ -17,7 +15,7 @@ public class StackFrameTest {
         assertEquals("142",sf.getLineNum());
         assertEquals(frame.trim(),sf.toString().trim());
     }
-
+    @Test
     public void testStackFrameNoPackage() {
         String frame = "       at ReferenceQueue.remove(ReferenceQueue.java:142)";
         StackFrame sf = new StackFrame(frame);
@@ -28,7 +26,7 @@ public class StackFrameTest {
         assertEquals("142",sf.getLineNum());
         assertEquals(frame.trim(),sf.toString().trim());
     }
-
+    @Test
     public void testStackFrameFileNameLine() {
         String frame = "       at java.lang.ref.ReferenceQueue.remove";
         StackFrame sf = new StackFrame(frame);
@@ -39,7 +37,7 @@ public class StackFrameTest {
         assertEquals("",sf.getLineNum());
         assertEquals(frame.trim(),sf.toString().trim());
     }
-
+    @Test
     public void testLockFrame() {
         String frame = "       - locked <0x00000007801cbf58> (a java.lang.ref.ReferenceQueue$Lock)";
         StackFrame sf = new StackFrame(frame);

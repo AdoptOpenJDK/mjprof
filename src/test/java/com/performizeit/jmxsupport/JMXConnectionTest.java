@@ -1,13 +1,11 @@
 package com.performizeit.jmxsupport;
 
-import junit.framework.TestCase;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-
-public class JMXConnectionTest extends TestCase {
+public class JMXConnectionTest {
     @Test
-    public void testJMXConnection() throws Exception {
+    public void testJMXConnection() {
  //       JstackDataSourcePlugin  jdsp = new JstackDataSourcePlugin(70782,100,1000);
    //     jdsp.getThreadDumps();
        /* int pid = 6960;

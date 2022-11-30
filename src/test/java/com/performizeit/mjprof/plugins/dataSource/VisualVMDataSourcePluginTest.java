@@ -1,13 +1,11 @@
 package com.performizeit.mjprof.plugins.dataSource;
 
-import junit.framework.TestCase;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class VisualVMDataSourcePluginTest extends TestCase {
+public class VisualVMDataSourcePluginTest  {
     @Test
-    public void testVVM() throws Exception {
+    public void testVVM() {
       //  VisualVMDataSourcePlugin vvmp = new VisualVMDataSourcePlugin("");
       //  vvmp.getThreadDumps();
-
     }
 }

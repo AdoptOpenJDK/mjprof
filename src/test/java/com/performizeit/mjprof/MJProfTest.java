@@ -18,19 +18,19 @@ package com.performizeit.mjprof;
 
 import com.performizeit.mjprof.monads.MJStep;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class MJProfTest {
     @Test
-    public void argWhichContainsPeriod() throws Exception {
+    public void argWhichContainsPeriod() {
         String args =  "contains/key.k,val.val/";
         ArrayList<MJStep> steps = MJProf.parseCommandLine(args);
         assertNotNull(steps);
@@ -38,7 +38,7 @@ public class MJProfTest {
         assertEquals(steps.get(0).getStepArgs(), Arrays.asList("key.k", "val.val"));
     }
     @Test
-    public void argWhichContainsPeriodSplit() throws Exception {
+    public void argWhichContainsPeriodSplit() {
         String args =  "contains/key.k,val.val/.list";
         ArrayList<String> steps = MJProf.splitCommandLine(args);
         assertNotNull(steps);
@@ -47,7 +47,7 @@ public class MJProfTest {
 
     }
     @Test
-    public void twoTrailingCOmmas() throws Exception {
+    public void twoTrailingCommas() {
         String args =  "contains/key:k,1,1,,/.list";
         ArrayList<String> steps = MJProf.splitCommandLine(args);
         assertNotNull(steps);
@@ -58,7 +58,7 @@ public class MJProfTest {
 
 
     @Test
-    public void argWhichContainsSlashSplit() throws Exception {
+    public void argWhichContainsSlashSplit() {
         String args =  "path/lib/dd/a.kk/.list";
         ArrayList<String> steps = MJProf.splitCommandLine(args);
         assertNotNull(steps);
@@ -67,7 +67,7 @@ public class MJProfTest {
 
     }
     @Test
-    public void argWhichContainsSlashSplit2() throws Exception {
+    public void argWhichContainsSlashSplit2() {
         String args =  "path/lib/dd/a.txt/.list";
         ArrayList<String> steps = MJProf.splitCommandLine(args);
         assertNotNull(steps);
@@ -76,7 +76,7 @@ public class MJProfTest {
 
     }
     @Test
-    public void argWhichContainsPeriod2() throws Exception {
+    public void argWhichContainsPeriod2() {
         String args =  "contains/key.k,val.,,val/.contains/stack,com.performizeit/";
         ArrayList<MJStep> steps = MJProf.parseCommandLine(args);
         assertNotNull(steps);
@@ -89,33 +89,33 @@ public class MJProfTest {
 
 
     @Test
-    public void pathWithSlash() throws Exception {
+    public void pathWithSlash() {
         String args =  "path//tmp/bn.txt/.contains/name,Timer/.bottom/3/";
         ArrayList<MJStep> steps = MJProf.parseCommandLine(args);
         assertNotNull(steps);
         assertEquals(steps.size(),3);
         assertEquals(steps.get(0).getStepName(), "path");
-        assertEquals(steps.get(0).getStepArgs(), Arrays.asList("/tmp/bn.txt"));
+        assertEquals(steps.get(0).getStepArgs(), List.of("/tmp/bn.txt"));
         assertEquals(steps.get(1).getStepName(), "contains");
         assertEquals(steps.get(1).getStepArgs(), Arrays.asList("name", "Timer"));
         assertEquals(steps.get(2).getStepName(), "bottom");
-        assertEquals(steps.get(2).getStepArgs(), Arrays.asList("3"));
+        assertEquals(steps.get(2).getStepArgs(), List.of("3"));
     }
 
     @Test
-    public void pathWithSlashAndBackslash() throws Exception {
+    public void pathWithSlashAndBackslash() {
         String args =  "path//tmp/bn.txt/.path/c:\\hello\\myfolder\\myfile.txt/";
         ArrayList<MJStep> steps = MJProf.parseCommandLine(args);
         assertNotNull(steps);
         assertEquals(steps.size(),2);
         assertEquals(steps.get(0).getStepName(), "path");
-        assertEquals(steps.get(0).getStepArgs(), Arrays.asList("/tmp/bn.txt"));
+        assertEquals(steps.get(0).getStepArgs(), List.of("/tmp/bn.txt"));
         assertEquals(steps.get(1).getStepName(), "path");
-        assertEquals(steps.get(1).getStepArgs(), Arrays.asList("c:\\hello\\myfolder\\myfile.txt"));
+        assertEquals(steps.get(1).getStepArgs(), List.of("c:\\hello\\myfolder\\myfile.txt"));
     }
 
     @Test
-    public void argListContainsSpaces() throws Exception {
+    public void argListContainsSpaces() {
         String args =  "contains/key.k,val.,,val/.contains/stack,com performizeit/";
         ArrayList<MJStep> steps = MJProf.parseCommandLine(args);
         assertNotNull(steps);
@@ -126,7 +126,7 @@ public class MJProfTest {
         assertEquals(steps.get(1).getStepArgs(), Arrays.asList("stack", "com performizeit"));
     }
     @Test
-    public void spaceOutsideAnArgumentIsASeparator() throws Exception {
+    public void spaceOutsideAnArgumentIsASeparator() {
         String args =  "contains/key.k,val.,,val/ contains/stack,com performizeit/";
         ArrayList<MJStep> steps = MJProf.parseCommandLine(args);
         assertNotNull(steps);
@@ -138,7 +138,7 @@ public class MJProfTest {
     }
     
     @Test
-    public void notValidStep() throws Exception {
+    public void notValidStep() {
     	String args ="notValid";
     	ArrayList<MJStep> steps = MJProf.parseCommandLine(args);
     	assertNull(steps);

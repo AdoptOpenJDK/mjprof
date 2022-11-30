@@ -18,29 +18,29 @@
 package com.performizeit.mjprof.plugins.filters;
 
 import com.performizeit.mjprof.parser.ThreadInfo;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class JStackFilterFieldRegexMatchesTest {
     @Test
-    public void should_match_optional_attribute_part() throws Exception {
-        ThreadInfo fooThreadInfo = new ThreadInfo("" +
-                "\"foo\" prio=7 tid=0x0000000000000007 nid=0x0007 runnable [0x0000000000000007]\n" +
-                "   java.lang.Thread.State: RUNNABLE\n" +
-                "       at fr.pingtimeout.mjprof.regex.someMethod(Regex.java:42)\n" +
-                "       at java.lang.Thread.run(Thread.java:745)");
-        ThreadInfo foobarThreadInfo = new ThreadInfo("" +
-                "\"foobar\" prio=7 tid=0x0000000000000007 nid=0x0007 runnable [0x0000000000000007]\n" +
-                "   java.lang.Thread.State: RUNNABLE\n" +
-                "       at fr.pingtimeout.mjprof.regex.someMethod(Regex.java:42)\n" +
-                "       at java.lang.Thread.run(Thread.java:745)");
-        ThreadInfo barThreadInfo = new ThreadInfo("" +
-                "\"bar\" prio=7 tid=0x0000000000000007 nid=0x0007 runnable [0x0000000000000007]\n" +
-                "   java.lang.Thread.State: RUNNABLE\n" +
-                "       at fr.pingtimeout.mjprof.regex.someMethod(Regex.java:42)\n" +
-                "       at java.lang.Thread.run(Thread.java:745)");
+    public void should_match_optional_attribute_part() {
+        ThreadInfo fooThreadInfo = new ThreadInfo("""
+            "foo" prio=7 tid=0x0000000000000007 nid=0x0007 runnable [0x0000000000000007]
+               java.lang.Thread.State: RUNNABLE
+                   at fr.pingtimeout.mjprof.regex.someMethod(Regex.java:42)
+                   at java.lang.Thread.run(Thread.java:745)""");
+        ThreadInfo foobarThreadInfo = new ThreadInfo("""
+            "foobar" prio=7 tid=0x0000000000000007 nid=0x0007 runnable [0x0000000000000007]
+               java.lang.Thread.State: RUNNABLE
+                   at fr.pingtimeout.mjprof.regex.someMethod(Regex.java:42)
+                   at java.lang.Thread.run(Thread.java:745)""");
+        ThreadInfo barThreadInfo = new ThreadInfo("""
+            "bar" prio=7 tid=0x0000000000000007 nid=0x0007 runnable [0x0000000000000007]
+               java.lang.Thread.State: RUNNABLE
+                   at fr.pingtimeout.mjprof.regex.someMethod(Regex.java:42)
+                   at java.lang.Thread.run(Thread.java:745)""");
         JStackFilterFieldRegexMatches filter = new JStackFilterFieldRegexMatches("name", "fo+(bar)?");
 
         boolean matchedFoo = filter.filter(fooThreadInfo);
@@ -53,22 +53,22 @@ public class JStackFilterFieldRegexMatchesTest {
     }
 
     @Test
-    public void should_implement_or_operator() throws Exception {
-        ThreadInfo fooThreadInfo = new ThreadInfo("" +
-                "\"foo\" prio=7 tid=0x0000000000000007 nid=0x0007 runnable [0x0000000000000007]\n" +
-                "   java.lang.Thread.State: RUNNABLE\n" +
-                "       at fr.pingtimeout.mjprof.regex.someMethod(Regex.java:42)\n" +
-                "       at java.lang.Thread.run(Thread.java:745)");
-        ThreadInfo barThreadInfo = new ThreadInfo("" +
-                "\"bar\" prio=7 tid=0x0000000000000007 nid=0x0007 runnable [0x0000000000000007]\n" +
-                "   java.lang.Thread.State: RUNNABLE\n" +
-                "       at fr.pingtimeout.mjprof.regex.someMethod(Regex.java:42)\n" +
-                "       at java.lang.Thread.run(Thread.java:745)");
-        ThreadInfo bazThreadInfo = new ThreadInfo("" +
-                "\"baz\" prio=7 tid=0x0000000000000007 nid=0x0007 runnable [0x0000000000000007]\n" +
-                "   java.lang.Thread.State: RUNNABLE\n" +
-                "       at fr.pingtimeout.mjprof.regex.someMethod(Regex.java:42)\n" +
-                "       at java.lang.Thread.run(Thread.java:745)");
+    public void should_implement_or_operator() {
+        ThreadInfo fooThreadInfo = new ThreadInfo("""
+            "foo" prio=7 tid=0x0000000000000007 nid=0x0007 runnable [0x0000000000000007]
+               java.lang.Thread.State: RUNNABLE
+                   at fr.pingtimeout.mjprof.regex.someMethod(Regex.java:42)
+                   at java.lang.Thread.run(Thread.java:745)""");
+        ThreadInfo barThreadInfo = new ThreadInfo("""
+            "bar" prio=7 tid=0x0000000000000007 nid=0x0007 runnable [0x0000000000000007]
+               java.lang.Thread.State: RUNNABLE
+                   at fr.pingtimeout.mjprof.regex.someMethod(Regex.java:42)
+                   at java.lang.Thread.run(Thread.java:745)""");
+        ThreadInfo bazThreadInfo = new ThreadInfo("""
+            "baz" prio=7 tid=0x0000000000000007 nid=0x0007 runnable [0x0000000000000007]
+               java.lang.Thread.State: RUNNABLE
+                   at fr.pingtimeout.mjprof.regex.someMethod(Regex.java:42)
+                   at java.lang.Thread.run(Thread.java:745)""");
         JStackFilterFieldRegexMatches filter = new JStackFilterFieldRegexMatches("name", "^foo|bar$");
 
         boolean matchedFoo = filter.filter(fooThreadInfo);

@@ -1,14 +1,13 @@
 package com.performizeit.mjprof.plugins.mappers;
 
-import static org.junit.Assert.*;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-import org.junit.Test;
 
 import com.performizeit.mjprof.parser.ThreadDump;
+import org.junit.jupiter.api.Test;
 
 public class MergedCalleesTest {
 	
@@ -29,8 +28,7 @@ System.out.println(g.map(dump).getStacks());
 	}
 
 	private static String readFromFile(String fileName) throws IOException {
-		BufferedReader br = new BufferedReader(new FileReader(fileName));
-		try {
+		try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
 			StringBuilder sb = new StringBuilder();
 			String line = br.readLine();
 
@@ -39,10 +37,7 @@ System.out.println(g.map(dump).getStacks());
 				sb.append("\n");
 				line = br.readLine();
 			}
-			String everything = sb.toString();
-			return everything;
-		} finally {
-			br.close();
+			return sb.toString();
 		}
 	
 	}
