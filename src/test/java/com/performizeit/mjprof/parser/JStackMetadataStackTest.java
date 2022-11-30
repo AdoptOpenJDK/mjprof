@@ -42,7 +42,7 @@ public class JStackMetadataStackTest {
           """;
 
   @Test
-  public void testMetadataLineProperties() throws Exception {
+  public void testMetadataLineProperties() {
     ThreadInfo s = new ThreadInfo(metaLine + stck);
 
     assertEquals("10", s.metadataProperty(metaLine, "prio"));
@@ -56,7 +56,7 @@ public class JStackMetadataStackTest {
     ThreadInfo s = new ThreadInfo(metaLine + stck);
 
     assertEquals("10", s.getVal("prio"));
-    assertEquals(0x0007fd8d8d5b000l, ((HexaLong) s.getVal("tidLong")).getValue());
+    assertEquals(0x0007fd8d8d5b000L, ((HexaLong) s.getVal("tidLong")).getValue());
     assertEquals(0xd17, ((HexaLong) s.getVal("nidLong")).getValue());
     assertEquals("qtp188618231-14", s.getVal("name"));
     assertEquals("waiting for monitor entry [0x00007fd8ae207000]", s.getVal("status"));
@@ -68,7 +68,7 @@ public class JStackMetadataStackTest {
     ThreadInfo s = new ThreadInfo(metaLineWithMixedOrder + stck);
 
     assertEquals("10", s.getVal("prio"));
-    assertEquals(0x0007fd8d8d5b000l, ((HexaLong) s.getVal("tidLong")).getValue());
+    assertEquals(0x0007fd8d8d5b000L, ((HexaLong) s.getVal("tidLong")).getValue());
     assertEquals(0xd17, ((HexaLong) s.getVal("nidLong")).getValue());
     assertEquals("qtp188618231-14", s.getVal("name"));
     assertEquals("waiting for monitor entry [0x00007fd8ae207000]", s.getVal("status"));

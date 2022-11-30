@@ -97,15 +97,11 @@
       <artifactId>junit-jupiter</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter</artifactId>
-      <scope>test</scope>
-    </dependency>
+
     <dependency>
       <groupId>org.reflections</groupId>
       <artifactId>reflections</artifactId>
-      <version>0.9.12</version>
+      <version>0.10.2</version>
     </dependency>
   </dependencies>
 

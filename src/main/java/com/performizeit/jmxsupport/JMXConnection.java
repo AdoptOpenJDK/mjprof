@@ -156,46 +156,11 @@ public JMXConnection(String serverUrl, String uName, String passwd) throws Malfo
     return threadsAllocBytes;
   }
 
-  private boolean supportAdvFeatures = true;
 
-  public boolean isJava16_25andAbove() {
-    return supportAdvFeatures;
-  }
-
-  public void unsetJava16_25andAbove() {
-    supportAdvFeatures = false;
-  }
-
-  public static Class addToolsJar() {
-    try {
-      return com.sun.tools.attach.VirtualMachine.class;
-    } catch (Throwable t) {
-      System.err.println("tools.jar not in class path from" + System.getProperty("java.home"));
-      File toolsJar = new File(System.getProperty("java.home") + "/lib/tools.jar"); //when jdk
-      System.err.println("try:" + toolsJar);
-      if (toolsJar.exists()) {
-        addURL(toolsJar);
-        System.err.println(toolsJar);
-      } else {
-        toolsJar = new File(System.getProperty("java.home") + "/../lib/tools.jar"); // when jre part of jdk
-        System.out.println("try:" + toolsJar);
-        if (toolsJar.exists()) {
-          addURL(toolsJar);
-          System.err.println("Found:" + toolsJar);
-        } else {
-          System.err.println("Unable to locate tools.jar pls add it to classpath");
-        }
-      }
-    }
-    return com.sun.tools.attach.VirtualMachine.class;
-
-
-  }
 
   public long[] getThreadIds() throws Exception {
 
-    long[] thIds = (long[]) getServerConnection().getAttribute(THREADING, "AllThreadIds");
-    return thIds;
+    return (long[]) getServerConnection().getAttribute(THREADING, "AllThreadIds");
 
   }
 
