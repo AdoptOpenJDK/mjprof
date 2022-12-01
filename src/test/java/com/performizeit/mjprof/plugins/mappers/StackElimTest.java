@@ -26,11 +26,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 public class StackElimTest {
-  String strt = """
+  String threadHeader = """
       "qtp188618231-14" prio=10 tid=0x0007fd8d8d5b000 nid=0xd17 waiting for monitor entry [0x00007fd8ae207000]
          java.lang.Thread.State: BLOCKED (on object monitor)
       """;
-  String stck =
+  String stackTrace =
       """
                  at org.apache.hadoop.hdfs.DFSUtil.<clinit>(DFSUtil.java:128)
                  at org.apache.hadoop.hdfs.DFSClient.<init>(DFSClient.java:437)
@@ -43,12 +43,12 @@ public class StackElimTest {
                  at org.apache.hadoop.fs.FileSystem.get(FileSystem.java:316)
           """;
 
-  String akkka =
+  String stackTraceWithPhrase =
       """
                  at com.akkka.aaa.bbbb.rest.FileSystemFactory.provide(FileSystemFactory.java:32)
                  at com.akkka.aaa.bbb.rest.FileSystemFactory.provide(FlsFactory.java:44)
           """;
-  String stck2 =
+  String stackTracePart2 =
       """
                  at org.jvnet.hk2.internal.FactoryCreator.create(FactoryCreator.java:56)
                  at org.jvnet.hk2.internal.SystemDescriptor.create(SystemDescriptor.java:456)
@@ -67,27 +67,25 @@ public class StackElimTest {
 
   @Test
   public void testStack() {
-    ThreadInfo js = new ThreadInfo(strt + stck + akkka + stck2);
+    ThreadInfo js = new ThreadInfo(threadHeader + stackTrace + stackTraceWithPhrase + stackTracePart2);
 
-    assertEquals(strt + stck + akkka + stck2, js.toString());
-
+    assertEquals(threadHeader + stackTrace + stackTraceWithPhrase + stackTracePart2, js.toString());
   }
 
   @Test
   public void testKeep() {
-    ThreadInfo js = new ThreadInfo(strt + stck + akkka + stck2);
+    ThreadInfo js = new ThreadInfo(threadHeader + stackTrace + stackTraceWithPhrase + stackTracePart2);
     StackFrameContains tb = new StackFrameContains("com.akkka");
     ThreadInfo js2 = tb.map(js);
-    assertEquals(strt + akkka, js2.toString());
+    assertEquals(threadHeader + stackTraceWithPhrase, js2.toString());
 
   }
 
   @Test
   public void testElim() {
-    ThreadInfo js = new ThreadInfo(strt + stck + akkka + stck2);
+    ThreadInfo js = new ThreadInfo(threadHeader + stackTrace + stackTraceWithPhrase + stackTracePart2);
     StackFrameNotContains tb = new StackFrameNotContains("com.akkka");
     ThreadInfo js2 = tb.map(js);
-    assertEquals(strt + stck + stck2, js2.toString());
-
+    assertEquals(threadHeader + stackTrace + stackTracePart2, js2.toString());
   }
 }

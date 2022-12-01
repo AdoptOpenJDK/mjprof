@@ -21,21 +21,21 @@ import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.parser.ThreadInfo;
 
-@Plugin(name="test1", params = {@Param()})
+@Plugin(name = "test1", params = {@Param()})
 public class PluginWithDefaultConstructorTest implements SingleThreadMapper {
-    private final String expr="kk";
+  private final String expr = "kk";
 
 
-    public ThreadInfo map(ThreadInfo stck) {
-        return  stck;
-    }
+  public ThreadInfo map(ThreadInfo stck) {
+    return stck;
+  }
 
-	public ThreadInfo execute(ThreadInfo stck) {
-		return map(stck);
-	}
-	
-	public String getHelpLine() {
-		return "Trim";
-	}
+  public ThreadInfo execute(ThreadInfo stck) {
+    return map(stck);
+  }
+
+  public String getHelpLine() {
+    return "Trim";
+  }
 
 }

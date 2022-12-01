@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class StackTreeTest {
   static char sep = getSeparator();
-  static String stck =
+  static String stackTrace =
 
       """
                  at org.apache.hadoop.hdfs.DFSUtil.<clinit>(DFSUtil.java:128)
@@ -77,14 +77,11 @@ public class StackTreeTest {
 
   @Test
   public void testConstructor() {
-    Profile st = new Profile(stck);
-    st.addMulti(new Profile(stck));
+    Profile st = new Profile(stackTrace);
+    st.addMulti(new Profile(stackTrace));
     st.addMulti(new Profile(stck2));
-    // System.out.println(st.toString());
     Profile st2 = new Profile(st.toString());
-    // System.out.println(st2.toString());
     assertEquals(st.toString(), st2.toString());
-    // System.out.println(st2.toString());
     assertEquals(tree, st2.toString());
   }
 

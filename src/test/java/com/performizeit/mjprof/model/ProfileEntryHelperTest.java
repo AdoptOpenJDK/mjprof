@@ -40,7 +40,6 @@ public class ProfileEntryHelperTest {
         assertEquals(p.indentation, 6);
         assertEquals(p.charType, ProfileEntryHelper.INDENT);
         assertEquals(p.description, "at org.apache.hadoop.fs.FileSystem.createFileSystem(FileSystem.java:2273)");
-
     }
 
     @Test
@@ -51,6 +50,5 @@ public class ProfileEntryHelperTest {
         assertEquals(10, p.indentation);
         assertEquals(p.charType, ProfileEntryHelper.LEAF);
         assertEquals(p.description, "at org.apache.hadoop.hdfs.DFSUtil.<clinit>(DFSUtil.java:128)");
-
     }
 }

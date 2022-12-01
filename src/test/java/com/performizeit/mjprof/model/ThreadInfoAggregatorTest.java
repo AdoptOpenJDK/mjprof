@@ -61,8 +61,6 @@ public class ThreadInfoAggregatorTest {
     ThreadInfoAggregator a = new ThreadInfoAggregator(List.of(TID));
     a.accumulateThreadInfo(new ThreadInfo(stack1));
     a.accumulateThreadInfo(new ThreadInfo(stack2));
-    System.out.println(a.getAggrInfos().get(0).toString());
-
   }
 
   @Test
@@ -70,8 +68,6 @@ public class ThreadInfoAggregatorTest {
     ThreadInfoAggregator a = new ThreadInfoAggregator(List.of(TID));
     a.accumulateThreadInfo(new ThreadInfo(stck1a));
     a.accumulateThreadInfo(new ThreadInfo(stck2a));
-    System.out.println(a.getAggrInfos().get(0).toString());
-
   }
 
   @Test
@@ -80,7 +76,6 @@ public class ThreadInfoAggregatorTest {
     FileNameEliminator fne = new FileNameEliminator();
     a.accumulateThreadInfo(fne.map(new ThreadInfo(stck1a)));
     a.accumulateThreadInfo(fne.map(new ThreadInfo(stck2a)));
-    System.out.println(a.getAggrInfos().get(0).toString());
-
+    // System.out.println(a.getAggrInfos().get(0).toString());
   }
 }
