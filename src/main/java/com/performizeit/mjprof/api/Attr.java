@@ -1,8 +1,5 @@
 package com.performizeit.mjprof.api;
 
-/**
- * Created by life on 13/5/14.
- */
 public class Attr {
   public String attrName;
 

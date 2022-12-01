@@ -9,13 +9,13 @@ import static com.performizeit.mjprof.parser.ThreadInfoProps.*;
 
 public class ThreadInfoAggregator {
   private final List<String> props;
-  HashSet<String> propsMap = new HashSet<String>();
+  HashSet<String> propsMap = new HashSet<>();
 
-  HashMap<List<Object>, ThreadInfo> aggregator = new HashMap<List<Object>, ThreadInfo>();
+  HashMap<List<Object>, ThreadInfo> aggregator = new HashMap<>();
 
   public ThreadInfoAggregator(List<String> props) {
     this.props = props;
-    for (String prop : props) propsMap.add(prop);
+    propsMap.addAll(props);
   }
 
   public void accumulateThreadInfo(ThreadInfo threadInfo) {
@@ -32,7 +32,7 @@ public class ThreadInfoAggregator {
   }
 
   public ArrayList<ThreadInfo> getAggrInfos() {
-    return new ArrayList<ThreadInfo>(aggregator.values());
+    return new ArrayList<>(aggregator.values());
 
   }
 
@@ -54,8 +54,6 @@ public class ThreadInfoAggregator {
     Long cpuTarget = (Long) target.getVal(CPUNS);
     Long cpu = (Long) threadInfo.getVal(CPUNS);
     if (cpu != null && cpuTarget != null) { // no cpu enrichment
-      if (cpu == null) cpu = 0l;
-      if (cpuTarget == null) cpuTarget = 0l;
       cpuTarget += cpu;
       target.setVal(CPUNS, cpuTarget);
     }
@@ -63,8 +61,8 @@ public class ThreadInfoAggregator {
     Long wallTarget = (Long) target.getVal(WALL);
     Long wall = (Long) threadInfo.getVal(WALL);
     if (wall != null || wallTarget != null) {
-      if (wall == null) wall = 0l;
-      if (wallTarget == null) wallTarget = 0l;
+      if (wall == null) wall = 0L;
+      if (wallTarget == null) wallTarget = 0L;
       if (wallTarget < wall) wallTarget = wall;
       target.setVal(WALL, wallTarget);
     }
@@ -83,12 +81,13 @@ public class ThreadInfoAggregator {
 
 
   public void mergeNonKeyProps(ThreadInfo target, ThreadInfo threadInfo) {
-    ArrayList<String> keys = new ArrayList<String>(threadInfo.getProps());
+    ArrayList<String> keys = new ArrayList<>(threadInfo.getProps());
     for (String prop1 : keys) {
-      if (prop1.equals(STACK) || prop1.equals(COUNT) || prop1.equals(CPUNS) ||
-        prop1.equals(WALL) || prop1.equals(CPU_PREC) || propsMap.contains(prop1))
-        continue; //    already merged to specially
       if (propsMap.contains(prop1)) continue; //     key properties are not merged
+      if (prop1.equals(STACK) || prop1.equals(COUNT) || prop1.equals(CPUNS) ||
+          prop1.equals(WALL) || prop1.equals(CPU_PREC))
+        continue; //    already merged to specially
+
 
       Object valTarget = target.getVal(prop1);
       Object val = threadInfo.getVal(prop1);
@@ -111,7 +110,7 @@ public class ThreadInfoAggregator {
   }
 
   ArrayList<Object> generateKey(ThreadInfo threadInfo) {
-    ArrayList<Object> key = new ArrayList<Object>();
+    ArrayList<Object> key = new ArrayList<>();
     for (String prop : props) {
       key.add(threadInfo.getVal(prop));
     }

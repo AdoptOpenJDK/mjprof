@@ -23,7 +23,6 @@ public class HexaLong implements Comparable<HexaLong> {
 
   public HexaLong(long val) {
     value = val;
-
   }
 
   public HexaLong(String s) throws NumberFormatException {
@@ -41,7 +40,7 @@ public class HexaLong implements Comparable<HexaLong> {
 
   @Override
   public int compareTo(HexaLong o) {
-    return new Long(value).compareTo(o.value);
+    return Long.compare(value, o.value);
   }
 
   public long getValue() {

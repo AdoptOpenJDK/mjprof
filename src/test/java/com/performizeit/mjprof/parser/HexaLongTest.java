@@ -21,10 +21,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class HexaLongTest {
     @Test
-    public void testConstructor() {
+    public void testStringConstructor() {
         assertEquals(10,(new HexaLong("a")).getValue());
         assertEquals(20,(new HexaLong("14")).getValue());
         assertEquals(32,(new HexaLong("20")).getValue());
         assertEquals(32,(new HexaLong("0x20")).getValue());
+    }
+    @Test
+    public void testToString() {
+        assertEquals("20",(new HexaLong(32)).toString());
     }
 }

@@ -2,6 +2,7 @@ package com.performizeit.mjprof.plugins.dataSource;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 import com.performizeit.mjprof.plugin.types.DataSource;
 import com.performizeit.mjprof.parser.ThreadDump;
@@ -23,10 +24,10 @@ public abstract class StreamDataSourcePluginBase implements DataSource, Generato
     StringBuilder linesOfStack = new StringBuilder();
     String line;
     try {
-
+      Pattern startWithADate = Pattern.compile("^(\\d\\d\\d\\d-\\d\\d-\\d\\d .*)");
       while ((line = reader.readLine()) != null) {
         //  System.out.println(line);
-        if (line.length() > 0 && Character.isDigit(line.charAt(0))) {   //starting a new stack dump
+        if (line.length() > 0 && startWithADate.matcher(line).matches()) {   //starting a new stack dump
           if (linesOfStack.length() > 0) {
             return linesOfStack.toString();
           }

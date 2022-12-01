@@ -24,8 +24,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.management.AttributeNotFoundException;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanException;
@@ -102,7 +100,7 @@ public JMXConnection(String serverUrl, String uName, String passwd) throws Malfo
       GC = new ObjectName("java.lang:type=GarbageCollector,name=*");
       THREADING = new ObjectName("java.lang:type=Threading");
     } catch (MalformedObjectNameException | NullPointerException ex) {
-      Logger.getLogger(JMXConnection.class.getName()).log(Level.SEVERE, null, ex);
+      ex.printStackTrace();
     }
   }
 
@@ -113,7 +111,7 @@ public JMXConnection(String serverUrl, String uName, String passwd) throws Malfo
       l = (Long) getServerConnection().getAttribute(JMXConnection.RUNTIME, "Uptime");
 
     } catch (MBeanException | AttributeNotFoundException | InstanceNotFoundException | ReflectionException | IOException ex) {
-      Logger.getLogger(JMXConnection.class.getName()).log(Level.SEVERE, null, ex);
+      ex.printStackTrace();
     }
     return l;
   }

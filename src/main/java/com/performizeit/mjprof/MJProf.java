@@ -17,31 +17,32 @@
 
 package com.performizeit.mjprof;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
-
 import com.performizeit.mjprof.api.Attr;
+import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.api.ThreadInfoComparator;
 import com.performizeit.mjprof.monads.MJStep;
-import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.monads.Macros;
 import com.performizeit.mjprof.monads.StepInfo;
 import com.performizeit.mjprof.monads.StepsRepository;
 import com.performizeit.mjprof.parser.ThreadInfo;
 import com.performizeit.mjprof.plugin.PluginUtils;
-import com.performizeit.mjprof.plugin.types.*;
+import com.performizeit.mjprof.plugin.types.DataSource;
+import com.performizeit.mjprof.plugin.types.DumpReducer;
+import com.performizeit.mjprof.plugin.types.Filter;
+import com.performizeit.mjprof.plugin.types.Outputer;
+import com.performizeit.mjprof.plugin.types.SingleThreadMapper;
+import com.performizeit.mjprof.plugin.types.Terminal;
 import com.performizeit.plumbing.Generator;
 import com.performizeit.plumbing.GeneratorHandler;
 import com.performizeit.plumbing.Pipe;
 import com.performizeit.plumbing.PipeHandler;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class MJProf {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         //  System.setProperty("java.awt.headless","true"); // when using lanterna we suffer when there we do not disable GUI
         if (args.length < 1) {
             printSynopsisAndExit();
@@ -82,7 +83,7 @@ public class MJProf {
 
     }
 
-    static ArrayList <Pipe> pipes = new ArrayList<Pipe>();
+    static ArrayList <Pipe> pipes = new ArrayList<>();
     static ArrayList <Generator<ThreadInfo>> generators = new ArrayList<Generator<ThreadInfo>>();
     private static void constructPlumbing(ArrayList<MJStep> steps) {
         int i=0;
@@ -138,16 +139,13 @@ public class MJProf {
         StringBuilder sb = new StringBuilder();
         sb.append("Synopsis\nA list of the following monads concatenated with . \n");
         sb.append("\nExpanded Expression:\n");
-        sb.append(expandedExpressionstr+"\n");
-        List<String> keys = new ArrayList<String>(StepsRepository.getRepository().keySet());
-        Collections.sort(keys,new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                if (o1.startsWith("-"))  o1 = o1.substring(1)+"-";
-                if (o2.startsWith("-"))  o2 = o2.substring(1)+"-";
-                return o1.compareTo(o2);
+        sb.append(expandedExpressionstr).append("\n");
+        List<String> keys = new ArrayList<>(StepsRepository.getRepository().keySet());
+        keys.sort((o1, o2) -> {
+            if (o1.startsWith("-")) o1 = o1.substring(1) + "-";
+            if (o2.startsWith("-")) o2 = o2.substring(1) + "-";
+            return o1.compareTo(o2);
 
-            }
         });
         sb.append("\nData sources:\n");
 
@@ -199,9 +197,7 @@ public class MJProf {
                 }
                 lineLength += appendAndCount(sb, "/");
             }
-            for (int j = 0; j < (70 - lineLength); j++) {
-                sb.append(" ");
-            }
+            sb.append(" ".repeat(Math.max(0, (70 - lineLength))));
             sb.append("- ");
             sb.append(stepInfo.getDescription());
             sb.append("\n");
@@ -236,7 +232,7 @@ public class MJProf {
 
     static ArrayList<String> splitCommandLine(String arg) {
         String argPart = arg;
-        ArrayList<String> argParts = new ArrayList<String>();
+        ArrayList<String> argParts = new ArrayList<>();
         for (int idx = findNextSeperator(argPart); idx != -1; idx = findNextSeperator(argPart)) {
             argParts.add(argPart.substring(0, idx));
             argPart = argPart.substring(idx + 1);
@@ -248,7 +244,7 @@ public class MJProf {
     static ArrayList<MJStep> parseCommandLine(String concatArgs) {
 
         ArrayList<String> argParts = splitCommandLine(concatArgs);
-        ArrayList<String> finalArgsParts = new ArrayList<String>();
+        ArrayList<String> finalArgsParts = new ArrayList<>();
         for (String argPart : argParts) {
             String expand = Macros.getInstance().getProperty(argPart);
             if (expand != null) {
@@ -267,7 +263,7 @@ public class MJProf {
             if (i<argParts.size()-1)    expandedExpression .append(".");
         }
         expandedExpressionstr = expandedExpression.toString();
-        ArrayList<MJStep> mjsteps = new ArrayList<MJStep>();
+        ArrayList<MJStep> mjsteps = new ArrayList<>();
         for (String s : argParts) {
             if (s.equalsIgnoreCase("help")) {
                 printSynopsisAndExit();
