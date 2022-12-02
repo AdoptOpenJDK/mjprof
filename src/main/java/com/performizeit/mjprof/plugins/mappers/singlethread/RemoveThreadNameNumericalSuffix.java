@@ -19,11 +19,14 @@ package com.performizeit.mjprof.plugins.mappers.singlethread;
 
 
 import com.performizeit.mjprof.api.Plugin;
+import com.performizeit.mjprof.api.PluginCategory;
 import com.performizeit.mjprof.parser.ThreadInfo;
 
 import static com.performizeit.mjprof.parser.ThreadInfoProps.*;
 
+@SuppressWarnings("unused")
 @Plugin(name = "-namesuffix", params = {},
+    category = PluginCategory.SINGLE_THREAD_MAPPER,
   description = "Trim the last number from thread names helps grouping thread pool threads together")
 public class RemoveThreadNameNumericalSuffix extends SingleThreadMapperBase {
   public RemoveThreadNameNumericalSuffix() {
@@ -34,7 +37,7 @@ public class RemoveThreadNameNumericalSuffix extends SingleThreadMapperBase {
     String tName = (String) stck.getVal(NAME);
     int idx = tName.length() - 1;
     for (; ; idx--) {
-      Character c = tName.charAt(idx);
+      char c = tName.charAt(idx);
       if (!Character.isDigit(c)) break;
     }
     tName = tName.substring(0, idx + 1);

@@ -18,6 +18,7 @@
 package com.performizeit.mjprof.plugins.mappers.singlethread.stackframe;
 
 import com.performizeit.mjprof.api.Plugin;
+import com.performizeit.mjprof.api.PluginCategory;
 import com.performizeit.mjprof.model.Profile;
 import com.performizeit.mjprof.parser.ThreadInfo;
 import com.performizeit.mjprof.plugins.mappers.singlethread.SingleThreadMapperBase;
@@ -26,6 +27,7 @@ import java.util.HashMap;
 
 @SuppressWarnings("unused")
 @Plugin(name = "-fn", params = {},
+    category = PluginCategory.SINGLE_THREAD_MAPPER,
   description = "Eliminates file name and line from stack frames")
 public class FileNameEliminator extends SingleThreadMapperBase {
 

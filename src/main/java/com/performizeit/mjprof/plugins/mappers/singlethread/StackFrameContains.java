@@ -18,6 +18,7 @@
 package com.performizeit.mjprof.plugins.mappers.singlethread;
 
 import com.performizeit.mjprof.api.Plugin;
+import com.performizeit.mjprof.api.PluginCategory;
 import com.performizeit.mjprof.model.Profile;
 import com.performizeit.mjprof.model.ProfileNodeFilter;
 import com.performizeit.mjprof.model.SFNode;
@@ -27,6 +28,7 @@ import com.performizeit.mjprof.parser.ThreadInfo;
 import static com.performizeit.mjprof.parser.ThreadInfoProps.*;
 
 @Plugin(name = "frame", params = {@Param()},
+    category = PluginCategory.SINGLE_THREAD_MAPPER,
   description = "Eliminates stack frames from all stacks which do not contain string.")
 public class StackFrameContains extends SingleThreadMapperBase {
   protected final String expr;

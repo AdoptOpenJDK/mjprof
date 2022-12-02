@@ -17,6 +17,7 @@
 
 package com.performizeit.mjprof.plugins.terminals;
 
+import com.performizeit.mjprof.api.PluginCategory;
 import com.performizeit.mjprof.plugin.types.Terminal;
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.parser.ThreadDump;
@@ -26,7 +27,7 @@ import com.performizeit.plumbing.PipeHandler;
 import java.util.HashSet;
 
 
-@Plugin(name = "list", params = {}, description = "lists the possible stack trace attributes")
+@Plugin(name = "list", params = {}, category = PluginCategory.TERMINAL, description = "lists the possible stack trace attributes")
 public class ListProps implements Terminal, PipeHandler<ThreadDump, String> {
   HashSet<String> propsHash = new HashSet<>();
 

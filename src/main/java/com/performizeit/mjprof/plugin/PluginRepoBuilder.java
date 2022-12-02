@@ -12,9 +12,7 @@ import java.util.Set;
 public class PluginRepoBuilder {
 
 
-  // java -cp `mvn dependency:build-classpath | grep jar:`:target/classes com.performizeit.mjprof.plugin.PluginRepoBuilder
-  //java -jar  -agentlib:native-image-agent=config-output-dir=META_INF/native-config -jar target/mjprof-1.0-jar-with-dependencies.jar
-  //native-image -H:ReflectionConfigurationFiles=META-INF/native-config/reflect-config.json  -H:IncludeResources=".*/*.txt" -jar target/mjprof-1.0-jar-with-dependencies.jar mjprof
+   //native-image   -H:IncludeResources=".*/*.txt" -jar target/mjprof-1.0-jar-with-dependencies.jar target/mjprof
   public static ArrayList<Class> resolvePluginListFromClassPath(ArrayList<Class> discoveredClasses) {
 
     Reflections reflections = new Reflections("com.performizeit");

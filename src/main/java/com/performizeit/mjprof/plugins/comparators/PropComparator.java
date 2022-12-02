@@ -18,9 +18,11 @@ package com.performizeit.mjprof.plugins.comparators;
 
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.api.Param;
+import com.performizeit.mjprof.api.PluginCategory;
 import com.performizeit.mjprof.parser.ThreadInfo;
 
-@Plugin(name = "sort", params = {@Param("attr") },description="Sorts based on an attribute")
+@Plugin(name = "sort", params = {@Param("attr") },category = PluginCategory.THREAD_INFO_COMPARTAOR,
+    description="Sorts based on an attribute")
 public class PropComparator extends SortMapper{
     private final String prop;
 

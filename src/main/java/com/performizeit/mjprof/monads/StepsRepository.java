@@ -18,12 +18,12 @@
 package com.performizeit.mjprof.monads;
 
 import java.io.BufferedInputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 
 import com.performizeit.mjprof.api.Plugin;
+import com.performizeit.mjprof.plugin.PluginUtils;
 
 public class StepsRepository {
   static HashMap<String, StepInfo> repo = new HashMap<>();
@@ -53,13 +53,8 @@ public class StepsRepository {
   private static void addPluginToRepo(Class cla) {
     Plugin pluginAnnotation = (Plugin) cla.getAnnotation(Plugin.class);
     StepInfo stepInit = new StepInfo(cla, pluginAnnotation.params(), pluginAnnotation.description());
-    try {
-      var cons = cla.getConstructor(stepInit.getParamTypes());
-      System.out.println("Cons"+ cons.getName());
-    } catch (NoSuchMethodException e) {
-      throw new RuntimeException(e);
-    }
     repo.put(pluginAnnotation.name(), stepInit);
+    PluginUtils.initObj(stepInit.getClazz(), stepInit.getParamTypes(), stepInit.getParamDummyArgs()); // needed for reflection in graal
   }
 
   public static boolean stepValid(MJStep a) {
@@ -74,5 +69,4 @@ public class StepsRepository {
   public static HashMap<String, StepInfo> getRepository() {
     return repo;
   }
-
 }

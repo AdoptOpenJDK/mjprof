@@ -19,10 +19,13 @@ package com.performizeit.mjprof.plugins.mappers.singlethread;
 
 import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.api.Plugin;
+import com.performizeit.mjprof.api.PluginCategory;
 import com.performizeit.mjprof.model.Profile;
 import com.performizeit.mjprof.parser.ThreadInfo;
 
+@SuppressWarnings("unused")
 @Plugin(name = "-frame", params = {@Param()},
+    category = PluginCategory.SINGLE_THREAD_MAPPER,
   description = "Eliminates stack frames from all stacks which contain string.")
 public class StackFrameNotContains extends SingleThreadMapperBase {
   protected final String expr;

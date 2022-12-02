@@ -19,25 +19,28 @@ package com.performizeit.mjprof.plugins.filters;
 
 import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.api.Plugin;
+import com.performizeit.mjprof.api.PluginCategory;
 import com.performizeit.mjprof.parser.ThreadInfo;
 
 import java.util.regex.Pattern;
 
 @Plugin(name = "regexMatches",
-        params = {@Param("attr"), @Param("regex")},
-        description = "Returns only threads which contain the string in certain attribute (regexp not supported)")
+    params = {@Param("attr"), @Param("regex")},
+    category = PluginCategory.FILTER,
+    description = "Returns only threads which contain the string in certain attribute (regexp not supported)"
+)
 public class JStackFilterFieldRegexMatches extends SingleThreadFilter {
-    private final String attrName;
-    private final Pattern regex;
+  private final String attrName;
+  private final Pattern regex;
 
-    public JStackFilterFieldRegexMatches(String attrName, String regex) {
-        this.attrName = attrName;
-        this.regex = Pattern.compile(regex);
-    }
+  public JStackFilterFieldRegexMatches(String attrName, String regex) {
+    this.attrName = attrName;
+    this.regex = Pattern.compile(regex);
+  }
 
-    @Override
-    public boolean filter(ThreadInfo stck) {
-        Object o = stck.getVal(attrName);
-        return o != null && regex.matcher(o.toString()).matches();
-    }
+  @Override
+  public boolean filter(ThreadInfo stck) {
+    Object o = stck.getVal(attrName);
+    return o != null && regex.matcher(o.toString()).matches();
+  }
 }

@@ -18,9 +18,13 @@ package com.performizeit.mjprof.plugins.comparators;
 
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.api.Param;
+import com.performizeit.mjprof.api.PluginCategory;
 import com.performizeit.mjprof.parser.ThreadInfo;
 
-@Plugin(name = "-sort", params = {@Param()}, description = "Sorts based on an attribute (descending order)")
+@SuppressWarnings("unused")
+@Plugin(name = "-sort", params = {@Param()},
+    category = PluginCategory.THREAD_INFO_COMPARTAOR,
+    description = "Sorts based on an attribute (descending order)")
 public class ReversePropComparator extends PropComparator {
   public ReversePropComparator(String prop) {
     super(prop);

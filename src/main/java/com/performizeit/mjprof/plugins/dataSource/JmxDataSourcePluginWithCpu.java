@@ -2,6 +2,7 @@ package com.performizeit.mjprof.plugins.dataSource;
 
 import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.api.Plugin;
+import com.performizeit.mjprof.api.PluginCategory;
 import com.performizeit.mjprof.parser.ThreadDump;
 import com.performizeit.mjprof.parser.ThreadInfo;
 import com.performizeit.mjprof.plugin.types.DataSource;
@@ -20,7 +21,8 @@ import static com.performizeit.mjprof.parser.ThreadInfoProps.*;
   @Param(type = int.class, value = "sleep", optional = true, defaultValue = "5000"),
   @Param(value = "username", optional = true),
   @Param(value = "passwd", optional = true)
-}, description = "Generates thread dumps dumps via JMX and collects per thread CPU")
+}, category = PluginCategory.DATA_SOURCE,
+    description = "Generates thread dumps dumps via JMX and collects per thread CPU")
 public class JmxDataSourcePluginWithCpu extends JmxDataSourcePlugin implements DataSource, GeneratorHandler<ThreadDump> {
   protected boolean collectCPU = true;
 

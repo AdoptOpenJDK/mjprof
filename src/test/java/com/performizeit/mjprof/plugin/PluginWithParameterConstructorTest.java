@@ -16,6 +16,7 @@
 */
 package com.performizeit.mjprof.plugin;
 
+import com.performizeit.mjprof.api.PluginCategory;
 import com.performizeit.mjprof.plugin.types.SingleThreadMapper;
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.model.Profile;
@@ -26,7 +27,7 @@ import com.performizeit.mjprof.parser.ThreadInfo;
 
 import java.util.HashMap;
 
-@Plugin(name="test2", params = {@Param()})
+@Plugin(name="test2", params = {@Param()},category = PluginCategory.SINGLE_THREAD_MAPPER)
 public class PluginWithParameterConstructorTest implements SingleThreadMapper {
     private final String expr;
 

@@ -18,8 +18,12 @@
 package com.performizeit.mjprof.plugins.mergers;
 
 import com.performizeit.mjprof.api.Plugin;
+import com.performizeit.mjprof.api.PluginCategory;
 
-@Plugin(name = "ctree", params = {}, description = "combine all stack traces with colors (UNIX Terminal) ")
+@SuppressWarnings("unused")
+@Plugin(name = "ctree", params = {},
+    category = PluginCategory.TERMINAL,
+    description = "combine all stack traces with colors (UNIX Terminal) ")
 public class StackTreeColor extends StackTreeMerger {
   public StackTreeColor() {
     st.color = true;

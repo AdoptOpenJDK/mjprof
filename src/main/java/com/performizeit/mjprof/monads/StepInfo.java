@@ -23,7 +23,7 @@ public class StepInfo {
   private final Class pluginType;
   private Class clazz;
   private Param[] params;
-  private String description;
+  private final String description;
 
   public StepInfo(Class clazz, Param[] params, String description) {
     this.clazz = clazz;
@@ -60,6 +60,20 @@ public class StepInfo {
       paramTypes[i] = params[i].type();
     }
     return paramTypes;
+  }
+
+  public Object[] getParamDummyArgs() {
+    Object[] paramVals = new Object[params.length];
+
+    for (int i = 0; i < params.length; i++) {
+      switch (params[i].type().getName()) {
+        case "int" -> paramVals[i] = Integer.valueOf(1);
+        case "long" -> paramVals[i] = Long.valueOf(1L);
+        case "boolean" -> paramVals[i] = Boolean.valueOf(true);
+        default -> paramVals[i] = "";
+      }
+    }
+    return paramVals;
   }
 
   public String getDescription() {

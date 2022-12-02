@@ -19,10 +19,13 @@ package com.performizeit.mjprof.plugins.mappers.singlethread;
 
 import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.api.Plugin;
+import com.performizeit.mjprof.api.PluginCategory;
 import com.performizeit.mjprof.model.Profile;
 import com.performizeit.mjprof.parser.ThreadInfo;
 
+@SuppressWarnings("unused")
 @Plugin(name = "trimbelow", params = {@Param()},
+    category = PluginCategory.SINGLE_THREAD_MAPPER,
   description = "Trim all stack frames below the first occurrence of string")
 public class TrimBelow extends SingleThreadMapperBase {
   protected final String expr;
@@ -32,13 +35,13 @@ public class TrimBelow extends SingleThreadMapperBase {
 
   }
 
-  private class TrimBelowContext {
+  private static class TrimBelowContext {
     int flowLevel = Integer.MAX_VALUE;
   }
 
   @Override
-  public ThreadInfo map(ThreadInfo stck) {
-    Profile p = (Profile) stck.getVal("stack");
+  public ThreadInfo map(ThreadInfo stack) {
+    Profile p = (Profile) stack.getVal("stack");
     p.filter((node, level, context) -> {
       TrimBelowContext ctx = (TrimBelowContext) context;
 
@@ -54,6 +57,6 @@ public class TrimBelow extends SingleThreadMapperBase {
       }
       return false;
     }, new TrimBelowContext());
-    return stck;
+    return stack;
   }
 }

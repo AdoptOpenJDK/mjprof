@@ -17,6 +17,7 @@
 
 package com.performizeit.mjprof.plugins.mappers;
 
+import com.performizeit.mjprof.api.PluginCategory;
 import com.performizeit.mjprof.plugin.types.DumpReducer;
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.model.ThreadInfoAggregator;
@@ -27,7 +28,10 @@ import com.performizeit.plumbing.PipeHandler;
 
 import java.util.ArrayList;
 
-@Plugin(name = "group", params = {@Param(type = String.class, value = "attr", optional = true, defaultValue = "")}, description = "Group a single thread dump by an attribute. If not attribute is specified all dump is merged")
+@Plugin(name = "group",
+    params = {@Param(value = "attr", optional = true)},
+    category = PluginCategory.DUMP_REDUCER,
+    description = "Group a single thread dump by an attribute. If not attribute is specified all dump is merged")
 public class GroupByProp implements DumpReducer, PipeHandler<ThreadDump, ThreadDump> {
   private final String prop;
 

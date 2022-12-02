@@ -1,5 +1,6 @@
 package com.performizeit.mjprof.plugins.output;
 
+import com.performizeit.mjprof.api.PluginCategory;
 import com.performizeit.mjprof.plugin.types.Outputer;
 import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.api.Plugin;
@@ -8,7 +9,7 @@ import com.performizeit.plumbing.PipeHandler;
 import java.io.*;
 
 @SuppressWarnings("unused")
-@Plugin(name = "snapshot", params = {@Param(value = "filename", optional = true)}, description = "Write to a file")
+@Plugin(name = "snapshot", params = {@Param(value = "filename", optional = true)}, category = PluginCategory.OUTPUTER, description = "Write to a file")
 public class SnapshotToPrintStream implements Outputer, PipeHandler {
   private final String fileName;
   private final PrintStream os;

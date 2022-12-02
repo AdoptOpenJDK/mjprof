@@ -17,6 +17,7 @@
 
 package com.performizeit.mjprof.plugins.terminals;
 
+import com.performizeit.mjprof.api.PluginCategory;
 import com.performizeit.mjprof.plugin.types.Terminal;
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.parser.ThreadDump;
@@ -25,7 +26,7 @@ import com.performizeit.plumbing.PipeHandler;
 
 
 @SuppressWarnings("unused")
-@Plugin(name = "count", params = {}, description = "counts number of threads")
+@Plugin(name = "count", params = {}, category = PluginCategory.TERMINAL, description = "counts number of threads")
 public class CountThreads implements Terminal, PipeHandler<ThreadDump, String> {
   @Override
   public String handleMsg(ThreadDump msg) {

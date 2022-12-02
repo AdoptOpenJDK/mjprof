@@ -16,11 +16,9 @@ public abstract class StreamDataSourcePluginBase implements DataSource, Generato
 
   boolean isDoneFlag = false;
 
-  public void setReader(BufferedReader reader) {
-    this.reader = reader;
-  }
 
   protected String getStackStringFromReader() {
+    initReader();
     StringBuilder linesOfStack = new StringBuilder();
     String line;
     try {
@@ -47,6 +45,9 @@ public abstract class StreamDataSourcePluginBase implements DataSource, Generato
     }
 
     return null;
+  }
+
+  protected void initReader() {
   }
 
 

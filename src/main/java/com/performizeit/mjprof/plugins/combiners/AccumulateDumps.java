@@ -19,6 +19,7 @@ package com.performizeit.mjprof.plugins.combiners;
 
 import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.api.Plugin;
+import com.performizeit.mjprof.api.PluginCategory;
 import com.performizeit.mjprof.model.ThreadInfoAggregator;
 import com.performizeit.mjprof.parser.ThreadDump;
 import com.performizeit.mjprof.parser.ThreadInfo;
@@ -28,14 +29,16 @@ import com.performizeit.plumbing.PipeHandler;
 import java.util.ArrayList;
 
 
-@Plugin(name = "merge", params = {@Param(type = String.class, value = "attr", optional = true, defaultValue = "tid")}, description = "Combine all dumps to a single one merge based on an attribute (thread id is the default attribute)")
+@Plugin(name = "merge", params = {@Param(type = String.class, value = "attr", optional = true, defaultValue = "tid")},
+    category = PluginCategory.DUMP_REDUCER,
+    description = "Combine all dumps to a single one merge based on an attribute (thread id is the default attribute)")
 public class AccumulateDumps implements DumpReducer, PipeHandler<ThreadDump, ThreadDump> {
 
   ThreadInfoAggregator tidAggr;
   int countDumps = 0;
 
   public AccumulateDumps(String prop) {
-    ArrayList<String> a = new ArrayList<String>();
+    ArrayList<String> a = new ArrayList<>();
     a.add(prop);
     tidAggr = new ThreadInfoAggregator(a);
   }

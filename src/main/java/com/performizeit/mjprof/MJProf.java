@@ -19,6 +19,7 @@ package com.performizeit.mjprof;
 
 import com.performizeit.mjprof.api.Attr;
 import com.performizeit.mjprof.api.Param;
+import com.performizeit.mjprof.api.PluginCategory;
 import com.performizeit.mjprof.api.ThreadInfoComparator;
 import com.performizeit.mjprof.monads.MJStep;
 import com.performizeit.mjprof.monads.Macros;
@@ -149,21 +150,21 @@ public class MJProf {
         });
         sb.append("\nData sources:\n");
 
-        getSynopsisContent(sb, keys, DataSource.class);
+        getSynopsisContent(sb, keys, DataSource.class,PluginCategory.DATA_SOURCE);
 
         sb.append("\nOutput:\n");
-        getSynopsisContent(sb, keys,Outputer.class);
+        getSynopsisContent(sb, keys,Outputer.class,PluginCategory.OUTPUTER);
 
         sb.append("\nFilters:\n");
-        getSynopsisContent(sb, keys, Filter.class);
+        getSynopsisContent(sb, keys, Filter.class,PluginCategory.FILTER);
         sb.append("\nSingle thread mappers:\n");
-        getSynopsisContent(sb, keys, SingleThreadMapper.class);
+        getSynopsisContent(sb, keys, SingleThreadMapper.class,PluginCategory.SINGLE_THREAD_MAPPER);
 
         sb.append("\nFull dump mappers:\n");
-        getSynopsisContent(sb, keys,DumpReducer.class);
-        getSynopsisContent(sb, keys,ThreadInfoComparator.class);
+        getSynopsisContent(sb, keys,DumpReducer.class,PluginCategory.DUMP_REDUCER);
+        getSynopsisContent(sb, keys,ThreadInfoComparator.class,PluginCategory.THREAD_INFO_COMPARTAOR);
         sb.append("\nTerminals:\n");
-        getSynopsisContent(sb, keys,Terminal.class);
+        getSynopsisContent(sb, keys,Terminal.class,PluginCategory.TERMINAL);
 
         sb.append("\n  help                                  -Prints this message");
         sb.append("\n\nMacros:\n");
@@ -172,7 +173,7 @@ public class MJProf {
         return sb.toString();
     }
 
-    private static void getSynopsisContent(StringBuilder sb, List<String> keys,Class pluginType) {
+    private static void getSynopsisContent(StringBuilder sb, List<String> keys, Class pluginType, PluginCategory category) {
         int lineLength = 0;
         StepInfo stepInfo;
         for (String stepName : keys) {

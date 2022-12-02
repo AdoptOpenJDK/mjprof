@@ -19,6 +19,7 @@ package com.performizeit.mjprof.plugins.mappers.singlethread.stackframe;
 
 
 import com.performizeit.mjprof.api.Plugin;
+import com.performizeit.mjprof.api.PluginCategory;
 import com.performizeit.mjprof.model.Profile;
 import com.performizeit.mjprof.parser.ThreadInfo;
 import com.performizeit.mjprof.plugins.mappers.singlethread.SingleThreadMapperBase;
@@ -27,6 +28,7 @@ import static com.performizeit.mjprof.parser.ThreadInfoProps.STACK;
 
 @SuppressWarnings("unused")
 @Plugin(name = "-pkg", params = {},
+    category = PluginCategory.SINGLE_THREAD_MAPPER,
   description = "Eliminates package name from stack frames")
 public class PackageEliminator extends SingleThreadMapperBase {
   @Override

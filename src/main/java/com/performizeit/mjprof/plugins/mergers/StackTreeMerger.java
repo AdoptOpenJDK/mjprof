@@ -17,6 +17,7 @@
 
 package com.performizeit.mjprof.plugins.mergers;
 
+import com.performizeit.mjprof.api.PluginCategory;
 import com.performizeit.mjprof.plugin.types.Terminal;
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.model.Profile;
@@ -25,7 +26,9 @@ import com.performizeit.mjprof.parser.ThreadInfoProps;
 import com.performizeit.mjprof.parser.ThreadInfo;
 import com.performizeit.plumbing.PipeHandler;
 
-@Plugin(name = "tree", params = {}, description = "combine all stack traces ")
+@Plugin(name = "tree", params = {},
+    category = PluginCategory.TERMINAL,
+    description = "combine all stack traces ")
 public class StackTreeMerger implements Terminal, PipeHandler<ThreadDump, String> {
   protected Profile st = new Profile();
 

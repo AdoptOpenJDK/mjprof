@@ -19,6 +19,7 @@ package com.performizeit.mjprof.plugins.mappers.singlethread.stackframe;
 
 
 import com.performizeit.mjprof.api.Plugin;
+import com.performizeit.mjprof.api.PluginCategory;
 import com.performizeit.mjprof.model.Profile;
 import com.performizeit.mjprof.model.ProfileVisitor;
 import com.performizeit.mjprof.model.SFNode;
@@ -29,6 +30,7 @@ import static com.performizeit.mjprof.parser.ThreadInfoProps.STACK;
 
 @SuppressWarnings("unused")
 @Plugin(name = "-at", params = {},
+    category = PluginCategory.SINGLE_THREAD_MAPPER,
   description = "Eliminates the 'at' from the beginning of stack frames")
 public class AtEliminator extends SingleThreadMapperBase {
   @Override

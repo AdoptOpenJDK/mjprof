@@ -18,6 +18,7 @@
 package com.performizeit.mjprof.plugins.mappers.singlethread;
 
 import com.performizeit.mjprof.api.Plugin;
+import com.performizeit.mjprof.api.PluginCategory;
 import com.performizeit.mjprof.model.Profile;
 import com.performizeit.mjprof.model.ProfileNodeFilter;
 import com.performizeit.mjprof.model.SFNode;
@@ -26,6 +27,7 @@ import com.performizeit.mjprof.parser.ThreadInfo;
 
 @SuppressWarnings("unused")
 @Plugin(name = "bottom", params = {@Param(type = int.class)},
+    category = PluginCategory.SINGLE_THREAD_MAPPER,
   description = "Returns at most n bottom stack frames of the stack")
 public class StackBottom extends SingleThreadMapperBase {
   private final int count;

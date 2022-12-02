@@ -25,7 +25,8 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Plugin {
-    public String name();
-    public Param[] params();
-    public String description() default "";
+    String name();
+    Param[] params();
+    PluginCategory category();
+    String description() default "";
 }

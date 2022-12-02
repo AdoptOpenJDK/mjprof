@@ -19,12 +19,14 @@ package com.performizeit.mjprof.plugins.mappers.singlethread;
 
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.api.Param;
+import com.performizeit.mjprof.api.PluginCategory;
 import com.performizeit.mjprof.parser.ThreadInfo;
 
 import java.util.HashMap;
 
 @SuppressWarnings("unused")
 @Plugin(name = "-prop", params = {@Param("attr")},
+    category = PluginCategory.THREAD_INFO_COMPARTAOR,
   description = "Removes a certain attribute e.g. eliminate/stack/")
 public class PropEliminator extends SingleThreadMapperBase {
   private final String prop;

@@ -1,5 +1,6 @@
 package com.performizeit.mjprof.plugins.dataSource;
 
+import com.performizeit.mjprof.api.PluginCategory;
 import com.performizeit.mjprof.plugin.types.DataSource;
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.api.Param;
@@ -16,7 +17,9 @@ import org.w3c.dom.Element;
 
 import java.io.File;
 
-@Plugin(name = "visualvm", params = {@Param("path")}, description = "Read profiling session from xml export of VisualVM(not implemented yet)")
+@Plugin(name = "visualvm", params = {@Param("path")},
+    category = PluginCategory.DATA_SOURCE,
+    description = "Read profiling session from xml export of VisualVM(not implemented yet)")
 public class VisualVMDataSourcePlugin implements DataSource, GeneratorHandler<ThreadDump> {
   String fileName;
 

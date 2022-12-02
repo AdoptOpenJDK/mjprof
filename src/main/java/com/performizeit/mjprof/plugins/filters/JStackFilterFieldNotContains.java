@@ -19,10 +19,12 @@ package com.performizeit.mjprof.plugins.filters;
 
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.api.Param;
+import com.performizeit.mjprof.api.PluginCategory;
 import com.performizeit.mjprof.parser.ThreadInfo;
 
 @SuppressWarnings("unused")
 @Plugin(name = "-contains", params = {@Param("attr"), @Param("value")},
+    category = PluginCategory.FILTER,
   description = "Returns only threads which do not contain the string (regexp not supported)")
 public class JStackFilterFieldNotContains extends JStackFilterFieldContains {
   public JStackFilterFieldNotContains(String attr, String valNotContained) {
