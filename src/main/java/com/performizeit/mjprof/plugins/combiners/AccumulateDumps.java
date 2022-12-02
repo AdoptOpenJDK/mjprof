@@ -28,7 +28,7 @@ import com.performizeit.plumbing.PipeHandler;
 
 import java.util.ArrayList;
 
-
+@SuppressWarnings("unused")
 @Plugin(name = "merge", params = {@Param(value = "attr", optional = true, defaultValue = "tid")},
     category = PluginCategory.DUMP_REDUCER,
     description = "Combine all dumps to a single one merge based on an attribute (thread id is the default attribute)")

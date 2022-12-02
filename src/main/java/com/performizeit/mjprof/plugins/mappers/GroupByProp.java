@@ -28,6 +28,7 @@ import com.performizeit.plumbing.PipeHandler;
 
 import java.util.ArrayList;
 
+@SuppressWarnings("unused")
 @Plugin(name = "group",
     params = {@Param(value = "attr", optional = true)},
     category = PluginCategory.DUMP_REDUCER,

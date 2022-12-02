@@ -29,7 +29,7 @@ import com.performizeit.mjprof.parser.ThreadInfo;
 import com.performizeit.mjprof.plugin.types.DumpReducer;
 import com.performizeit.plumbing.PipeHandler;
 
-
+@SuppressWarnings("unused")
 @Plugin(name = "mergedCallees",
     params = {@Param(value = "methodName", optional = true)},
     category = PluginCategory.DUMP_REDUCER,

@@ -17,6 +17,7 @@ import org.w3c.dom.Element;
 
 import java.io.File;
 
+@SuppressWarnings("unused")
 @Plugin(name = "visualvm", params = {@Param("path")},
     category = PluginCategory.DATA_SOURCE,
     description = "Read profiling session from xml export of VisualVM(not implemented yet)")
