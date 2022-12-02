@@ -43,10 +43,8 @@ public class ListProps implements Terminal, PipeHandler<ThreadDump, String> {
 
   @Override
   public String handleMsg(ThreadDump threadDump) {
-    for (ThreadInfo threadInfo : threadDump.getStacks()) {
-      for (String prop : threadInfo.getProps()) {
-        propsHash.add(prop);
-      }
+    for (ThreadInfo threadInfo : threadDump.getThreadInfos()) {
+      propsHash.addAll(threadInfo.getProps());
     }
     return null;
   }

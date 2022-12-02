@@ -31,7 +31,7 @@ public class CountThreads implements Terminal, PipeHandler<ThreadDump, String> {
   @Override
   public String handleMsg(ThreadDump msg) {
     int count = 0;
-    for (ThreadInfo mss : msg.getStacks()) {
+    for (ThreadInfo mss : msg.getThreadInfos()) {
       int inc = mss.getVal("count") == null ? 1 : (Integer) mss.getVal("count");
 
       count += inc;

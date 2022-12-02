@@ -33,7 +33,7 @@ public class StackTreeMerger implements Terminal, PipeHandler<ThreadDump, String
   protected Profile st = new Profile();
 
   public void addStackDump(ThreadDump jsd) {
-    for (ThreadInfo mss : jsd.getStacks()) {
+    for (ThreadInfo mss : jsd.getThreadInfos()) {
       st.addMulti((Profile) mss.getVal(ThreadInfoProps.STACK));      // System.out.println();
     }
   }

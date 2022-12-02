@@ -25,7 +25,7 @@ import java.util.ArrayList;
 /* Thread dump consists of a header and a list ThreadInfo */
 public class ThreadDump {
   protected JStackHeader header;
-  ArrayList<ThreadInfo> stacks = new ArrayList<>();
+  ArrayList<ThreadInfo> threadInfos = new ArrayList<>();
   int JNIglobalReferences = -1;
 
   public static String JNI_GLOBAL_REFS = "JNI global references:";
@@ -47,7 +47,7 @@ public class ThreadDump {
         }
 
       } else {
-        stacks.add(new ThreadInfo("\"" + splitTraces[i]));
+        threadInfos.add(new ThreadInfo("\"" + splitTraces[i]));
       }
     }
   }
@@ -56,16 +56,16 @@ public class ThreadDump {
     super();
   }
 
-  public ArrayList<ThreadInfo> getStacks() {
-    return stacks;
+  public ArrayList<ThreadInfo> getThreadInfos() {
+    return threadInfos;
   }
 
   public void addThreadInfo(ThreadInfo ti) {
-    stacks.add(ti);
+    threadInfos.add(ti);
   }
 
-  public void setStacks(ArrayList<ThreadInfo> stacks) {
-    this.stacks = stacks;
+  public void setThreadInfos(ArrayList<ThreadInfo> threadInfos) {
+    this.threadInfos = threadInfos;
   }
 
   @Override
@@ -73,7 +73,7 @@ public class ThreadDump {
     StringBuilder s = new StringBuilder();
     s.append(header).append("\n\n");
 
-    for (ThreadInfo stack : stacks) {
+    for (ThreadInfo stack : threadInfos) {
       s.append(stack.toString()).append("\n");
     }
 
@@ -91,9 +91,7 @@ public class ThreadDump {
 
   public ArrayList<ThreadInfo> cloneStacks() {
     ArrayList<ThreadInfo> newStcks = new ArrayList<>();
-    for (ThreadInfo stk : getStacks()) {
-      newStcks.add(stk);
-    }
+    newStcks.addAll(getThreadInfos());
     return newStcks;
   }
 

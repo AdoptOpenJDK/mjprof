@@ -15,10 +15,10 @@ public abstract class SingleThreadMapperBase implements com.performizeit.mjprof.
     that.setHeader(jsd.getHeader());
     that.setJNIglobalReferences(jsd.getJNIglobalReferences());
     ArrayList<ThreadInfo> stcks = new ArrayList<>();
-    for (ThreadInfo stk : jsd.getStacks()) {
+    for (ThreadInfo stk : jsd.getThreadInfos()) {
       stcks.add(map(stk));
     }
-    that.setStacks(stcks);
+    that.setThreadInfos(stcks);
     return that;
 
   }

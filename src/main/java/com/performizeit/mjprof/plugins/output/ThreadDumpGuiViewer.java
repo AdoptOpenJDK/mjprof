@@ -20,7 +20,7 @@ import java.util.HashMap;
  */
 public class ThreadDumpGuiViewer extends JPanel implements TreeSelectionListener {
   ThreadDump toDisplay;
-  private JTree tree;
+  private final JTree tree;
 
   //Optionally play with line styles.  Possible values are
   //"Angled" (the default), "Horizontal", and "None".
@@ -77,13 +77,13 @@ public class ThreadDumpGuiViewer extends JPanel implements TreeSelectionListener
 
     if (node == null) return;
 
-    Object nodeInfo = node.getUserObject();
+    node.getUserObject();
 
   }
 
 
   private void createNodes(DefaultMutableTreeNode top) {
-    for (ThreadInfo ti : toDisplay.getStacks()) {
+    for (ThreadInfo ti : toDisplay.getThreadInfos()) {
       DefaultMutableTreeNode tgui = createThreadProfile(ti);
 
       top.add(tgui);
@@ -91,7 +91,7 @@ public class ThreadDumpGuiViewer extends JPanel implements TreeSelectionListener
 
   }
 
-  class Vis implements ProfileVisitor {
+  static class Vis implements ProfileVisitor {
     HashMap<Integer, DefaultMutableTreeNode> parents = new HashMap<>();
 
     public Vis(DefaultMutableTreeNode thread) {

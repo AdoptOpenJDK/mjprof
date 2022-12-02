@@ -23,8 +23,6 @@ import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.api.PluginCategory;
 import com.performizeit.mjprof.model.Profile;
-import com.performizeit.mjprof.model.ProfileNodeFilter;
-import com.performizeit.mjprof.model.SFNode;
 import com.performizeit.mjprof.model.ThreadInfoAggregator;
 import com.performizeit.mjprof.parser.ThreadDump;
 import com.performizeit.mjprof.parser.ThreadInfo;
@@ -48,7 +46,7 @@ public class MergedCallees implements DumpReducer, PipeHandler<ThreadDump, Threa
     ArrayList<String> a = new ArrayList<>();
     a.add(methodName);
     ThreadInfoAggregator aggr = new ThreadInfoAggregator(a);
-    for (ThreadInfo mss : jsd.getStacks()) {
+    for (ThreadInfo mss : jsd.getThreadInfos()) {
       Profile p = (Profile) mss.getVal(STACK);
 
 //			p.filterUp(new ProfileNodeFilter() {
@@ -67,7 +65,7 @@ public class MergedCallees implements DumpReducer, PipeHandler<ThreadDump, Threa
     }
     ThreadDump jsd2 = new ThreadDump();
     jsd2.setHeader(jsd.getHeader());
-    jsd2.setStacks(aggr.getAggrInfos());
+    jsd2.setThreadInfos(aggr.getAggrInfos());
     jsd2.setJNIglobalReferences(jsd.getJNIglobalReferences());
     return jsd2;
   }

@@ -29,7 +29,7 @@ import com.performizeit.plumbing.PipeHandler;
 import java.util.ArrayList;
 
 
-@Plugin(name = "merge", params = {@Param(type = String.class, value = "attr", optional = true, defaultValue = "tid")},
+@Plugin(name = "merge", params = {@Param(value = "attr", optional = true, defaultValue = "tid")},
     category = PluginCategory.DUMP_REDUCER,
     description = "Combine all dumps to a single one merge based on an attribute (thread id is the default attribute)")
 public class AccumulateDumps implements DumpReducer, PipeHandler<ThreadDump, ThreadDump> {
@@ -44,7 +44,7 @@ public class AccumulateDumps implements DumpReducer, PipeHandler<ThreadDump, Thr
   }
 
   public void reduce(ThreadDump td) {
-    for (ThreadInfo ti : td.getStacks()) {
+    for (ThreadInfo ti : td.getThreadInfos()) {
       tidAggr.accumulateThreadInfo(ti);
     }
     countDumps++;
@@ -56,7 +56,7 @@ public class AccumulateDumps implements DumpReducer, PipeHandler<ThreadDump, Thr
     ThreadDump td = new ThreadDump();
     td.setHeader("Profiling session number of dumps is " + countDumps);
 
-    td.setStacks(tidAggr.getAggrInfos());
+    td.setThreadInfos(tidAggr.getAggrInfos());
     return td;
   }
 

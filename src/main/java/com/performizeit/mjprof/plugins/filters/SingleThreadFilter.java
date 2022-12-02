@@ -15,11 +15,11 @@ public abstract class SingleThreadFilter implements Filter, PipeHandler<ThreadDu
     that.setHeader(jsd.getHeader());
     that.setJNIglobalReferences(jsd.getJNIglobalReferences());
     ArrayList<ThreadInfo> stcks = new ArrayList<>();
-    for (ThreadInfo stk : jsd.getStacks()) {
+    for (ThreadInfo stk : jsd.getThreadInfos()) {
       if (filter(stk))
         stcks.add(stk);
     }
-    that.setStacks(stcks);
+    that.setThreadInfos(stcks);
     return that;
 
 

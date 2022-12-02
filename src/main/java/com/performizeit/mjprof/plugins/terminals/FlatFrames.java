@@ -36,7 +36,7 @@ public class FlatFrames implements Terminal,PipeHandler<ThreadDump,String> {
 
 
     public void addStackDump(ThreadDump jsd) {
-        for (ThreadInfo mss : jsd.getStacks()  ) {
+        for (ThreadInfo mss : jsd.getThreadInfos()  ) {
             Profile p = (Profile) mss.getVal(STACK);
             p.visit((stackframe, level) -> {
                 if (stackframe.getNumChildren() ==0 && stackframe.getStackFrame() != null) {

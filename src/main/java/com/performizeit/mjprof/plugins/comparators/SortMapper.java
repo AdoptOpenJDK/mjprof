@@ -6,7 +6,6 @@ import com.performizeit.mjprof.parser.ThreadInfo;
 import com.performizeit.plumbing.PipeHandler;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 public abstract class SortMapper implements ThreadInfoComparator, PipeHandler<ThreadDump, ThreadDump> {
   public ThreadDump map(ThreadDump jsd) {
@@ -14,8 +13,8 @@ public abstract class SortMapper implements ThreadInfoComparator, PipeHandler<Th
     that.setHeader(jsd.getHeader());
     that.setJNIglobalReferences(jsd.getJNIglobalReferences());
     ArrayList<ThreadInfo> stacks = jsd.cloneStacks();
-    Collections.sort(stacks, this);
-    that.setStacks(stacks);
+    stacks.sort(this);
+    that.setThreadInfos(stacks);
     return that;
 
   }
