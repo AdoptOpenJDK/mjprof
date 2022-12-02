@@ -17,10 +17,11 @@
 
 package com.performizeit.mjprof.monads;
 
+import java.io.BufferedInputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Set;
 
-import org.reflections.Reflections;
 
 import com.performizeit.mjprof.api.Plugin;
 
@@ -28,13 +29,37 @@ public class StepsRepository {
   static HashMap<String, StepInfo> repo = new HashMap<>();
 
   static {
-    Reflections reflections = new Reflections("com.performizeit");
-    Set<Class<?>> annotatedPlugin = reflections.getTypesAnnotatedWith(Plugin.class);
-    for (Class cla : annotatedPlugin) {
-      Plugin pluginAnnotation = (Plugin) cla.getAnnotation(Plugin.class);
-      StepInfo stepInit = new StepInfo(cla, pluginAnnotation.params(), pluginAnnotation.description());
-      repo.put(pluginAnnotation.name(), stepInit);
+    ArrayList<Class> plugins = new ArrayList<>();
+
+    try {
+      String inputStream = new String(new BufferedInputStream(StepsRepository.class.getResourceAsStream("/supported_monads.txt")).readAllBytes());
+      for (var line : inputStream.split("\n")) {
+        try {
+          plugins.add(Class.forName(line));
+        } catch (Exception e) {
+          System.out.println("Unable to find class "+line);
+          throw new RuntimeException(e);
+        }
+      }
+    } catch (Exception e) {
+
+      throw new RuntimeException(e);
     }
+    for (Class cla : plugins) {
+      addPluginToRepo(cla);
+    }
+  }
+
+  private static void addPluginToRepo(Class cla) {
+    Plugin pluginAnnotation = (Plugin) cla.getAnnotation(Plugin.class);
+    StepInfo stepInit = new StepInfo(cla, pluginAnnotation.params(), pluginAnnotation.description());
+    try {
+      var cons = cla.getConstructor(stepInit.getParamTypes());
+      System.out.println("Cons"+ cons.getName());
+    } catch (NoSuchMethodException e) {
+      throw new RuntimeException(e);
+    }
+    repo.put(pluginAnnotation.name(), stepInit);
   }
 
   public static boolean stepValid(MJStep a) {

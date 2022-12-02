@@ -17,14 +17,10 @@
 
 package com.performizeit.mjprof.plugin;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Set;
+import com.performizeit.mjprof.plugin.types.DataSource;
+import com.performizeit.mjprof.plugin.types.Outputer;
 
-import com.performizeit.mjprof.api.*;
-import com.performizeit.mjprof.plugin.types.*;
-import org.reflections.Reflections;
+import java.lang.reflect.Constructor;
 
 
 public class PluginUtils {
@@ -41,27 +37,9 @@ public class PluginUtils {
 
 
   //conParameter - constructor parameters
-  public static HashMap<Class, Class> getAllPlugins() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, ClassNotFoundException {
-    HashMap<Class, Class> map = new HashMap<>();
-    //TODO
-    Reflections reflections = new Reflections("com.performizeit");
-    Set<Class<?>> annotatedPlugin = reflections.getTypesAnnotatedWith(Plugin.class);
 
-    for (Class cla : annotatedPlugin) {
-      if (BasePlugin.class.isAssignableFrom(cla)) {
-        invokeGetHelpLine(cla);
-        map.put(cla, cla);
-      } else {
-        System.out.println("ERROR: class " + cla.getName() + " needs to extend BasePlugin child");
-      }
-    }
-    return map;
-  }
 
-  private static String invokeGetHelpLine(Class<?> cla) {
-    Plugin pluginAnnotation = cla.getAnnotation(Plugin.class);
-    return pluginAnnotation.description();
-  }
+
 
 
   public static boolean isDataSource(Object o) {
