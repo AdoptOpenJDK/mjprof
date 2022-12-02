@@ -32,22 +32,6 @@
                         <artifactId>exec-maven-plugin</artifactId>
                         <version>3.1.0</version>
                         <executions>
-                            <!--execution>
-                                <id>enumerate-supported-plugins</id>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <phase>process-classes</phase>
-                                <configuration>
-                                    <executable>java</executable>
-                                    <arguments>
-                                        <argument>-classpath</argument>
-                                        <classpath/>
-                                        <argument>com.performizeit.mjprof.plugin.PluginRepoBuilder</argument>
-                                        <argument>${project.build.outputDirectory}/supported_monads.txt</argument>
-                                    </arguments>
-                                </configuration>
-                            </execution-->
                             <execution>
                                 <id>create-reflection-metadata</id>
                                 <goals>
