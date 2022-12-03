@@ -1,0 +1,40 @@
+project:
+  name: mjprof
+  description: mjprof is a command line monadic java profiler
+  longDescription: mjprof is a monadic thread dump analysis tool set. It is a fancy way to say it analyzes jstack output using a series of simple composable building blocks (monads).
+  links:
+    homepage: https://github.com/AdoptOpenJDK/mjprof
+  authors:
+    - Haim Yadid
+  license: Apache-2.0
+  java:
+    groupId: com.performizeit
+    version: 8
+  inceptionYear: 2014
+  stereotype: cli
+
+release:
+  github:
+    overwrite: true
+    sign: true
+    discussionCategoryName: 'Announcements'
+    changelog:
+      formatted: 'ALWAYS'
+      format: '- {{commitShortHash}} {{commitTitle}}'
+      preset: 'conventional-commits'
+      contributors:
+        format: '- {{contributorName}}{{#contributorUsernameAsLink}} ({{.}}){{/contributorUsernameAsLink}}'
+
+signing:
+  active: always
+  armored: true
+
+packagers:
+  brew:
+    active: always
+
+distributions:
+  app:
+    artifacts:
+      - path: target/distributions/{{distributionName}}/{{distributionName}}-{{projectVersion}}.zip
+      - path: target/distributions/{{distributionName}}/{{distributionName}}-{{projectVersion}}.tar.gz

@@ -4,7 +4,7 @@
 
     <groupId>com.performizeit</groupId>
     <artifactId>mjprof</artifactId>
-    <version>2.0</version>
+    <version>1.1.0</version>
     <packaging>jar</packaging>
 
     <name>A command line monadic java profiler</name>
