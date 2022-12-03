@@ -40,23 +40,24 @@ public class StepsRepository {
   }
 
   private static void resolvePlugins(ArrayList<Class> plugins) {
-    var inputStream = new BufferedInputStream(StepsRepository.class.getResourceAsStream("/supported_monads.txt"));
-    if (inputStream == null) {
-      resolvePluginsDynamically(plugins);
-      return;
-    }
-    try {
+    try (var inputStream = new BufferedInputStream(StepsRepository.class.getResourceAsStream("/supported_monads.txt"))) {
+     if (inputStream == null) {
+        resolvePluginsDynamically(plugins);
+        return;
+      }
+
       String text = new String(inputStream.readAllBytes());
       for (var line : text.split("\n")) {
         try {
           plugins.add(Class.forName(line));
         } catch (Exception e) {
-          System.out.println("Unable to find class " + line);
+          System.out.println("Unable to locate plugin class " + line);
           throw new RuntimeException(e);
         }
       }
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+    } catch (IOException | NullPointerException e)  {
+      System.out.println("Could not read /supported_monads.txt generating scanning plugins");
+      resolvePluginsDynamically(plugins);
     }
   }
 

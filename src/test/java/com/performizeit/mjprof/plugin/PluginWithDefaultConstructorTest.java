@@ -22,7 +22,7 @@ import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.parser.ThreadInfo;
 
-@Plugin(name = "test1", params = {@Param()}, category = PluginCategory.SINGLE_THREAD_MAPPER)
+@Plugin(name = "test1", params = {}, category = PluginCategory.SINGLE_THREAD_MAPPER)
 public class PluginWithDefaultConstructorTest implements SingleThreadMapper {
   private final String expr = "kk";
 

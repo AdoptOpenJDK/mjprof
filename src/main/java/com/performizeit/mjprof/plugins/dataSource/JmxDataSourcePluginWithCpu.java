@@ -16,7 +16,7 @@ import static com.performizeit.mjprof.parser.ThreadInfoProps.*;
 
 // host:port or pid , freq,period       ,user,pass
 @SuppressWarnings("unused")
-@Plugin(name = "jmxc", params = {@Param("host:port|MainClass|pid"),
+@Plugin(name = "jmxc", params = {@Param("host:port"),
   @Param(type = int.class, value = "count", optional = true, defaultValue = "1"),
   @Param(type = int.class, value = "sleep", optional = true, defaultValue = "5000"),
   @Param(value = "username", optional = true),
