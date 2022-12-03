@@ -19,8 +19,8 @@
     </developers>
 
     <properties>
-        <java.compiler.source>17</java.compiler.source>
-        <java.compiler.target>17</java.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
     </properties>
     <profiles>
         <profile>
@@ -77,15 +77,6 @@
     </profiles>
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.1</version>
-                <configuration>
-                    <source>${java.compiler.source}</source>
-                    <target>${java.compiler.target}</target>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
