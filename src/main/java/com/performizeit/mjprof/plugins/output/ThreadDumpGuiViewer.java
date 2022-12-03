@@ -123,7 +123,7 @@ public class ThreadDumpGuiViewer extends JPanel implements TreeSelectionListener
    * this method should be invoked from the
    * event dispatch thread.
    */
-  public static void createAndShowGUI(ThreadDump td, String title) {
+  public static void createAndShowGUI(ThreadDump td, String title,boolean show) {
     if (useSystemLookAndFeel) {
       try {
         UIManager.setLookAndFeel(
@@ -142,13 +142,7 @@ public class ThreadDumpGuiViewer extends JPanel implements TreeSelectionListener
 
     //Display the window.
     frame.pack();
-    frame.setVisible(true);
-  }
-
-  public static void main(String[] args) {
-    //Schedule a job for the event dispatch thread:
-    //creating and showing this application's GUI.
-    javax.swing.SwingUtilities.invokeLater(() -> createAndShowGUI(null, "mjprof test"));
+    frame.setVisible(show);
   }
 }
 

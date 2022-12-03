@@ -53,7 +53,7 @@ public class SnapshotToGui implements Outputer, PipeHandler {
       final int cinv = curInvocation;
       final String tit = title1;
       final ThreadDump msg2 = (ThreadDump) msg;
-      ThreadDumpGuiViewer.createAndShowGUI(msg2, tit + ":" + cinv);
+      ThreadDumpGuiViewer.createAndShowGUI(msg2, tit + ":" + cinv,true);
       javax.swing.SwingUtilities.invokeLater(new Runnable() {
         public void run() {
 
