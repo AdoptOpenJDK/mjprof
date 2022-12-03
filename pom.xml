@@ -7,8 +7,8 @@
     <version>1.0</version>
     <packaging>jar</packaging>
 
-    <name>mjprof</name>
-    <url>http://maven.apache.org</url>
+    <name>A command line monadic java profiler</name>
+    <url>https://github.com/AdoptOpenJDK/mjprof</url>
 
     <developers>
         <developer>
