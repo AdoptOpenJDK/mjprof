@@ -18,11 +18,13 @@
 package com.performizeit.mjprof.monads;
 
 import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 
 import com.performizeit.mjprof.api.Plugin;
+import com.performizeit.mjprof.plugin.PluginRepoBuilder;
 import com.performizeit.mjprof.plugin.PluginUtils;
 
 public class StepsRepository {
@@ -31,23 +33,37 @@ public class StepsRepository {
   static {
     ArrayList<Class> plugins = new ArrayList<>();
 
-    try {
-      String inputStream = new String(new BufferedInputStream(StepsRepository.class.getResourceAsStream("/supported_monads.txt")).readAllBytes());
-      for (var line : inputStream.split("\n")) {
-        try {
-          plugins.add(Class.forName(line));
-        } catch (Exception e) {
-          System.out.println("Unable to find class "+line);
-          throw new RuntimeException(e);
-        }
-      }
-    } catch (Exception e) {
-
-      throw new RuntimeException(e);
-    }
+    resolvePlugins(plugins);
     for (Class cla : plugins) {
       addPluginToRepo(cla);
     }
+  }
+
+  private static void resolvePlugins(ArrayList<Class> plugins) {
+    var inputStream = new BufferedInputStream(StepsRepository.class.getResourceAsStream("/supported_monads.txt"));
+    if (inputStream == null) {
+      resolvePluginsDynamically(plugins);
+      return;
+    }
+    try {
+      String text = new String(inputStream.readAllBytes());
+      for (var line : text.split("\n")) {
+        try {
+          plugins.add(Class.forName(line));
+        } catch (Exception e) {
+          System.out.println("Unable to find class " + line);
+          throw new RuntimeException(e);
+        }
+      }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private static void resolvePluginsDynamically(ArrayList<Class> plugins) {
+    // the prefered way is to create /supported_monads.txt during build whe it is missing create dynamically
+    // dynamic creation will not work in graal native
+    PluginRepoBuilder.resolvePluginListFromClassPath(plugins);
   }
 
   private static void addPluginToRepo(Class cla) {

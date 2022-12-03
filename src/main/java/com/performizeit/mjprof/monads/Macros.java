@@ -2,6 +2,7 @@ package com.performizeit.mjprof.monads;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Properties;
 
@@ -17,23 +18,32 @@ public class Macros {
   }
 
   private Macros() {
+    defaultProps = new Properties();
+
+    try {
+      try (InputStream inputStream = Macros.class.getResourceAsStream("/internal.macros.properties")) {
+        if (inputStream != null)
+          defaultProps.load(inputStream);
+        else {
+          reason += " unable read /internal.macros.properties as stream";
+        }
+      }
+    } catch (IOException e) {
+      reason += " unable read /internal.macros.properties as stream " + e.getMessage();
+    }
+
     macroFile = System.getProperty("macros.configFile");
     if (macroFile == null) {
       macroFile = "macros.properties";
     }
     try {
-      initProp(macroFile);
+      try (FileInputStream inputStream = new FileInputStream(macroFile)) {
+        defaultProps.load(inputStream);
+      }
     } catch (IOException e) {
-      reason = "No macros Unable to read macro file '" + macroFile + "'";
+      reason += "No macros Unable to read macro file '" + macroFile + "'";
 
     }
-  }
-
-  public void initProp(String propFile) throws IOException {
-    defaultProps = new Properties();
-    FileInputStream in = new FileInputStream(propFile);
-    defaultProps.load(in);
-    in.close();
   }
 
   public Properties getProps() {

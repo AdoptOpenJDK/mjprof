@@ -33,7 +33,7 @@
                         <version>3.1.0</version>
                         <executions>
                             <execution>
-                                <id>create-reflection-metadata</id>
+                                <id>create-plugin-reflection-metadata</id>
                                 <goals>
                                     <goal>exec</goal>
                                 </goals>
@@ -46,7 +46,7 @@
                                         </argument>
                                         <argument>-classpath</argument>
                                         <classpath/>
-                                        <argument>com.performizeit.mjprof.plugin.ReflectionBuilder</argument>
+                                        <argument>com.performizeit.mjprof.plugin.PluginRepositoryScanner</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
@@ -109,6 +109,31 @@
                     </execution>
                 </executions>
 
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-property-files</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/classes</outputDirectory>
+                            <encoding>UTF-8</encoding>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/src</directory>
+                                    <includes>
+                                        <include>**/*.properties</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
             <plugin>
