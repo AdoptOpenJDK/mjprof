@@ -47,7 +47,7 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
 
       - name: Build
-        run: mvn -ntp -B --file pom.xml package
+        run: mvn -Pnative -ntp -B --file pom.xml package
 
 
       - name: Assemble
