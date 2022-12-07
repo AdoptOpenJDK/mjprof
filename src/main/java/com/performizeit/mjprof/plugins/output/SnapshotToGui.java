@@ -23,10 +23,13 @@ import com.performizeit.plumbing.PipeHandler;
 
 
 @SuppressWarnings("unused")
-@Plugin(name = "gui", params = {@Param(type = String.class, value = "title", optional = true, defaultValue = ""),
+
+/*@Plugin(name = "gui", params = {@Param(type = String.class, value = "title", optional = true, defaultValue = ""),
     @Param(type = int.class, value = "maxInvocations", optional = true, defaultValue = "10")},
     category = PluginCategory.OUTPUTER,
     description = "Displays current thread dump in a GUI window")
+
+ */
 public class SnapshotToGui implements Outputer, PipeHandler {
   private int maxInvocations;
   private int curInvocation;
