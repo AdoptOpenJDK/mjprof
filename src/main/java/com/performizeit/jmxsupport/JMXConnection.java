@@ -24,13 +24,9 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.Map;
-import javax.management.AttributeNotFoundException;
-import javax.management.InstanceNotFoundException;
-import javax.management.MBeanException;
 import javax.management.MBeanServerConnection;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
-import javax.management.ReflectionException;
 import javax.management.openmbean.CompositeData;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
@@ -79,7 +75,7 @@ public JMXConnection(String serverUrl, String uName, String passwd) throws Malfo
   public MBeanServerConnection getServerConnection() throws IOException {
     if (server == null) {
 
-      Map env = new HashMap();
+      Map<String, String[]> env = new HashMap<>();
       if (userName != null && userPassword != null && userName.trim().length() > 0) {
         String[] creds = {userName, userPassword};
         env.put(JMXConnector.CREDENTIALS, creds);
@@ -104,27 +100,6 @@ public JMXConnection(String serverUrl, String uName, String passwd) throws Malfo
     }
   }
 
-  public long getUptime() {
-    long l = -1;
-    try {
-
-      l = (Long) getServerConnection().getAttribute(JMXConnection.RUNTIME, "Uptime");
-
-    } catch (MBeanException | AttributeNotFoundException | InstanceNotFoundException | ReflectionException | IOException ex) {
-      ex.printStackTrace();
-    }
-    return l;
-  }
-
-  public static float inSecsTimestamp(long ts) {
-    return ((float) ts) / 1000;
-
-  }
-
-  boolean isUseAuthentication() {
-    return !userName.isEmpty();
-  }
-
   public CompositeData[] getThreads(long[] thIds, int stackTraceEntriesNo) throws Exception {
     String[] signature = {"[J", "int"};
     Object[] params = {thIds, stackTraceEntriesNo};
@@ -138,24 +113,6 @@ public JMXConnection(String serverUrl, String uName, String passwd) throws Malfo
     return (long[]) server.invoke(THREADING, "getThreadCpuTime", params, signature);
   }
 
-  public long getThreadCPU(long thId) throws Exception {
-
-    String[] signature = {"long"};
-    Object[] params = {thId};
-    return (long) (Long) server.invoke(THREADING, "getThreadCpuTime", params, signature);
-
-  }
-
-  public long[] getThreadsAllocBytes(long[] thIds) throws Exception {
-
-    String[] signature = {"[J"};
-    Object[] params = {thIds};
-    long[] threadsAllocBytes = (long[]) server.invoke(THREADING, "getThreadAllocatedBytes", params, signature);
-    return threadsAllocBytes;
-  }
-
-
-
   public long[] getThreadIds() throws Exception {
 
     return (long[]) getServerConnection().getAttribute(THREADING, "AllThreadIds");
@@ -164,9 +121,9 @@ public JMXConnection(String serverUrl, String uName, String passwd) throws Malfo
 
   public static void addURL(File file) throws RuntimeException {
     try {
-      URL url = file.toURL();
+      URL url = file.toURI().toURL();
       URLClassLoader classLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
-      Class clazz = URLClassLoader.class;
+      Class<URLClassLoader> clazz = URLClassLoader.class;
 
       // Use reflection
       Method method = clazz.getDeclaredMethod("addURL", new Class[]{URL.class});
@@ -178,13 +135,4 @@ public JMXConnection(String serverUrl, String uName, String passwd) throws Malfo
 
     }
   }
-
-
-  public long[] getThreadIds(JMXConnection server) throws Exception {
-
-    long[] thIds = (long[]) server.getServerConnection().getAttribute(THREADING, "AllThreadIds");
-    return thIds;
-
-  }
-
 }
