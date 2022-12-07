@@ -39,6 +39,16 @@ jobs:
           components: 'native-image'
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Cache Maven
+          uses: actions/cache@v3
+          with:
+            path: ~/.m2/repository
+            key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+            restore-keys: ${{ runner.os }}-m2
+
+      - name: Build
+        run: mvn -ntp -B --file pom.xml package
+
 
       - name: Assemble
         uses: jreleaser/release-action@v2
