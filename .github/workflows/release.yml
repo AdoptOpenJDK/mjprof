@@ -72,7 +72,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           retention-days: 1
-          name: jreleaser-${{ matrix.job.target }}
+          name: jreleaser-${{ matrix.os }}
           path: |
             out/jreleaser/trace.log
             out/jreleaser/output.properties
