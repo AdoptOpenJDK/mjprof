@@ -70,5 +70,5 @@ distributions:
 #        platform: "osx-aarch_64"
       - path: "{{artifactsDir}}/mjprof-{{projectVersion}}-linux-x86_64.zip"
         platform: "linux-x86_64"
-      - path: "{{artifactsDir}}/mjprof-{{projectVersion}}-windows-x86_64.zip"
-        platform: "windows-x86_64"
+#      - path: "{{artifactsDir}}/mjprof-{{projectVersion}}-windows-x86_64.zip"
+#        platform: "windows-x86_64"
