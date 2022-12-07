@@ -21,12 +21,12 @@ jobs:
 
   build:
     needs: [ precheck ]
+    name: 'Build on ${{ matrix.os }}'
     strategy:
       fail-fast: true
-    runs-on:
-      - macOS-latest
-      - ubuntu-latest
-      - windows-latest
+      matrix:
+        os: [ ubuntu-latest, macOS-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
