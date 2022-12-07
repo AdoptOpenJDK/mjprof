@@ -13,11 +13,11 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Version
-          id: vars
-          shell: bash
-          run: |
-            version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-            echo "VERSION=$(echo $version)" >> $GITHUB_OUTPUT
+        id: vars
+        shell: bash
+        run: |
+          version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "VERSION=$(echo $version)" >> $GITHUB_OUTPUT
 
   build:
     needs: [ precheck ]
