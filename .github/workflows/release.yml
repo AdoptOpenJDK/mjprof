@@ -10,7 +10,7 @@ jobs:
       VERSION: ${{ steps.vars.outputs.VERSION }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Version
         id: vars
@@ -25,12 +25,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, macOS-latest]
-        #, windows-latest ]
+        os: [ ubuntu-latest, macOS-latest, windows-latest]
+        #,
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install Graal toolchain
         uses: graalvm/setup-graalvm@v1
@@ -61,7 +61,7 @@ jobs:
           JRELEASER_PLATFORM_OVERRIDE: ${{ matrix.job.jreleaser_platform }}
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           retention-days: 1
           name: artifacts
@@ -70,7 +70,7 @@ jobs:
 
       - name: JReleaser output
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           retention-days: 1
           name: jreleaser-${{ matrix.os }}
@@ -87,12 +87,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
 
       - name: Release
         uses: jreleaser/release-action@v2
@@ -104,7 +104,7 @@ jobs:
 
       - name: JReleaser output
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           retention-days: 1
           name: jreleaser-release
