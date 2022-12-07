@@ -23,7 +23,7 @@ jobs:
     needs: [ precheck ]
     name: 'Build on ${{ matrix.os }}'
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         os: [ ubuntu-latest, macOS-latest, windows-latest ]
     runs-on: ${{ matrix.os }}
