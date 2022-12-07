@@ -31,15 +31,15 @@ public class StepsRepository {
   static HashMap<String, StepInfo> repo = new HashMap<>();
 
   static {
-    ArrayList<Class> plugins = new ArrayList<>();
+    ArrayList<Class<?>> plugins = new ArrayList<>();
 
     resolvePlugins(plugins);
-    for (Class cla : plugins) {
+    for (Class<?> cla : plugins) {
       addPluginToRepo(cla);
     }
   }
 
-  private static void resolvePlugins(ArrayList<Class> plugins) {
+  private static void resolvePlugins(ArrayList<Class<?>> plugins) {
     try (var inputStream = new BufferedInputStream(StepsRepository.class.getResourceAsStream("/supported_monads.txt"))) {
      if (inputStream == null) {
         resolvePluginsDynamically(plugins);
@@ -61,7 +61,7 @@ public class StepsRepository {
     }
   }
 
-  private static void resolvePluginsDynamically(ArrayList<Class> plugins) {
+  private static void resolvePluginsDynamically(ArrayList<Class<?>> plugins) {
     // the prefered way is to create /supported_monads.txt during build whe it is missing create dynamically
     // dynamic creation will not work in graal native
     PluginRepoBuilder.resolvePluginListFromClassPath(plugins);
