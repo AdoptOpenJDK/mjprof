@@ -16,7 +16,7 @@ project:
 release:
   github:
     overwrite: true
-    sign: true
+    sign: false
     discussionCategoryName: 'Announcements'
     changelog:
       formatted: 'ALWAYS'
@@ -26,15 +26,49 @@ release:
         format: '- {{contributorName}}{{#contributorUsernameAsLink}} ({{.}}){{/contributorUsernameAsLink}}'
 
 signing:
-  active: always
+  active: never
   armored: true
 
 packagers:
   brew:
     active: always
+    multiPlatform: true
+    tap:
+      owner: lifey
+
+# export JRELEASER_PROJECT_VERSION=1.1.0
+# jreleaser assemble
+# jreleaser full-release -scp
+
+assemble:
+  archive:
+    mjprof:
+      active: ALWAYS
+      formats: [ ZIP ]
+      attachPlatform: true
+      fileSets:
+        - input: 'target'
+          output: 'bin'
+          includes: [ 'mjprof{.exe,}' ]
+        - input: '.'
+          includes: [ 'LICENSE' ]
+
+
+
+environment:
+  properties:
+    artifactsDir: out/jreleaser/assemble/mjprof/archive
 
 distributions:
-  app:
+  mjprof:
+    executable:
+      windowsExtension: exe
     artifacts:
-      - path: target/distributions/{{distributionName}}/{{distributionName}}-{{projectVersion}}.zip
-      - path: target/distributions/{{distributionName}}/{{distributionName}}-{{projectVersion}}.tar.gz
+      - path: "{{artifactsDir}}/mjprof-{{projectVersion}}-osx-x86_64.zip"
+        platform: "osx-x86_64"
+#      - path: "{{artifactsDir}}/mjprof-{{projectVersion}}-osx-aarch_64.zip"
+#        platform: "osx-aarch_64"
+      - path: "{{artifactsDir}}/mjprof-{{projectVersion}}-linux-x86_64.zip"
+        platform: "linux-x86_64"
+      - path: "{{artifactsDir}}/mjprof-{{projectVersion}}-windows-x86_64.zip"
+        platform: "windows-x86_64"

@@ -6,3 +6,4 @@ mjprof.iml
 .settings
 .project
 .classpath
+/out/
