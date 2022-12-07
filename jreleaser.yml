@@ -15,9 +15,9 @@ project:
 
 release:
   github:
+    branch: master
     overwrite: true
     sign: false
-    discussionCategoryName: 'Announcements'
     changelog:
       formatted: 'ALWAYS'
       format: '- {{commitShortHash}} {{commitTitle}}'
