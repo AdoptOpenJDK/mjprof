@@ -47,7 +47,7 @@ public class StepsRepository {
       }
 
       String text = new String(inputStream.readAllBytes());
-      for (var line : text.split("\n")) {
+      for (var line : text.split(System.lineSeparator())) {
         try {
           plugins.add(Class.forName(line));
         } catch (Exception e) {
