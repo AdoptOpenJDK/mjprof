@@ -200,7 +200,7 @@
             <artifactId>reflections</artifactId>
             <version>0.10.2</version>
             <exclusions>
-                <exclusion>  <!-- we dont need findbugs as a dependency  -->
+                <exclusion>  <!-- We don't need findbugs as a dependency  -->
                     <groupId>com.google.code.findbugs</groupId>
                     <artifactId>jsr305</artifactId>
                 </exclusion>
