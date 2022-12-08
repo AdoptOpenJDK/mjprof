@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.regex.Pattern;
 
+import com.performizeit.mjprof.parser.ThreadDumpTextualParser;
 import com.performizeit.mjprof.plugin.types.DataSource;
 import com.performizeit.mjprof.parser.ThreadDump;
 import com.performizeit.plumbing.GeneratorHandler;
@@ -58,7 +59,7 @@ public abstract class StreamDataSourcePluginBase implements DataSource, Generato
       isDoneFlag = true;
       return null;
     }
-    return new ThreadDump(nextDump);
+    return ThreadDumpTextualParser.parseStringRepresentation(nextDump);
   }
 
   @Override

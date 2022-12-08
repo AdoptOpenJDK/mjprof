@@ -7,6 +7,7 @@ import java.io.IOException;
 
 
 import com.performizeit.mjprof.parser.ThreadDump;
+import com.performizeit.mjprof.parser.ThreadDumpTextualParser;
 import org.junit.jupiter.api.Test;
 
 public class MergedCalleesTest {
@@ -20,7 +21,7 @@ public class MergedCalleesTest {
 
 		//	GroupByProp g = new GroupByProp("org.eclipse.core.internal.jobs.WorkerPool.test");
 		//	ThreadDump dump = new ThreadDump(readFromFile("src/test/res/test1.txt"));
-		ThreadDump dump = new ThreadDump(readFromFile("src/test/res/test2.txt"));
+		ThreadDump dump = ThreadDumpTextualParser.parseStringRepresentation(readFromFile("src/test/res/test2.txt"));
 //		ThreadDump resDump = new ThreadDump(readFromFile("src/test/res/resTest2.txt"));
 
 //System.out.println(g.map(dump).getStacks());

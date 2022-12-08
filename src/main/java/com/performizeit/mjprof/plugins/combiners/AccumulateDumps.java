@@ -20,6 +20,7 @@ package com.performizeit.mjprof.plugins.combiners;
 import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.api.PluginCategory;
+import com.performizeit.mjprof.model.JStackHeader;
 import com.performizeit.mjprof.model.ThreadInfoAggregator;
 import com.performizeit.mjprof.parser.ThreadDump;
 import com.performizeit.mjprof.parser.ThreadInfo;
@@ -48,18 +49,11 @@ public class AccumulateDumps implements DumpReducer, PipeHandler<ThreadDump, Thr
       tidAggr.accumulateThreadInfo(ti);
     }
     countDumps++;
-
-
   }
 
   public ThreadDump getResult() {
-    ThreadDump td = new ThreadDump();
-    td.setHeader("Profiling session number of dumps is " + countDumps);
-
-    td.setThreadInfos(tidAggr.getAggrInfos());
-    return td;
+    return new ThreadDump(new JStackHeader("Profiling session number of dumps is " + countDumps), tidAggr.getAggrInfos());
   }
-
 
   @Override
   public ThreadDump handleMsg(ThreadDump msg) {

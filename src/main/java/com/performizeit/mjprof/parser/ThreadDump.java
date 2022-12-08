@@ -34,26 +34,19 @@ public class ThreadDump {
     return header;
   }
 
-  public ThreadDump(String stringRep) {
-    String[] splitTraces = stringRep.split("\n\"");  // Assuming that thread stack trace starts with a new line followed by "
+  public ThreadDump(JStackHeader header, ArrayList<ThreadInfo> threadInfos, int JNIglobalReferences) {
+    this.header = header;
+    this.threadInfos = threadInfos;
+    this.JNIglobalReferences = JNIglobalReferences;
+  }
+  public ThreadDump(JStackHeader header, ArrayList<ThreadInfo> threadInfos) {
+    this.header = header;
+    this.threadInfos = threadInfos;
 
-    header = new JStackHeader(splitTraces[0]);
-    for (int i = 1; i < splitTraces.length; i++) {
-      if (splitTraces[i].startsWith(JNI_GLOBAL_REFS)) {
-        try {
-          JNIglobalReferences = Integer.parseInt(splitTraces[i].substring(splitTraces[i].indexOf(":") + 2).trim());
-        } catch (NumberFormatException e) {
-          // do nothing so we missed the JNI global references I do not know what to do with it.
-        }
-
-      } else {
-        threadInfos.add(new ThreadInfo("\"" + splitTraces[i]));
-      }
-    }
   }
 
+
   public ThreadDump() {
-    super();
   }
 
   public ArrayList<ThreadInfo> getThreadInfos() {
