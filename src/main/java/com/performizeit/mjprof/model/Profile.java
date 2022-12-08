@@ -16,6 +16,8 @@
 */
 package com.performizeit.mjprof.model;
 
+import com.performizeit.mjprof.plugins.filters.ProfileNodeFilter;
+
 import java.util.HashMap;
 
 
@@ -72,9 +74,7 @@ public class Profile {
         HashMap<String,SFNode> c = root.children;
         root.count ++;
         for (int i=elements.length-1;i>=0;i--) {
-
             String sfi = "at "+ elements[i].getClassName() + "." +elements[i].getMethodName() +"("+elements[i].getFileName()+":"+elements[i].getLineNumber()+")";
-            if (sfi.isEmpty()) continue;
             SFNode node = c.get(sfi);
             if (node == null) {
                 node = new SFNode();
@@ -133,7 +133,7 @@ public class Profile {
          root.visitChildren(pv,0);
     }
 
-    public void filter(ProfileNodeFilter pnf,Object context) {
+    public void filter(ProfileNodeFilter pnf, Object context) {
         root.filterChildren(pnf,0,context);
     }
     public int getCount() {

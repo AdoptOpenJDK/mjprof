@@ -15,9 +15,10 @@
         along with mjprof.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.performizeit.mjprof.model;
+package com.performizeit.mjprof.plugins.filters;
+
+import com.performizeit.mjprof.model.SFNode;
 
 public interface  ProfileNodeFilter {
-    boolean accept(SFNode node, int level,Object context);
-
+    boolean accept(SFNode node, int level, Object context);
 }

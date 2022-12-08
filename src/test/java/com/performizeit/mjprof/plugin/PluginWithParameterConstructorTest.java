@@ -20,7 +20,7 @@ import com.performizeit.mjprof.api.PluginCategory;
 import com.performizeit.mjprof.plugin.types.SingleThreadMapper;
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.model.Profile;
-import com.performizeit.mjprof.model.ProfileNodeFilter;
+import com.performizeit.mjprof.plugins.filters.ProfileNodeFilter;
 import com.performizeit.mjprof.model.SFNode;
 import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.parser.ThreadInfo;
@@ -39,13 +39,9 @@ public class PluginWithParameterConstructorTest implements SingleThreadMapper {
         HashMap<String,Object> mtd = stck.cloneMetaData();
         Profile jss = (Profile) mtd.get("stack");
 
-        jss.filter(new ProfileNodeFilter() {
-
-            @Override
-            public boolean accept(SFNode node, int level, Object context) {
-                if (node.getStackFrame() == null) return true;
-                return node.getStackFrame().contains("lock");
-            }
+        jss.filter((node, level, context) -> {
+            if (node.getStackFrame() == null) return true;
+            return node.getStackFrame().contains("lock");
         },null);
         return stck;
     }

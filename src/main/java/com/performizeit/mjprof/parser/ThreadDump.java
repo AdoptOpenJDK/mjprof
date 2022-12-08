@@ -45,7 +45,6 @@ public class ThreadDump {
 
   }
 
-
   public ThreadDump() {
   }
 
@@ -83,9 +82,9 @@ public class ThreadDump {
   }
 
   public ArrayList<ThreadInfo> cloneStacks() {
-    ArrayList<ThreadInfo> newStcks = new ArrayList<>();
-    newStcks.addAll(getThreadInfos());
-    return newStcks;
+    ArrayList<ThreadInfo> newStacks = new ArrayList<>();
+    newStacks.addAll(getThreadInfos());
+    return newStacks;
   }
 
   public int getJNIglobalReferences() {

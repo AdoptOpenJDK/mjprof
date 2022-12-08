@@ -16,6 +16,8 @@
 */
 package com.performizeit.mjprof.model;
 
+import com.performizeit.mjprof.plugins.filters.ProfileNodeFilter;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;

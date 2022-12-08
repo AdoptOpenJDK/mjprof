@@ -20,7 +20,7 @@ package com.performizeit.mjprof.plugins.mappers.singlethread;
 import com.performizeit.mjprof.api.Plugin;
 import com.performizeit.mjprof.api.PluginCategory;
 import com.performizeit.mjprof.model.Profile;
-import com.performizeit.mjprof.model.ProfileNodeFilter;
+import com.performizeit.mjprof.plugins.filters.ProfileNodeFilter;
 import com.performizeit.mjprof.model.SFNode;
 import com.performizeit.mjprof.api.Param;
 import com.performizeit.mjprof.parser.ThreadInfo;
