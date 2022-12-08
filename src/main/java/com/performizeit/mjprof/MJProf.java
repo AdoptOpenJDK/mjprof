@@ -104,7 +104,7 @@ public class MJProf {
             }   else {
 
                 PipeHandler<ThreadInfo,ThreadInfo> handler = (PipeHandler<ThreadInfo,ThreadInfo>)stepObject;
-                p = new Pipe<ThreadInfo,ThreadInfo> ("Pipe Thread "+step.getStepName() +i,handler);
+                p = new Pipe<>("Pipe Thread " + step.getStepName() + i, handler);
             }
             pipes.add(p);
             if (i > 0) {     //connect to previous pipe

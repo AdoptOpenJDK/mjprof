@@ -22,9 +22,11 @@ public class PathDataSourcePlugin extends StreamDataSourcePluginBase {
   @Override
   protected void initReader() {
     try {
-      reader = new BufferedReader(new FileReader(fileName));
-    } catch (FileNotFoundException e1) {
-      e1.printStackTrace();
+      if (reader == null) {
+        reader = new BufferedReader(new FileReader(fileName));
+      }
+    } catch (FileNotFoundException e) {
+      throw new RuntimeException(e);
     }
   }
 }
