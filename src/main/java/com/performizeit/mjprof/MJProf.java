@@ -55,7 +55,7 @@ public class MJProf {
         }
         boolean foundExplicitDataSource = false;
         for (MJStep mjstep : steps) {
-            Class clz = getClassFromStep(mjstep);
+            Class<?> clz = getClassFromStep(mjstep);
             if (PluginUtils.isDataSourceClass(clz)) {
                 foundExplicitDataSource = true;
             }
@@ -65,7 +65,7 @@ public class MJProf {
 
         }
         MJStep lastStep = steps.get(steps.size()-1);
-        Class lststp = getClassFromStep(lastStep);
+        Class<?> lststp = getClassFromStep(lastStep);
         if (!PluginUtils.isOutputerClass(lststp)) {
             steps.add(new MJStep("stdout"));
         }
@@ -77,15 +77,16 @@ public class MJProf {
         for (Pipe pipe : pipes) {
              pipe.start();
         }
-        for (Generator g : generators) {
+        for (Generator<ThreadInfo> g : generators) {
             g.start();
         }
 
 
     }
 
-    static ArrayList <Pipe> pipes = new ArrayList<>();
-    static ArrayList <Generator<ThreadInfo>> generators = new ArrayList<Generator<ThreadInfo>>();
+    static ArrayList<Pipe> pipes = new ArrayList<>();
+    static ArrayList<Generator<ThreadInfo>> generators = new ArrayList<>();
+    
     private static void constructPlumbing(ArrayList<MJStep> steps) {
         int i=0;
 
@@ -97,12 +98,11 @@ public class MJProf {
                 PipeHandler handler = (PipeHandler)getObjectFromStep(noopStep);
                 p = new Pipe("Pipe Thread "+step.getStepName() +i,handler);
                 GeneratorHandler genHandler = (GeneratorHandler)stepObject;
-                Generator<ThreadInfo> g = new Generator<ThreadInfo>("Generator Thread "+step.getStepName() +i,genHandler,p);
+                Generator<ThreadInfo> g = new Generator<>("Generator Thread "+step.getStepName() +i,genHandler,p);
                 generators.add(g);
 
 
-            }   else {
-
+            } else {
                 PipeHandler<ThreadInfo,ThreadInfo> handler = (PipeHandler<ThreadInfo,ThreadInfo>)stepObject;
                 p = new Pipe<>("Pipe Thread " + step.getStepName() + i, handler);
             }
@@ -125,7 +125,8 @@ public class MJProf {
         Object obj = PluginUtils.initObj(step.getClazz(), step.getParamTypes(), paramArgs);
         return obj;
     }
-    private static Class getClassFromStep(MJStep mjstep) {
+    
+    private static Class<?> getClassFromStep(MJStep mjstep) {
         StepInfo step = StepsRepository.getStep(mjstep.getStepName());
         return step.getClazz();
     }
@@ -146,25 +147,26 @@ public class MJProf {
             if (o1.startsWith("-")) o1 = o1.substring(1) + "-";
             if (o2.startsWith("-")) o2 = o2.substring(1) + "-";
             return o1.compareTo(o2);
-
         });
+        
         sb.append("\nData sources:\n");
-
-        getSynopsisContent(sb, keys, DataSource.class,PluginCategory.DATA_SOURCE);
+        getSynopsisContent(sb, keys, DataSource.class, PluginCategory.DATA_SOURCE);
 
         sb.append("\nOutput:\n");
-        getSynopsisContent(sb, keys,Outputer.class,PluginCategory.OUTPUTER);
+        getSynopsisContent(sb, keys, Outputer.class, PluginCategory.OUTPUTER);
 
         sb.append("\nFilters:\n");
-        getSynopsisContent(sb, keys, Filter.class,PluginCategory.FILTER);
+        getSynopsisContent(sb, keys, Filter.class, PluginCategory.FILTER);
+        
         sb.append("\nSingle thread mappers:\n");
-        getSynopsisContent(sb, keys, SingleThreadMapper.class,PluginCategory.SINGLE_THREAD_MAPPER);
+        getSynopsisContent(sb, keys, SingleThreadMapper.class, PluginCategory.SINGLE_THREAD_MAPPER);
 
         sb.append("\nFull dump mappers:\n");
-        getSynopsisContent(sb, keys,DumpReducer.class,PluginCategory.DUMP_REDUCER);
-        getSynopsisContent(sb, keys,ThreadInfoComparator.class,PluginCategory.THREAD_INFO_COMPARTAOR);
+        getSynopsisContent(sb, keys, DumpReducer.class, PluginCategory.DUMP_REDUCER);
+        getSynopsisContent(sb, keys, ThreadInfoComparator.class, PluginCategory.THREAD_INFO_COMPARTAOR);
+        
         sb.append("\nTerminals:\n");
-        getSynopsisContent(sb, keys,Terminal.class,PluginCategory.TERMINAL);
+        getSynopsisContent(sb, keys, Terminal.class, PluginCategory.TERMINAL);
 
         sb.append("\n  help                                  -Prints this message");
         sb.append("\n\nMacros:\n");
@@ -173,31 +175,41 @@ public class MJProf {
         return sb.toString();
     }
 
-    private static void getSynopsisContent(StringBuilder sb, List<String> keys, Class pluginType, PluginCategory category) {
-        int lineLength = 0;
-        StepInfo stepInfo;
-        for (String stepName : keys) {
-            lineLength = 0;
-            stepInfo = StepsRepository.getStep(stepName);
-            if (!stepInfo.getPluginType().equals(pluginType))  continue;
-            lineLength += appendAndCount(sb, "  " + stepName);
+    private static void getSynopsisContent(StringBuilder sb, List<String> keys, Class<?> pluginType, PluginCategory category) {
+        for (var stepName : keys) {
+            var stepInfo = StepsRepository.getStep(stepName);
+            if (!stepInfo.getPluginType().equals(pluginType)) continue;
+            
+            int lineLength = appendAndCount(sb, "  " + stepName);
+            
             if (stepInfo.getArgNum() > 0) {
                 lineLength += appendAndCount(sb, "/");
-                Param[] params = stepInfo.getParams();
+                var params = stepInfo.getParams();
+                
                 for (int i = 0; i < stepInfo.getArgNum(); i++) {
-                    String paramName = params[i].value();
-                    if (paramName == null || paramName.length() == 0)   // the default paramter name is ""
+                    // Format parameter name
+                    var paramName = params[i].value();
+                    if (paramName == null || paramName.isEmpty()) {
+                        // Default parameter name is class name lowercase
                         paramName = params[i].type().getSimpleName().toLowerCase();
-                    if (params[i].optional()) {
-                        paramName = "["+paramName+"]";
                     }
-                    lineLength += appendAndCount(sb,paramName );
+                    
+                    // Handle optional params
+                    if (params[i].optional()) {
+                        paramName = "[" + paramName + "]";
+                    }
+                    
+                    lineLength += appendAndCount(sb, paramName);
+                    
+                    // Add comma if not the last parameter
                     if (i < stepInfo.getArgNum() - 1) {
                         lineLength += appendAndCount(sb, ",");
                     }
                 }
                 lineLength += appendAndCount(sb, "/");
             }
+            
+            // Add spacing for alignment
             sb.append(" ".repeat(Math.max(0, (70 - lineLength))));
             sb.append("- ");
             sb.append(stepInfo.getDescription());
@@ -205,24 +217,24 @@ public class MJProf {
         }
     }
 
-
     private static int appendAndCount(StringBuilder command, String str) {
         command.append(str);
         return str.length();
     }
 
-    // a separator between steps can be either a period of a space if  part of argument list (inside // it is ignored)
+    // a separator between steps can be either a period of a space if part of argument list (inside // it is ignored)
     static int findNextSeperator(String str) {
         boolean insideArgList = false;
         for (int i = 0; i < str.length(); i++) {
-            if (!insideArgList ) {
+            if (!insideArgList) {
                 if (str.charAt(i) == '/') insideArgList = true;   // / starts arg list
-
             } else {
                 if (str.charAt(i) == '/') {   // / will end arg list
-                    if (i<str.length()-1 && insideArgList && str.charAt(i+1) !='.'  && str.charAt(i+1) !=' ') {
+                    if (i < str.length()-1 && insideArgList && str.charAt(i+1) != '.' && str.charAt(i+1) != ' ') {
                         // but we have to have a space or . afterwards otherwise it is part of the arguments
-                    }  else insideArgList = false;
+                    } else {
+                        insideArgList = false;
+                    }
                 }
             }
 
@@ -233,7 +245,7 @@ public class MJProf {
 
     static ArrayList<String> splitCommandLine(String arg) {
         String argPart = arg;
-        ArrayList<String> argParts = new ArrayList<>();
+        var argParts = new ArrayList<String>();
         for (int idx = findNextSeperator(argPart); idx != -1; idx = findNextSeperator(argPart)) {
             argParts.add(argPart.substring(0, idx));
             argPart = argPart.substring(idx + 1);
@@ -241,35 +253,43 @@ public class MJProf {
         argParts.add(argPart);
         return argParts;
     }
-    static String expandedExpressionstr="";
+    
+    static String expandedExpressionstr = "";
+    
     static ArrayList<MJStep> parseCommandLine(String concatArgs) {
-
-        ArrayList<String> argParts = splitCommandLine(concatArgs);
-        ArrayList<String> finalArgsParts = new ArrayList<>();
-        for (String argPart : argParts) {
-            String expand = Macros.getInstance().getProperty(argPart);
+        var argParts = splitCommandLine(concatArgs);
+        var finalArgsParts = new ArrayList<String>();
+        
+        // Process macros expansion
+        argParts.forEach(argPart -> {
+            var macros = Macros.getInstance();
+            var expand = macros.getProperty(argPart);
+            
             if (expand != null) {
-                ArrayList<String> expandParts = splitCommandLine(expand);
-                finalArgsParts.addAll(expandParts);
+                finalArgsParts.addAll(splitCommandLine(expand));
             } else {
                 finalArgsParts.add(argPart);
             }
-
-        }
-        argParts = finalArgsParts;
-        StringBuilder expandedExpression = new StringBuilder();
-        for(int i = 0;i<argParts.size();i++ )    {
-
-            expandedExpression.append(argParts.get(i));
-            if (i<argParts.size()-1)    expandedExpression .append(".");
-        }
-        expandedExpressionstr = expandedExpression.toString();
-        ArrayList<MJStep> mjsteps = new ArrayList<>();
-        for (String s : argParts) {
+        });
+        
+        // Build expanded expression string
+        expandedExpressionstr = finalArgsParts.stream()
+            .collect(StringBuilder::new, 
+                    (sb, part) -> {
+                        if (sb.length() > 0) sb.append(".");
+                        sb.append(part);
+                    }, 
+                    StringBuilder::append)
+            .toString();
+        
+        // Process steps
+        var mjsteps = new ArrayList<MJStep>();
+        for (var s : finalArgsParts) {
             if (s.equalsIgnoreCase("help")) {
                 printSynopsisAndExit();
             }
-            MJStep step = new MJStep(s);
+            
+            var step = new MJStep(s);
             if (!StepsRepository.stepValid(step)) {
                 System.err.println("Step " + step + " is invalid\n");
                 return null;
@@ -279,14 +299,8 @@ public class MJProf {
         return mjsteps;
     }
 
-
     public static String join(String[] strs, String delim) {
-        StringBuilder b = new StringBuilder();
-        for (int i = 0; i < strs.length; i++) {
-            b.append(strs[i]);
-            if (i < strs.length - 1) b.append(delim);
-        }
-        return b.toString();
+        return String.join(delim, strs);
     }
 
     public static Object[] buildArgsArray(Param[] params, List<String> paramsVals) {
@@ -295,18 +309,16 @@ public class MJProf {
         for (int i = 0; i < params.length; i++) {
             try {
                 String val;
-                if (paramsVals.size() <= i ) {
+                if (paramsVals.size() <= i) {
                     if (params[i].optional()) {
                         val = params[i].defaultValue();
-
                     } else {
-                        throw new RuntimeException("Non optional parameter" + params[i].value() + "  is missing ");
+                        throw new RuntimeException("Non optional parameter " + params[i].value() + " is missing");
                         // TODO improve error handling
                     }
                 } else {
                     val = paramsVals.get(i);
                 }
-
 
                 if (params[i].type().equals(Integer.class) || params[i].type().equals(int.class)) {
                     paramsTrans[i] = Integer.parseInt(val);
@@ -314,7 +326,7 @@ public class MJProf {
                     paramsTrans[i] = Long.parseLong(val);
                 } else if (params[i].type().equals(Boolean.class) || params[i].type().equals(boolean.class)) {
                     paramsTrans[i] = Boolean.parseBoolean(val);
-                } else if (params[i].type().equals(Attr.class) ) {
+                } else if (params[i].type().equals(Attr.class)) {
                     paramsTrans[i] = new Attr(val);
                 } else {
                     paramsTrans[i] = val;

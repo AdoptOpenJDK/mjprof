@@ -102,7 +102,7 @@ public JMXConnection(String serverUrl, String uName, String passwd) throws Malfo
 
   public CompositeData[] getThreads(long[] thIds, int stackTraceEntriesNo) throws Exception {
     String[] signature = {"[J", "int"};
-    Object[] params = {thIds, stackTraceEntriesNo};
+    Object[] params = {thIds, (Integer)stackTraceEntriesNo};
     return (CompositeData[]) server.invoke(THREADING, "getThreadInfo", params, signature);
   }
 
@@ -126,9 +126,9 @@ public JMXConnection(String serverUrl, String uName, String passwd) throws Malfo
       Class<URLClassLoader> clazz = URLClassLoader.class;
 
       // Use reflection
-      Method method = clazz.getDeclaredMethod("addURL", new Class[]{URL.class});
+      Method method = clazz.getDeclaredMethod("addURL", URL.class);
       method.setAccessible(true);
-      method.invoke(classLoader, new Object[]{url});
+      method.invoke(classLoader, url);
 
     } catch (Exception e) {
       throw new RuntimeException(e);

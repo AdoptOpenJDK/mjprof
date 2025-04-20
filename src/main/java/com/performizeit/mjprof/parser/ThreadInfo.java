@@ -18,28 +18,51 @@
 package com.performizeit.mjprof.parser;
 
 import java.util.HashMap;
-
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ThreadInfo  {
-  HashMap<String, Object> props;
+/**
+ * Represents information about a thread, including its stack trace and properties.
+ * Uses modern Java features like var, Optional, and enhanced Map handling.
+ */
+public class ThreadInfo {
+  // Use HashMap specifically for backward compatibility
+  private final HashMap<String, Object> props;
 
-  public ThreadInfo(HashMap<String, Object> mtd) {
-    props = mtd;
+  public ThreadInfo(Map<String, Object> mtd) {
+    this.props = new HashMap<>(mtd);
   }
 
   public ThreadInfo() {
-    props = new HashMap<>();
+    this.props = new HashMap<>();
   }
 
   public HashMap<String, Object> cloneMetaData() {
-    return (HashMap<String, Object>) props.clone();
+    return new HashMap<>(props);
   }
 
+  /**
+   * Gets a property value wrapped in Optional for null-safety.
+   * Note: For direct backward compatibility use getVal(String) without Optional.
+   */
+  public Optional<Object> getValOptional(String key) {
+    return Optional.ofNullable(props.get(key));
+  }
+
+  /**
+   * Original method for backward compatibility with existing code.
+   */
   public Object getVal(String key) {
     return props.get(key);
+  }
+  
+  /**
+   * Gets a property value with a default if it's null.
+   */
+  public Object getVal(String key, Object defaultValue) {
+    return Optional.ofNullable(props.get(key)).orElse(defaultValue);
   }
 
   public Object setVal(String key, Object val) {
@@ -50,21 +73,16 @@ public class ThreadInfo  {
     return props.keySet();
   }
 
-
   public ThreadInfo(String stackTrace) {
-    props = new JStackTextualFormatParser().parseLegacyTextualFormat(stackTrace);
+    var parser = new JStackTextualFormatParser();
+    this.props = parser.parseLegacyTextualFormat(stackTrace);
   }
 
-
   protected String metadataProperty(String metaLine, String propertyName) {
-    Pattern p = Pattern.compile(".* " + propertyName + "=([0-9a-fx]*) .*");
-    Matcher m = p.matcher(metaLine);
+    var pattern = Pattern.compile(".* " + propertyName + "=([0-9a-fx]*) .*");
+    var matcher = pattern.matcher(metaLine);
 
-    if (m.find()) {
-      return m.group(1);
-
-    }
-    return null;
+    return matcher.find() ? matcher.group(1) : null;
   }
 
   @Override

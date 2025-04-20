@@ -17,18 +17,21 @@
 
 package com.performizeit.mjprof.parser;
 
-
 import com.performizeit.mjprof.model.JStackHeader;
 
 import java.util.ArrayList;
+import java.util.List;
 
-/* Thread dump consists of a header and a list ThreadInfo */
+/**
+ * Represents a thread dump consisting of a header and a list of thread information.
+ * Updated to use Java 17 features and flexible list handling.
+ */
 public class ThreadDump {
   protected JStackHeader header;
-  ArrayList<ThreadInfo> threadInfos = new ArrayList<>();
-  int JNIglobalReferences = -1;
+  protected ArrayList<ThreadInfo> threadInfos = new ArrayList<>();
+  protected int JNIglobalReferences = -1;
 
-  public static String JNI_GLOBAL_REFS = "JNI global references:";
+  public static final String JNI_GLOBAL_REFS = "JNI global references:";
 
   public JStackHeader getHeader() {
     return header;
@@ -39,13 +42,19 @@ public class ThreadDump {
     this.threadInfos = threadInfos;
     this.JNIglobalReferences = JNIglobalReferences;
   }
+  
   public ThreadDump(JStackHeader header, ArrayList<ThreadInfo> threadInfos) {
     this.header = header;
     this.threadInfos = threadInfos;
-
+  }
+  
+  public ThreadDump(JStackHeader header, List<ThreadInfo> threadInfos) {
+    this.header = header;
+    this.threadInfos = new ArrayList<>(threadInfos);
   }
 
   public ThreadDump() {
+    // Default constructor
   }
 
   public ArrayList<ThreadInfo> getThreadInfos() {
@@ -58,6 +67,10 @@ public class ThreadDump {
 
   public void setThreadInfos(ArrayList<ThreadInfo> threadInfos) {
     this.threadInfos = threadInfos;
+  }
+  
+  public void setThreadInfos(List<ThreadInfo> threadInfos) {
+    this.threadInfos = new ArrayList<>(threadInfos);
   }
 
   @Override
