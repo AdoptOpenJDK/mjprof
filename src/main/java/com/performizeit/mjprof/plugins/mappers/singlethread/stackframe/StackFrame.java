@@ -61,28 +61,27 @@ public class StackFrame {
 
   @Override
   public String toString() {
-    // TODO to string builder
-    String build = "";
-    build += SEVEN_SPACES;
-    if (!lockFrame.isEmpty()) return build + lockFrame;
-    build += at;
-    if (packageName.length() > 0) build += packageName;
-    if (className.length() > 0) {
-      if (packageName.length() > 0) build += ".";
-      build += className;
+    StringBuilder builder = new StringBuilder();
+    builder.append(SEVEN_SPACES);
+    if (!lockFrame.isEmpty()) return builder.append(lockFrame).toString();
+    builder.append(at);
+    if (!packageName.isEmpty()) builder.append(packageName);
+    if (!className.isEmpty()) {
+      if (!packageName.isEmpty()) builder.append(".");
+      builder.append(className);
     }
-    if (methodName.length() > 0) {
-      if (packageName.length() > 0 || className.length() > 0) build += ".";
-      build += methodName;
+    if (!methodName.isEmpty()) {
+      if (!packageName.isEmpty() || !className.isEmpty()) builder.append(".");
+      builder.append(methodName);
     }
-    if (fileName.length() > 0 || lineNum.length() > 0) {
-      build += "(";
-      if (fileName.length() > 0) build += fileName;
-      if (lineNum.length() > 0 && fileName.length() > 0) build += ":";
-      if (lineNum.length() > 0) build += lineNum;
-      build += ")";
+    if (!fileName.isEmpty() || !lineNum.isEmpty()) {
+      builder.append("(");
+      if (!fileName.isEmpty()) builder.append(fileName);
+      if (!lineNum.isEmpty() && !fileName.isEmpty()) builder.append(":");
+      if (!lineNum.isEmpty()) builder.append(lineNum);
+      builder.append(")");
     }
-    return build;
+    return builder.toString();
   }
 
   public String getAt() {

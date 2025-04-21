@@ -5,7 +5,7 @@ This document contains a detailed list of actionable improvement tasks for the m
 ## Code Quality Improvements
 
 1. [ ] Improve error handling in MJProf.java as noted in the TODO comment (line 317)
-2. [ ] Replace string concatenation with StringBuilder in StackFrame.java (line 64)
+2. [x] Replace string concatenation with StringBuilder in StackFrame.java (line 64)
 3. [ ] Implement the TODO in StepInfo.java to properly check if a class is assignable from BasePlugin
 4. [ ] Add proper exception handling with meaningful error messages instead of printing to stderr
 5. [ ] Refactor the command-line parsing logic in MJProf.java to improve readability and maintainability
