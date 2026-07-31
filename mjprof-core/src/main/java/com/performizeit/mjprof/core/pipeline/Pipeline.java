@@ -14,6 +14,8 @@ import com.performizeit.mjprof.core.plugins.dataSource.StdinDataSourcePlugin;
 import com.performizeit.mjprof.core.plumbing.GeneratorHandler;
 import com.performizeit.mjprof.core.plumbing.PipeHandler;
 
+import javax.management.remote.JMXServiceURL;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -71,19 +73,46 @@ public final class Pipeline {
   /**
    * Samples thread dumps over JMX.
    *
-   * @param hostPort host:port of the target JMX endpoint
+   * @param hostPort host:port of the target JMX endpoint; validated eagerly, so a malformed value
+   *                 throws {@link MjprofException} here rather than at {@link #collect()}
    * @param count    number of dumps to take
    * @param sleepMs  milliseconds to wait between dumps; blocks the calling thread
-   * @param user     JMX username, or null
-   * @param pass     JMX password, or null
+   * @param user     JMX username, or null for no credentials
+   * @param pass     JMX password, or null for no credentials
    */
   public static Pipeline fromJmx(String hostPort, int count, int sleepMs, String user, String pass) {
-    return new Pipeline(() -> new JmxDataSourcePlugin(hostPort, count, sleepMs, user, pass), List.of());
+    validateJmxHostPort(hostPort);
+    String safeUser = user == null ? "" : user;
+    String safePass = pass == null ? "" : pass;
+    return new Pipeline(() -> new JmxDataSourcePlugin(hostPort, count, sleepMs, safeUser, safePass), List.of());
   }
 
   /** As fromJmx, additionally collecting per-thread CPU time. */
   public static Pipeline fromJmxWithCpu(String hostPort, int count, int sleepMs, String user, String pass) {
-    return new Pipeline(() -> new JmxDataSourcePluginWithCpu(hostPort, count, sleepMs, user, pass), List.of());
+    validateJmxHostPort(hostPort);
+    String safeUser = user == null ? "" : user;
+    String safePass = pass == null ? "" : pass;
+    return new Pipeline(() -> new JmxDataSourcePluginWithCpu(hostPort, count, sleepMs, safeUser, safePass), List.of());
+  }
+
+  /**
+   * Rejects a null or malformed {@code host:port} before any plugin is constructed.
+   *
+   * <p>{@code JmxDataSourcePlugin}'s constructor calls {@code System.exit(1)} when
+   * {@code JMXConnection} throws {@link MalformedURLException} — reasonable for the CLI, fatal for
+   * a library caller. So a bad host:port must never reach that constructor. The URL template below
+   * is deliberately copied verbatim from {@code JMXConnection}, so acceptance here is identical to
+   * what the plugin itself would accept.
+   */
+  private static void validateJmxHostPort(String hostPort) {
+    if (hostPort == null) {
+      throw new MjprofException("JMX host:port must not be null");
+    }
+    try {
+      new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + hostPort + "/jmxrmi");
+    } catch (MalformedURLException e) {
+      throw new MjprofException("malformed JMX host:port: " + hostPort, e);
+    }
   }
 
   // ------------------------------------------------------------ generic stage
@@ -121,22 +150,26 @@ public final class Pipeline {
 
   /** Runs the pipeline and returns one dump per dump the source produced. */
   public List<ThreadDump> collect() {
-    GeneratorHandler<ThreadDump> generator;
-    try {
-      generator = source.get();
-    } catch (RuntimeException e) {
-      throw new MjprofException("failed to build data source: " + e.getMessage(), e);
-    }
-    return PipelineRunner.run(generator, freshStages());
+    return PipelineRunner.run(buildSource(), freshStages());
   }
 
   /** Runs the pipeline and returns its single dump, failing if the source produced any other number. */
   public ThreadDump collectOne() {
-    List<ThreadDump> all = collect();
+    GeneratorHandler<ThreadDump> generator = buildSource();
+    List<ThreadDump> all = PipelineRunner.run(generator, freshStages());
     if (all.size() != 1) {
-      throw new MjprofException("expected exactly one thread dump, got " + all.size());
+      throw new MjprofException("expected exactly one thread dump from "
+          + generator.getClass().getName() + ", got " + all.size());
     }
     return all.get(0);
+  }
+
+  private GeneratorHandler<ThreadDump> buildSource() {
+    try {
+      return source.get();
+    } catch (RuntimeException e) {
+      throw new MjprofException("failed to build data source: " + e.getMessage(), e);
+    }
   }
 
   /** Runs the pipeline and returns every thread of every resulting dump. */

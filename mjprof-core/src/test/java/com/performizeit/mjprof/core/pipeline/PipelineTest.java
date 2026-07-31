@@ -6,6 +6,7 @@ import com.performizeit.mjprof.core.parser.ThreadInfo;
 import com.performizeit.mjprof.core.plugins.filters.JStackFilterFieldContains;
 import com.performizeit.mjprof.core.plugins.mappers.singlethread.StackTop;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import java.util.List;
 
@@ -74,9 +75,35 @@ class PipelineTest {
   }
 
   @Test
+  @Timeout(30)
   void unreachableJmxThrowsMjprofException() {
-    // port 1 is never a live JMX endpoint
+    // well-formed host:port, but nothing is listening on port 1 - the genuine connect-failure path
     assertThrows(MjprofException.class,
-        () -> Pipeline.fromJmx("localhost:1", 1, 0, null, null).collect());
+        () -> Pipeline.fromJmx("localhost:1", 1, 0, "", "").collect());
+  }
+
+  @Test
+  void nullJmxCredentialsAreAcceptedAsNoAuth() {
+    // building the Pipeline must not throw - null user/pass means "no credentials", not a
+    // programmer error. If Finding 2's normalization regressed, this line itself would NPE.
+    Pipeline pipeline = Pipeline.fromJmx("localhost:1", 1, 0, null, null);
+
+    // Nothing listens on port 1, so collecting must fail - but with MjprofException wrapping the
+    // real connect failure, not a NullPointerException from unnormalized credentials. A bare
+    // assertThrows(MjprofException.class, ...) would not catch a regression here, since an NPE
+    // wrapped as MjprofException also satisfies it - so inspect the cause explicitly.
+    MjprofException e = assertThrows(MjprofException.class, pipeline::collect);
+    Throwable cause = e.getCause();
+    assertFalse(cause instanceof NullPointerException,
+        "credentials must be normalized before reaching the plugin, not NPE: " + e);
+  }
+
+  @Test
+  void malformedJmxHostPortThrowsMjprofExceptionWithoutExiting() {
+    // JMXServiceURL is lenient about host/port syntax (e.g. "host:" or "host:port" both parse), but
+    // rejects any non-ASCII/control character in the URL outright - a newline in the host:port
+    // reliably reproduces a MalformedURLException without needing a live network attempt.
+    assertThrows(MjprofException.class,
+        () -> Pipeline.fromJmx("bad\nhost:1", 1, 0, "", ""));
   }
 }
