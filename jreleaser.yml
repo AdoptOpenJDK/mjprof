@@ -47,7 +47,7 @@ assemble:
       formats: [ ZIP ]
       attachPlatform: true
       fileSets:
-        - input: 'target'
+        - input: 'mjprof-cli/target'
           output: 'bin'
           includes: [ 'mjprof{.exe,}' ]
         - input: '.'

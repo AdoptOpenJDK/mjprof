@@ -1,0 +1,3 @@
+#!/bin/bash
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+java -cp "$DIR/mjprof-cli-1.1.0-jar-with-dependencies.jar:$DIR/plugins/*" -Dmacros.configFile=${DIR}/macros.properties com.performizeit.mjprof.cli.MJProf $*

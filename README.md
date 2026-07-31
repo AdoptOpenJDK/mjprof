@@ -70,6 +70,11 @@ Full dump mappers:
 * _**sort**/attr/_                                                          - Sorts based on an attribute
 * _**-sort**/string/_                                                       - Sorts based on an attribute (descending order)
 
+**Fixed:** `sort`/`-sort` used to throw a `NullPointerException` and crash the whole run when any
+thread lacked the sorted attribute (e.g. `mjprof path/dump.txt/.sort/state/` on an ordinary dump).
+Threads missing the attribute now sort last, in both ascending and descending order, instead of
+crashing.
+
 Terminals:
 ---------
 * _**count**_                                                               - counts number of threads
@@ -129,11 +134,84 @@ Count threads
 
 
 
+Java API
+=============
+
+`mjprof-core` is usable as a library. Add the dependency:
+
+```xml
+<dependency>
+    <groupId>com.performizeit</groupId>
+    <artifactId>mjprof-core</artifactId>
+    <version>1.1.0</version>
+</dependency>
+```
+
+**Not on Maven Central yet.** There is no publishing configuration for `mjprof-core`, so the
+snippet above will not resolve from a fresh checkout. Until it is published, build and install it
+into your local `~/.m2` repository yourself:
+
+```
+git clone https://github.com/AdoptOpenJDK/mjprof.git
+cd mjprof
+mvn -pl mjprof-core -am install
+```
+
+Stages are plugin instances, so their constructor arguments are typed and checked by the compiler:
+
+```java
+List<ThreadInfo> runnable = Pipeline.fromFile("dump.txt")
+    .contains(Attr.STATE, "RUNNABLE")
+    .sort(Attr.NAME)
+    .threads();
+```
+
+Anything without a convenience method — including plugins from your own jars — goes through `map`:
+
+```java
+Pipeline.fromStdin()
+    .map(new MergedCallees("java.net.SocketInputStream.read"))
+    .collect();
+```
+
+Sample on your own schedule and merge later:
+
+```java
+List<ThreadDump> samples = new ArrayList<>();
+samples.add(Pipeline.fromJmxWithCpu("localhost:9010", 1, 0, null, null).collectOne());
+// ... more samples, on your cadence ...
+
+List<ThreadInfo> profile = Pipeline.fromDumps(samples)
+    .merge(Attr.TID)        // sums cpu_ns, merges stack trees
+    .withoutNameSuffix()
+    .group(Attr.NAME)
+    .sortDesc(Attr.CPU_NS)
+    .threads();
+```
+
+Notes:
+
+- Collection runs on the calling thread. A source configured for several samples blocks for its own
+  sleep interval.
+- Failures throw `MjprofException` rather than yielding an empty result.
+- `group(Attr.STACK)` and `merge(Attr.STACK)` are rejected: stack profiles have no value equality.
+  Use `merge(Attr.TID)` then `tree()`.
+- Dumps written as jstack text keep `count`, `cpu_ns`, `wall_ms` and `%cpu`. But JMX-sourced dumps
+  do not re-split when concatenated — their header is not date-prefixed — so several JMX samples in
+  one file read back as one dump. Use `fromDumps` for self-collected samples.
+- The expression DSL, macros and the `supported_monads.txt` plugin registry live in `mjprof-cli`,
+  not in the library.
+
+
 Building MJProf
 =============
 mjprof uses maven for compilation. In order to build mjprof use the following command line:  
 `mvn clean package`
-This will create a zip file in `target/mjprof1.0-bin.zip` which contains everything you need.
+This builds both modules and produces a self-contained runnable jar at
+`mjprof-cli/target/mjprof-cli-1.1.0-jar-with-dependencies.jar`. Run it with
+`java -jar mjprof-cli/target/mjprof-cli-1.1.0-jar-with-dependencies.jar` or via the launcher script
+in `mjprof-cli/src/main/scripts/mjprof`. A native binary (via GraalVM, `mvn -Pnative package`) is
+named `mjprof`.
 
 
 Writing a plugin
@@ -141,15 +219,25 @@ Writing a plugin
 
 mjprof monadic capabilities can be extended with plugins. If you feel something is missing you can write your own plugin. 
 We will appreciate if you will contribute it back to the community. 
-A plugin is a Java class which is annotated with the com.performizeit.mjprof.plugin.Plugin. The annotation accepts three parameters. "name" the
-plugin name (must be unique) paramTypes the expected parameter types in the plugin. description one liner that will be used for 
-synopsis. For example:  
+A new plugin belongs in `mjprof-core` (the plugin implementations live there; `mjprof-cli` only
+discovers and wires them up). A plugin is a Java class annotated with
+`com.performizeit.mjprof.core.api.Plugin`. The annotation requires "name" (the plugin name, must be
+unique), "category" (a `PluginCategory` value identifying which plugin-type interface it
+implements), and "params" (an array of `@Param`, describing the expected arguments); "description"
+is optional and used for the synopsis. For example:
 
-```
-import com.performizeit.mjprof.api.Plugin;
+```java
+import com.performizeit.mjprof.core.api.Param;
+import com.performizeit.mjprof.core.api.Plugin;
+import com.performizeit.mjprof.core.api.PluginCategory;
 
-@Plugin(name="group", paramTypes={String.class},description="Group by an attribute")
+@Plugin(name = "group", params = {@Param(type = String.class)},
+    category = PluginCategory.DUMP_REDUCER, description = "Group by an attribute")
 ```
+
+No registration code is needed beyond the annotation: the build's `process-classes` phase
+regenerates `supported_monads.txt` from every annotated class it finds on the classpath.
+
 There are several plugin types mappers filters terminals etc... for each type you will  need to implement a different interface.
 
 Mapper
