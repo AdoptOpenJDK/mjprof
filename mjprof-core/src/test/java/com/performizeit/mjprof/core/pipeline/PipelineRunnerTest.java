@@ -201,4 +201,52 @@ class PipelineRunnerTest {
     PipelineRunner.run(counting, List.of(passThrough()));
     assertEquals(1, sleeps[0], "sleep only between dumps, never after the last");
   }
+
+  @Test
+  void doneWalkIsAscendingSoAnAccumulatorFeedsTheNextAccumulator() {
+    // stage A accumulates and emits only from handleDone; stage B does the same, and its
+    // emission must reflect having received A's emission via handleMsg first. This only
+    // holds if the closing handleDone walk runs stages in ascending order (0 before 1).
+    int[] countSeenByA = {0};
+    PipeHandler<ThreadDump, ThreadDump> stageA = new PipeHandler<>() {
+      public ThreadDump handleMsg(ThreadDump msg) {
+        countSeenByA[0]++;
+        return null;
+      }
+
+      public ThreadDump handleDone() {
+        return dumpNamed("A-" + countSeenByA[0]);
+      }
+    };
+
+    List<String> namesSeenByStageB = new ArrayList<>();
+    PipeHandler<ThreadDump, ThreadDump> stageB = new PipeHandler<>() {
+      public ThreadDump handleMsg(ThreadDump msg) {
+        namesSeenByStageB.add(msg.getThreadInfos().get(0).name());
+        return null;
+      }
+
+      public ThreadDump handleDone() {
+        return dumpNamed(namesSeenByStageB.isEmpty()
+            ? "B-saw-nothing"
+            : "B-saw-" + namesSeenByStageB.get(0));
+      }
+    };
+
+    List<ThreadDump> out = PipelineRunner.run(
+        source(dumpNamed("a"), dumpNamed("b"), dumpNamed("c")),
+        List.of(stageA, stageB));
+
+    assertEquals(List.of("A-3"), namesSeenByStageB,
+        "stage B must receive stage A's handleDone emission via handleMsg");
+
+    List<String> outNames = new ArrayList<>();
+    for (ThreadDump d : out) {
+      outNames.add(d.getThreadInfos().get(0).name());
+    }
+    assertTrue(outNames.contains("B-saw-A-3"),
+        "result must contain B's emission reflecting it saw A's output: " + outNames);
+    assertTrue(!outNames.contains("B-saw-nothing"),
+        "B must not have emitted before seeing A's output: " + outNames);
+  }
 }
