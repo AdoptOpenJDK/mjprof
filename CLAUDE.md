@@ -15,14 +15,14 @@ Example: `jstack -l <pid> | mjprof contains/state,RUNNABLE/.tree`
 This is a two-module Maven reactor (root `pom.xml` is `packaging=pom`, `<modules>mjprof-core, mjprof-cli</modules>`):
 
 - **`mjprof-core`** (`com.performizeit.mjprof.core.*`) — thread-dump parsing, the data model, every plugin implementation, the plugin type interfaces, the threaded `Pipe`/`Generator` plumbing, and the typed `Pipeline`/`PipelineRunner` API. **Zero external main-scope dependencies** — keep it that way; anything that pulls in a library goes in `mjprof-cli` instead.
-- **`mjprof-cli`** (`com.performizeit.mjprof.cli.*`) — the expression DSL (`monads/MJStep`, `monads/Macros`, `internal.macros.properties`), the plugin registry (`plugin/StepsRepository`, `plugin/PluginRepoBuilder`, `plugin/PluginRepositoryScanner`), `MJProf.main`, and the `native` Maven profile. Depends on `mjprof-core` plus the `reflections` library.
+- **`mjprof-cli`** (`com.performizeit.mjprof.cli.*`) — the expression DSL (`monads/MJStep`, `monads/Macros`, `internal.macros.properties`), the plugin registry (`monads/StepsRepository`, `plugin/PluginRepoBuilder`, `plugin/PluginRepositoryScanner`), `MJProf.main`, and the `native` Maven profile. Depends on `mjprof-core` plus the `reflections` library.
 
 ## Build & test
 
 Requires GraalVM JDK (see `.sdkmanrc`: `java=22.3.r19-grl`); compiler target is Java 17.
 
 - All tests, both modules, from the repo root: `mvn test` (JUnit 5 / Jupiter).
-- Single test class/method needs `-pl` to target a module, e.g. `mvn -pl mjprof-core test -Dtest=StackTreeTest` or `mvn -pl mjprof-cli test -Dtest=MJProfTest#someMethod`.
+- Single test class/method needs `-pl` to target a module, and the two modules are asymmetric. `mjprof-core` has no reactor dependency, so `mvn -pl mjprof-core test -Dtest=StackTreeTest` works standalone. `mjprof-cli` depends on `mjprof-core` through the reactor (it isn't `mvn install`-ed into the local repo), so a bare `-pl mjprof-cli` fails dependency resolution — it needs `-am` to build `mjprof-core` first; that in turn makes surefire run in `mjprof-core` too, which errors out because the named class doesn't live there, so also pass `-Dsurefire.failIfNoSpecifiedTests=false`: `mvn -pl mjprof-cli -am test -Dtest=MJProfTest#someMethod -Dsurefire.failIfNoSpecifiedTests=false`.
 - Build fat jar: `mvn clean package` → `mjprof-cli/target/mjprof-cli-1.1.0-jar-with-dependencies.jar` (main class `com.performizeit.mjprof.cli.MJProf`).
 - Native image: `mvn -Pnative package -pl mjprof-cli -am` (GraalVM `native-maven-plugin`; `-am` also builds `mjprof-core` first since the profile lives only in `mjprof-cli`).
 - Run without full package: `mvn -pl mjprof-cli exec:java -Dexec.mainClass=com.performizeit.mjprof.cli.MJProf -Dexec.args="..."` (or run the jar directly).
