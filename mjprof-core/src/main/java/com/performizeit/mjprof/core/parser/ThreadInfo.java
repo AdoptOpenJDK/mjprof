@@ -104,7 +104,9 @@ public class ThreadInfo {
   }
 
   public String tid() {
-    return (String) getVal(ThreadInfoProps.TID);
+    Object value = getVal(ThreadInfoProps.TID);
+    // the jstack text parser stores a hex String; the JMX and in-process sources store a Long
+    return value == null ? null : value.toString();
   }
 
   public Long cpuNs() {

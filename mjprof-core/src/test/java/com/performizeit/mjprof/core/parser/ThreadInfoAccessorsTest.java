@@ -124,4 +124,23 @@ class ThreadInfoAccessorsTest {
     assertEquals(40L, roundTripped.wallMs(), "wallMs should coerce from String in round-trip");
     assertEquals(3.75, roundTripped.cpuPct(), "cpuPct should coerce from String in round-trip");
   }
+
+  @Test
+  void tidStoredAsALongIsReturnedAsAString() {
+    ThreadInfo ti = new ThreadInfo();
+    ti.setVal(ThreadInfoProps.TID, 42L);   // what JmxDataSourcePlugin and SelfDataSource store
+    assertEquals("42", ti.tid());
+  }
+
+  @Test
+  void tidStoredAsAStringIsUnchanged() {
+    ThreadInfo ti = new ThreadInfo();
+    ti.setVal(ThreadInfoProps.TID, "0x00007f9e");   // what the jstack text parser stores
+    assertEquals("0x00007f9e", ti.tid());
+  }
+
+  @Test
+  void tidIsNullWhenAbsent() {
+    assertNull(new ThreadInfo().tid());
+  }
 }
