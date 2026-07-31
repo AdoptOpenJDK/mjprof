@@ -2,18 +2,38 @@ package com.performizeit.mjprof.core.pipeline;
 
 import com.performizeit.mjprof.core.api.Attr;
 import com.performizeit.mjprof.core.api.ThreadInfoComparator;
+import com.performizeit.mjprof.core.model.JStackHeader;
+import com.performizeit.mjprof.core.model.Profile;
 import com.performizeit.mjprof.core.parser.ThreadDump;
 import com.performizeit.mjprof.core.parser.ThreadInfo;
+import com.performizeit.mjprof.core.parser.ThreadInfoProps;
 import com.performizeit.mjprof.core.plugin.types.DataSource;
 import com.performizeit.mjprof.core.plugin.types.DumpReducer;
 import com.performizeit.mjprof.core.plugin.types.Filter;
 import com.performizeit.mjprof.core.plugin.types.SingleThreadMapper;
 import com.performizeit.mjprof.core.plugins.combiners.AccumulateDumps;
+import com.performizeit.mjprof.core.plugins.comparators.PropComparator;
+import com.performizeit.mjprof.core.plugins.comparators.ReversePropComparator;
 import com.performizeit.mjprof.core.plugins.dataSource.JmxDataSourcePlugin;
 import com.performizeit.mjprof.core.plugins.dataSource.JmxDataSourcePluginWithCpu;
 import com.performizeit.mjprof.core.plugins.dataSource.PathDataSourcePlugin;
 import com.performizeit.mjprof.core.plugins.dataSource.StdinDataSourcePlugin;
+import com.performizeit.mjprof.core.plugins.filters.JStackFilterFieldContains;
+import com.performizeit.mjprof.core.plugins.filters.JStackFilterFieldNotContains;
+import com.performizeit.mjprof.core.plugins.filters.JStackFilterFieldRegexMatches;
 import com.performizeit.mjprof.core.plugins.mappers.GroupByProp;
+import com.performizeit.mjprof.core.plugins.mappers.MergedCallees;
+import com.performizeit.mjprof.core.plugins.mappers.singlethread.PropEliminator;
+import com.performizeit.mjprof.core.plugins.mappers.singlethread.RemoveThreadNameNumericalSuffix;
+import com.performizeit.mjprof.core.plugins.mappers.singlethread.StackBottom;
+import com.performizeit.mjprof.core.plugins.mappers.singlethread.StackFrameContains;
+import com.performizeit.mjprof.core.plugins.mappers.singlethread.StackFrameNotContains;
+import com.performizeit.mjprof.core.plugins.mappers.singlethread.StackTop;
+import com.performizeit.mjprof.core.plugins.mappers.singlethread.TrimBelow;
+import com.performizeit.mjprof.core.plugins.mappers.singlethread.stackframe.AtEliminator;
+import com.performizeit.mjprof.core.plugins.mappers.singlethread.stackframe.FileNameEliminator;
+import com.performizeit.mjprof.core.plugins.mappers.singlethread.stackframe.PackageEliminator;
+import com.performizeit.mjprof.core.plugins.mergers.StackTreeMerger;
 import com.performizeit.mjprof.core.plumbing.GeneratorHandler;
 import com.performizeit.mjprof.core.plumbing.PipeHandler;
 
@@ -183,6 +203,127 @@ public final class Pipeline {
       throw new MjprofException(method + "(Attr.STACK) is not supported: stack profiles have no "
           + "value equality, so nothing would be collapsed. Use merge(Attr.TID) then tree().");
     }
+  }
+
+  // ------------------------------------------------- filters
+
+  /** Keeps threads whose attribute contains the given substring. */
+  public Pipeline contains(Attr attr, String value) {
+    return add(new JStackFilterFieldContains(attr.getAttrName(), value));
+  }
+
+  /** Keeps threads whose attribute does not contain the given substring. */
+  public Pipeline notContains(Attr attr, String value) {
+    return add(new JStackFilterFieldNotContains(attr.getAttrName(), value));
+  }
+
+  /** Keeps threads whose attribute matches the given regular expression. */
+  public Pipeline matches(Attr attr, String regex) {
+    return add(new JStackFilterFieldRegexMatches(attr.getAttrName(), regex));
+  }
+
+  // ------------------------------------------------- stack shaping
+
+  /** Keeps only the top n stack frames of each thread. */
+  public Pipeline stackTop(int frames) {
+    return add(new StackTop(frames));
+  }
+
+  /** Keeps only the bottom n stack frames of each thread. */
+  public Pipeline stackBottom(int frames) {
+    return add(new StackBottom(frames));
+  }
+
+  /** Drops stack frames below the first frame containing the given text. */
+  public Pipeline trimBelow(String frameText) {
+    return add(new TrimBelow(frameText));
+  }
+
+  /** Keeps only stack frames containing the given text. */
+  public Pipeline frameContains(String text) {
+    return add(new StackFrameContains(text));
+  }
+
+  /** Drops stack frames containing the given text. */
+  public Pipeline frameNotContains(String text) {
+    return add(new StackFrameNotContains(text));
+  }
+
+  // ------------------------------------------------- ordering
+
+  /** Sorts threads by an attribute, ascending. */
+  public Pipeline sort(Attr attr) {
+    return add(new PropComparator(attr.getAttrName()));
+  }
+
+  /** Sorts threads by an attribute, descending. */
+  public Pipeline sortDesc(Attr attr) {
+    return add(new ReversePropComparator(attr.getAttrName()));
+  }
+
+  // ------------------------------------------------- stack trees
+
+  /**
+   * Merges all thread stacks of every dump into one combined call tree, collapsing the whole
+   * pipeline down to a single {@link ThreadInfo} whose {@code stack} is that merged {@link Profile}.
+   *
+   * <p>{@link StackTreeMerger} is a {@code Terminal} plugin — it natively produces a {@code String},
+   * not a {@code ThreadDump}, since in the CLI it is always the last step before output. To fit the
+   * typed pipeline (every stage is {@code ThreadDump -> ThreadDump}), this wraps it unmodified: each
+   * dump is accumulated via its public {@code addStackDump}, and once the source is exhausted the
+   * merged text is parsed back into a {@link Profile} via its public string constructor.
+   */
+  public Pipeline tree() {
+    return add(new TreeMergeStage());
+  }
+
+  private static final class TreeMergeStage implements PipeHandler<ThreadDump, ThreadDump> {
+    private final StackTreeMerger merger = new StackTreeMerger();
+
+    @Override
+    public ThreadDump handleMsg(ThreadDump msg) {
+      merger.addStackDump(msg);
+      return null;
+    }
+
+    @Override
+    public ThreadDump handleDone() {
+      ThreadInfo merged = new ThreadInfo();
+      merged.setVal(ThreadInfoProps.STACK, new Profile(merger.toString()));
+      return new ThreadDump(new JStackHeader(""), List.of(merged));
+    }
+  }
+
+  /** Merges the callees of the given method across all threads. */
+  public Pipeline mergedCallees(String methodName) {
+    return add(new MergedCallees(methodName));
+  }
+
+  // ------------------------------------------------- elimination
+
+  /** Removes an attribute from every thread. */
+  public Pipeline withoutProp(Attr attr) {
+    return add(new PropEliminator(attr.getAttrName()));
+  }
+
+  /** Strips trailing numbers from thread names so pool threads group together. */
+  public Pipeline withoutNameSuffix() {
+    return add(new RemoveThreadNameNumericalSuffix());
+  }
+
+  /** Removes package names from stack frames. */
+  public Pipeline withoutPackages() {
+    return add(new PackageEliminator());
+  }
+
+  /** Removes file names and line numbers from stack frames. */
+  public Pipeline withoutFileNames() {
+    return add(new FileNameEliminator());
+  }
+
+  /** Removes the leading "at " from stack frames. */
+  public Pipeline withoutAt() {
+    return add(new AtEliminator());
   }
 
   Pipeline add(PipeHandler<ThreadDump, ThreadDump> stage) {
