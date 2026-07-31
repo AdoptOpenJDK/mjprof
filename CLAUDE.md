@@ -19,7 +19,7 @@ This is a two-module Maven reactor (root `pom.xml` is `packaging=pom`, `<modules
 
 ## Build & test
 
-Requires GraalVM JDK (see `.sdkmanrc`: `java=22.3.r19-grl`); compiler target is Java 17.
+Compiler source/target is Java 17. `.sdkmanrc` pins `java=25.1.3-graalce` (GraalVM CE, latest GA) — `sdk env install` then `sdk env` to use it. Only `mvn -Pnative package` actually needs GraalVM; the jar build and tests run on any JDK 17+.
 
 - All tests, both modules, from the repo root: `mvn test` (JUnit 5 / Jupiter).
 - Single test class/method needs `-pl` to target a module, and the two modules are asymmetric. `mjprof-core` has no reactor dependency, so `mvn -pl mjprof-core test -Dtest=StackTreeTest` works standalone. `mjprof-cli` depends on `mjprof-core` through the reactor (it isn't `mvn install`-ed into the local repo), so a bare `-pl mjprof-cli` fails dependency resolution — it needs `-am` to build `mjprof-core` first; that in turn makes surefire run in `mjprof-core` too, which errors out because the named class doesn't live there, so also pass `-Dsurefire.failIfNoSpecifiedTests=false`: `mvn -pl mjprof-cli -am test -Dtest=MJProfTest#someMethod -Dsurefire.failIfNoSpecifiedTests=false`.
