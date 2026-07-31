@@ -2192,7 +2192,7 @@ git commit -m "feat: fromDumps source for self-collected samples"
 
 ### Task 8: Document the API and pin the text-persistence limits
 
-The spec resolved that text round-tripping is lossy and broken for JMX headers. That must be asserted by a test and stated in the docs, not left for a user to discover.
+Text-persisted dumps keep their numeric properties (Task 2 measured this; the spec's original "lossy" claim was wrong and has been corrected), but JMX-sourced dumps do not split back apart. That limitation must be asserted by a test and stated in the docs, not left for a user to discover.
 
 **Files:**
 - Create: `mjprof-core/src/test/java/com/performizeit/mjprof/core/pipeline/TextRoundTripLimitsTest.java`
@@ -2203,64 +2203,98 @@ The spec resolved that text round-tripping is lossy and broken for JMX headers. 
 - Consumes: everything from Tasks 2–7.
 - Produces: no new API.
 
-- [ ] **Step 1: Write the test that pins the known losses**
+- [ ] **Step 1: Write the test that pins the real remaining boundary**
+
+**Corrected during execution — read this before writing the test.** The spec originally claimed
+`count`/`cpu_ns`/`wall_ms`/`%cpu` are lost on a text round-trip. That was **wrong**, and Task 2 proved
+it: `JStackTextualFormatParser.metadataKeyValProperties` reads every `key=value` pair on the header
+line back via a generic `(\S+)=(\S+)` regex, so all four survive (as Strings, coerced by the typed
+accessors). `ThreadInfoAccessorsTest` already covers that fidelity — **do not duplicate it here.**
+
+The boundary that *is* real and untested is dump *splitting*: `StreamDataSourcePluginBase` starts a new
+dump only on a line matching `^\d\d\d\d-\d\d-\d\d`, and `JmxDataSourcePlugin` sets its header from
+`new Date()` ("Fri Jul 31 10:23:45 IDT 2026"), which does not match. So concatenated JMX-sourced dumps
+silently collapse into one. Pin exactly that, with no JMX connection required:
 
 ```java
 package com.performizeit.mjprof.core.pipeline;
 
 import com.performizeit.mjprof.core.model.JStackHeader;
 import com.performizeit.mjprof.core.parser.ThreadDump;
-import com.performizeit.mjprof.core.parser.ThreadDumpTextualParser;
 import com.performizeit.mjprof.core.parser.ThreadInfo;
 import com.performizeit.mjprof.core.parser.ThreadInfoProps;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
- * Pins the fidelity limits of persisting dumps as jstack text, so the loss is a known, tested
- * boundary rather than a surprise. See the spec's open question 2.
+ * Pins how dumps persisted as text split back apart, so the JMX-header limitation is a known, tested
+ * boundary rather than a surprise. Numeric-property fidelity is covered by ThreadInfoAccessorsTest.
  */
 class TextRoundTripLimitsTest {
 
-  private static ThreadDump dumpWithCpu() {
+  private static ThreadDump dumpWith(String headerText, String threadName) {
     ThreadInfo ti = new ThreadInfo();
-    ti.setVal(ThreadInfoProps.NAME, "worker-1");
+    ti.setVal(ThreadInfoProps.NAME, threadName);
     ti.setVal(ThreadInfoProps.TID, "0x00007f");
     ti.setVal(ThreadInfoProps.STATE, "RUNNABLE");
-    ti.setVal(ThreadInfoProps.CPUNS, 1_234_567L);
     ThreadDump d = new ThreadDump();
-    d.setHeader(new JStackHeader("2026-07-31 10:00:00\nFull thread dump"));
+    d.setHeader(new JStackHeader(headerText));
     ArrayList<ThreadInfo> tis = new ArrayList<>();
     tis.add(ti);
     d.setThreadInfos(tis);
     return d;
   }
 
-  @Test
-  void nameAndStateSurviveARoundTrip() {
-    ThreadDump reparsed = ThreadDumpTextualParser.parseStringRepresentation(dumpWithCpu().toString());
-    assertEquals(1, reparsed.getThreadInfos().size());
-    ThreadInfo t = reparsed.getThreadInfos().get(0);
-    assertEquals("worker-1", t.name());
-    assertNotNull(t.state());
+  private static Path write(Path dir, String name, ThreadDump... dumps) throws IOException {
+    StringBuilder sb = new StringBuilder();
+    for (ThreadDump d : dumps) {
+      sb.append(d).append("\n");
+    }
+    Path f = dir.resolve(name);
+    Files.writeString(f, sb.toString());
+    return f;
   }
 
   @Test
-  void cpuNsIsLostOnARoundTrip() {
-    ThreadDump reparsed = ThreadDumpTextualParser.parseStringRepresentation(dumpWithCpu().toString());
-    assertNull(reparsed.getThreadInfos().get(0).cpuNs(),
-        "toJStackFormat writes cpu_ns= but the parser has no case to read it back; "
-            + "use Pipeline.fromDumps to keep CPU data in memory instead");
+  void jstackStyleHeadersSplitBackIntoSeparateDumps(@TempDir Path dir) throws IOException {
+    Path f = write(dir, "jstack.txt",
+        dumpWith("2026-07-31 10:00:00\nFull thread dump", "worker-a"),
+        dumpWith("2026-07-31 10:00:05\nFull thread dump", "worker-b"));
+
+    List<ThreadDump> read = Pipeline.fromFile(f.toString()).collect();
+    assertEquals(2, read.size(), "date-prefixed headers must split into separate dumps");
+  }
+
+  @Test
+  void jmxStyleHeadersDoNotSplit(@TempDir Path dir) throws IOException {
+    // exactly what JmxDataSourcePlugin writes: Date.toString(), which is not date-prefixed
+    String jmxHeader = new Date() + "\nThread dump via JMX of process localhost:9010";
+    Path f = write(dir, "jmx.txt",
+        dumpWith(jmxHeader, "worker-a"),
+        dumpWith(jmxHeader, "worker-b"));
+
+    List<ThreadDump> read = Pipeline.fromFile(f.toString()).collect();
+    assertEquals(1, read.size(),
+        "JMX headers are not date-prefixed, so concatenated JMX dumps collapse into one — "
+            + "use Pipeline.fromDumps to keep self-collected samples separate");
   }
 }
 ```
 
-Run it and adjust only the *assertions* to match observed behavior — if `cpuNs` unexpectedly survives, change the test to assert that and update the docs below accordingly. The point is a truthful record, not a predetermined answer.
+Run it and adjust only the *assertions* to match observed behavior. If `jmxStyleHeadersDoNotSplit`
+comes back as 2, the limitation does not exist and you should say so in the report and drop the doc
+warning about it — a truthful record beats a predetermined answer. Note `Date.toString()` is
+locale-dependent; if the default locale somehow produces a date-prefixed form, use a hardcoded
+`"Fri Jul 31 10:23:45 IDT 2026"` string instead so the test is deterministic.
 
 - [ ] **Step 2: Run the test**
 
@@ -2277,9 +2311,9 @@ Append to the class-level Javadoc:
 
 ```java
  * <p>To sample on your own schedule and analyse later, keep the ThreadDump objects and use
- * fromDumps: dumps written out as text and re-read lose count, cpu_ns, wall_ms and %cpu, because
- * the parser has no cases for them, and dumps taken over JMX do not re-split when concatenated
- * because their header is not date-prefixed.
+ * fromDumps. Writing dumps out as jstack text and re-reading them preserves count, cpu_ns, wall_ms
+ * and %cpu, but dumps taken over JMX do not re-split when concatenated, because their header is not
+ * date-prefixed — so several JMX samples in one file come back as a single dump.
 ```
 
 - [ ] **Step 4: Add an API section to `README.md`**
@@ -2338,8 +2372,9 @@ Notes:
 - Failures throw `MjprofException` rather than yielding an empty result.
 - `group(Attr.STACK)` and `merge(Attr.STACK)` are rejected: stack profiles have no value equality.
   Use `merge(Attr.TID)` then `tree()`.
-- Keep dumps in memory to keep every property. Written as text they lose `count`, `cpu_ns`,
-  `wall_ms` and `%cpu`, and JMX-sourced dumps do not re-split when concatenated.
+- Dumps written as jstack text keep `count`, `cpu_ns`, `wall_ms` and `%cpu`. But JMX-sourced dumps
+  do not re-split when concatenated — their header is not date-prefixed — so several JMX samples in
+  one file read back as one dump. Use `fromDumps` for self-collected samples.
 - The expression DSL, macros and the `supported_monads.txt` plugin registry live in `mjprof-cli`,
   not in the library.
 ````
@@ -2422,4 +2457,4 @@ State plainly: test count, golden diff result for each of the ten expressions, `
 - **The golden capture in Task 1 Step 1 must happen before any file moves.** There is no way to reconstruct it afterwards.
 - Task 1 is the only task that cannot be partially completed — a half-renamed tree does not compile. Everything after it is independently revertible.
 - If javac rejects the four `map` overloads as having the same erasure, fall back to distinct names (`mapThread`, `reduce`, `filter`, `sortBy`) and update Tasks 5–7 accordingly. Note the change in the commit message; do not silently diverge from the spec.
-- Do not "fix" the lossy text round-trip, the missing JMX connect timeout, or `Profile`'s lack of value equality. All three are recorded follow-ups. Fixing them here makes the diff unreviewable.
+- Do not "fix" the JMX header format (which is why concatenated JMX dumps don't re-split), the missing JMX connect timeout, or `Profile`'s lack of value equality. All three are recorded follow-ups. Fixing them here makes the diff unreviewable.

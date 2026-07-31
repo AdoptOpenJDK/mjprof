@@ -288,7 +288,10 @@ Pipeline.fromFile("session.txt").merge().tree().collect();
 ```
 
 This works because `StreamDataSourcePluginBase` splits a stream into dumps on date-prefixed lines,
-the same mechanism `jstackOverTime.sh` relies on. Fidelity is unverified — see open questions.
+the same mechanism `jstackOverTime.sh` relies on. Property fidelity is verified — `count`, `cpu_ns`,
+`wall_ms` and `%cpu` all survive (see open question 2) — but this works only for jstack-format text.
+Dumps taken over JMX carry a non-date-prefixed header, so concatenating them yields one unsplittable
+blob; use `fromDumps` for those.
 
 No Java serialization and no JSON format for `ThreadDump`. Add one when a real consumer needs to
 store sessions across restarts.
@@ -303,8 +306,10 @@ Core unit tests, over `src/test/res/test.txt`:
 - `fromDumps` + `merge(Attr.TID)` over two hand-built dumps sums `cpu_ns` and `count`
 - `collectOne()` throws `MjprofException` when the source emits more than one dump
 - `MjprofException` on a missing file, and on `group`/`merge` handed `Attr.STACK`
-- text round-trip loss is asserted, not assumed: a dump carrying `cpu_ns` re-read from
-  `toString()` output comes back without it
+- text round-trip fidelity is asserted, not assumed: a dump carrying `count`/`cpu_ns`/`wall_ms`/`%cpu`
+  re-read from `toString()` output returns those values as numbers — they come back as Strings and the
+  accessors coerce them (`ThreadInfoAccessorsTest`)
+- concatenated JMX-sourced dumps do **not** re-split, because their header is not date-prefixed
 - typed `Attr` constants resolve to the same strings as `ThreadInfoProps`
 
 CLI regression guard for the rename: before splitting, capture `mjprof <expr>` stdout for about six
@@ -328,15 +333,24 @@ Build verification:
    `MjprofException` when handed `Attr.STACK`, with a message pointing at `merge(Attr.TID).tree()` —
    which produces the merged stack tree that "group by stack" is actually reaching for. The `group`
    and `merge` monads keep their current silent behavior; only the API guards.
-2. **Text round-trip is lossy, and structurally broken for JMX sources.** `toJStackFormat` writes
-   `count=`, `cpu_ns=`, `wall_ms=`, `%cpu=`, but the parser has no cases to read them back, so those
-   props are lost. Separately, `JmxDataSourcePlugin` sets its header to `new Date() + "\nThread dump
-   via JMX of ..."`, and `Date.toString()` ("Fri Jul 31 10:23:45 IDT 2026") does not match the
-   `^\d\d\d\d-\d\d-\d\d` pattern `StreamDataSourcePluginBase` splits on — so concatenated JMX dumps
-   do not re-split into separate dumps. **Resolution:** the in-memory pattern (`fromDumps`) is the
-   supported way to collect and merge your own samples. Text persistence is documented as
-   jstack-text-only and lossy, with a test asserting the loss so it is known rather than discovered.
-   A lossless dump format is a follow-up, not part of this change.
+2. **CORRECTED during implementation — the text round-trip preserves the numeric props, and the
+   original claim here was wrong.** `toJStackFormat` writes `count=`, `cpu_ns=`, `wall_ms=`, `%cpu=`
+   into the thread header line, and `JStackTextualFormatParser.metadataKeyValProperties` reads every
+   `key=value` pair on that line back via a generic `(\S+)=(\S+)` regex — as a **`String`**. The
+   absence of a *named* parse case for those props is what made them look lost. Measured: all four
+   survive `ThreadDump.toString()` → `parseStringRepresentation`.
+
+   That same fact was a live `ClassCastException`: typed accessors casting straight to
+   `Long`/`Double`/`Integer` threw on any re-parsed dump. **Resolution:** the numeric accessors coerce
+   `Number` or `String`, and throw `NumberFormatException` on non-numeric input rather than returning a
+   silent null, covered by a round-trip regression test in `ThreadInfoAccessorsTest`.
+
+   The remaining limitation has nothing to do with fidelity: `JmxDataSourcePlugin` sets its header to
+   `new Date() + "\nThread dump via JMX of ..."`, and `Date.toString()`
+   ("Fri Jul 31 10:23:45 IDT 2026") does not match the `^\d\d\d\d-\d\d-\d\d` pattern
+   `StreamDataSourcePluginBase` splits on — so concatenated **JMX-sourced** dumps do not re-split into
+   separate dumps. `fromDumps` stays the recommended path for self-collected samples because it
+   sidesteps text entirely.
 3. **`PathDataSourcePlugin` already throws** `RuntimeException(FileNotFoundException)` from
    `initReader()` on a missing file. No plugin change needed; the runner wraps it in
    `MjprofException`.
