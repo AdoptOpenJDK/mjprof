@@ -178,3 +178,16 @@ Installing a plugin
 ============
 In order to install the plugin just drop your jar which contains plugin implementation  into the 'plugins' directory 
 inside mjprof installation directory.
+
+Claude Code plugins
+============
+This repo ships a project `.claude/settings.json` that declares the `caveman`, `ponytail`, and
+`superpowers` Claude Code marketplaces and enables their plugins. Enabling does not install:
+external plugins only load after each user installs them once. In the repo, run:
+
+    /plugin install ponytail@ponytail
+    /plugin install caveman@caveman
+    /plugin install superpowers@superpowers-marketplace
+
+Then `/reload-plugins` (or restart Claude Code). After that the committed settings keep the
+plugins enabled automatically, so the install is a one-time step per user.
