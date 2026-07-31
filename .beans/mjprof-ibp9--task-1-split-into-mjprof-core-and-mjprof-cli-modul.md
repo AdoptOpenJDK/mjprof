@@ -1,11 +1,11 @@
 ---
 # mjprof-ibp9
 title: 'Task 1: split into mjprof-core and mjprof-cli modules'
-status: todo
+status: in-progress
 type: task
 priority: high
 created_at: 2026-07-31T08:26:56Z
-updated_at: 2026-07-31T08:26:56Z
+updated_at: 2026-07-31T08:31:40Z
 parent: mjprof-6l4o
 ---
 
