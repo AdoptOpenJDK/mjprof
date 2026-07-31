@@ -40,6 +40,7 @@ import com.performizeit.mjprof.core.plumbing.PipeHandler;
 import javax.management.remote.JMXServiceURL;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -53,19 +54,23 @@ import java.util.function.Supplier;
  * <p>Collection happens on the calling thread. A source configured to take several samples blocks
  * for its own sleep interval: fromJmx(hostPort, 3, 1000, ...) blocks roughly two seconds.
  *
- * <p>Known limitations, deliberate: {@link #from(Object) from(S source)} reuses the caller's plugin
- * instance rather than building it fresh, so a Pipeline built that way is single-use, unlike the
- * {@code fromX} factories below. Likewise {@link #add} copies the stage <em>list</em>, not the stage
- * objects, on every call, so a stateful stage instance is shared across repeated {@link #collect()}
- * calls on the same or derived Pipelines.
+ * <p>Stages are held as suppliers, not instances, so every {@link #collect()} builds a fresh stage
+ * object for every internal convenience method (merge, group, sort, contains, tree, ...) — a
+ * stateful stage such as the one behind {@link #merge(Attr)} does not carry state between runs.
+ *
+ * <p>Known limitation, deliberate: {@link #from(Object) from(S source)} reuses the caller's plugin
+ * instance rather than building it fresh, so a Pipeline built that way is single-use. Likewise the
+ * four {@code map(P stage)} overloads are handed an already-constructed instance with no way to
+ * fabricate a fresh copy of it, so that one stage is shared across repeated {@link #collect()} calls
+ * on the same or derived Pipelines — construct a new plugin instance per run if that matters.
  */
 public final class Pipeline {
 
   private final Supplier<GeneratorHandler<ThreadDump>> source;
-  private final List<PipeHandler<ThreadDump, ThreadDump>> stages;
+  private final List<Supplier<PipeHandler<ThreadDump, ThreadDump>>> stages;
 
   private Pipeline(Supplier<GeneratorHandler<ThreadDump>> source,
-                   List<PipeHandler<ThreadDump, ThreadDump>> stages) {
+                   List<Supplier<PipeHandler<ThreadDump, ThreadDump>>> stages) {
     this.source = source;
     this.stages = stages;
   }
@@ -91,6 +96,19 @@ public final class Pipeline {
   /** Reads thread dumps from standard input. */
   public static Pipeline fromStdin() {
     return new Pipeline(StdinDataSourcePlugin::new, List.of());
+  }
+
+  /**
+   * Analyses thread dumps the caller collected itself — sample on your own schedule, keep the dumps,
+   * then merge and analyse them later. Combine with merge(Attr.TID) to turn N samples into one
+   * sampled profile.
+   */
+  public static Pipeline fromDumps(Collection<ThreadDump> dumps) {
+    if (dumps == null) {
+      throw new MjprofException("dumps must not be null");
+    }
+    List<ThreadDump> snapshot = List.copyOf(dumps);
+    return new Pipeline(() -> new DumpsDataSource(snapshot), List.of());
   }
 
   /**
@@ -142,22 +160,33 @@ public final class Pipeline {
 
   /** Adds any single-thread mapper plugin instance as a stage. */
   public <P extends SingleThreadMapper & PipeHandler<ThreadDump, ThreadDump>> Pipeline map(P stage) {
-    return add(stage);
+    return addInstance(stage);
   }
 
   /** Adds any dump reducer plugin instance as a stage. */
   public <P extends DumpReducer & PipeHandler<ThreadDump, ThreadDump>> Pipeline map(P stage) {
-    return add(stage);
+    return addInstance(stage);
   }
 
   /** Adds any filter plugin instance as a stage. */
   public <P extends Filter & PipeHandler<ThreadDump, ThreadDump>> Pipeline map(P stage) {
-    return add(stage);
+    return addInstance(stage);
   }
 
   /** Adds any comparator plugin instance as a stage. */
   public <P extends ThreadInfoComparator & PipeHandler<ThreadDump, ThreadDump>> Pipeline map(P stage) {
-    return add(stage);
+    return addInstance(stage);
+  }
+
+  /**
+   * Adds an already-constructed stage instance, reused unchanged on every {@link #collect()} — see
+   * the class-level known limitation.
+   */
+  private Pipeline addInstance(PipeHandler<ThreadDump, ThreadDump> stage) {
+    if (stage == null) {
+      throw new MjprofException("stage must not be null");
+    }
+    return add(() -> stage);
   }
 
   /**
@@ -173,13 +202,13 @@ public final class Pipeline {
       rejectStack(a, "group");
     }
     if (attrs.length == 0) {
-      return add(new GroupByProp(""));
+      return add(() -> new GroupByProp(""));
     }
     List<String> props = new ArrayList<>();
     for (Attr a : attrs) {
       props.add(a.getAttrName());
     }
-    return add(new GroupByProp(props));
+    return add(() -> new GroupByProp(props));
   }
 
   /** Combines every dump into one, matching threads on their thread id. */
@@ -195,7 +224,7 @@ public final class Pipeline {
    */
   public Pipeline merge(Attr attr) {
     rejectStack(attr, "merge");
-    return add(new AccumulateDumps(attr.getAttrName()));
+    return add(() -> new AccumulateDumps(attr.getAttrName()));
   }
 
   private static void rejectStack(Attr attr, String method) {
@@ -209,56 +238,56 @@ public final class Pipeline {
 
   /** Keeps threads whose attribute contains the given substring. */
   public Pipeline contains(Attr attr, String value) {
-    return add(new JStackFilterFieldContains(attr.getAttrName(), value));
+    return add(() -> new JStackFilterFieldContains(attr.getAttrName(), value));
   }
 
   /** Keeps threads whose attribute does not contain the given substring. */
   public Pipeline notContains(Attr attr, String value) {
-    return add(new JStackFilterFieldNotContains(attr.getAttrName(), value));
+    return add(() -> new JStackFilterFieldNotContains(attr.getAttrName(), value));
   }
 
   /** Keeps threads whose attribute matches the given regular expression. */
   public Pipeline matches(Attr attr, String regex) {
-    return add(new JStackFilterFieldRegexMatches(attr.getAttrName(), regex));
+    return add(() -> new JStackFilterFieldRegexMatches(attr.getAttrName(), regex));
   }
 
   // ------------------------------------------------- stack shaping
 
   /** Keeps only the top n stack frames of each thread. */
   public Pipeline stackTop(int frames) {
-    return add(new StackTop(frames));
+    return add(() -> new StackTop(frames));
   }
 
   /** Keeps only the bottom n stack frames of each thread. */
   public Pipeline stackBottom(int frames) {
-    return add(new StackBottom(frames));
+    return add(() -> new StackBottom(frames));
   }
 
   /** Drops stack frames below the first frame containing the given text. */
   public Pipeline trimBelow(String frameText) {
-    return add(new TrimBelow(frameText));
+    return add(() -> new TrimBelow(frameText));
   }
 
   /** Keeps only stack frames containing the given text. */
   public Pipeline frameContains(String text) {
-    return add(new StackFrameContains(text));
+    return add(() -> new StackFrameContains(text));
   }
 
   /** Drops stack frames containing the given text. */
   public Pipeline frameNotContains(String text) {
-    return add(new StackFrameNotContains(text));
+    return add(() -> new StackFrameNotContains(text));
   }
 
   // ------------------------------------------------- ordering
 
   /** Sorts threads by an attribute, ascending. */
   public Pipeline sort(Attr attr) {
-    return add(new PropComparator(attr.getAttrName()));
+    return add(() -> new PropComparator(attr.getAttrName()));
   }
 
   /** Sorts threads by an attribute, descending. */
   public Pipeline sortDesc(Attr attr) {
-    return add(new ReversePropComparator(attr.getAttrName()));
+    return add(() -> new ReversePropComparator(attr.getAttrName()));
   }
 
   // ------------------------------------------------- stack trees
@@ -274,7 +303,7 @@ public final class Pipeline {
    * merged text is parsed back into a {@link Profile} via its public string constructor.
    */
   public Pipeline tree() {
-    return add(new TreeMergeStage());
+    return add(() -> new TreeMergeStage());
   }
 
   private static final class TreeMergeStage implements PipeHandler<ThreadDump, ThreadDump> {
@@ -296,42 +325,42 @@ public final class Pipeline {
 
   /** Merges the callees of the given method across all threads. */
   public Pipeline mergedCallees(String methodName) {
-    return add(new MergedCallees(methodName));
+    return add(() -> new MergedCallees(methodName));
   }
 
   // ------------------------------------------------- elimination
 
   /** Removes an attribute from every thread. */
   public Pipeline withoutProp(Attr attr) {
-    return add(new PropEliminator(attr.getAttrName()));
+    return add(() -> new PropEliminator(attr.getAttrName()));
   }
 
   /** Strips trailing numbers from thread names so pool threads group together. */
   public Pipeline withoutNameSuffix() {
-    return add(new RemoveThreadNameNumericalSuffix());
+    return add(() -> new RemoveThreadNameNumericalSuffix());
   }
 
   /** Removes package names from stack frames. */
   public Pipeline withoutPackages() {
-    return add(new PackageEliminator());
+    return add(() -> new PackageEliminator());
   }
 
   /** Removes file names and line numbers from stack frames. */
   public Pipeline withoutFileNames() {
-    return add(new FileNameEliminator());
+    return add(() -> new FileNameEliminator());
   }
 
   /** Removes the leading "at " from stack frames. */
   public Pipeline withoutAt() {
-    return add(new AtEliminator());
+    return add(() -> new AtEliminator());
   }
 
-  Pipeline add(PipeHandler<ThreadDump, ThreadDump> stage) {
-    if (stage == null) {
+  Pipeline add(Supplier<PipeHandler<ThreadDump, ThreadDump>> stageFactory) {
+    if (stageFactory == null) {
       throw new MjprofException("stage must not be null");
     }
-    List<PipeHandler<ThreadDump, ThreadDump>> next = new ArrayList<>(stages);
-    next.add(stage);
+    List<Supplier<PipeHandler<ThreadDump, ThreadDump>>> next = new ArrayList<>(stages);
+    next.add(stageFactory);
     return new Pipeline(source, next);
   }
 
@@ -386,6 +415,10 @@ public final class Pipeline {
   }
 
   private List<PipeHandler<ThreadDump, ThreadDump>> freshStages() {
-    return new ArrayList<>(stages);
+    List<PipeHandler<ThreadDump, ThreadDump>> out = new ArrayList<>(stages.size());
+    for (Supplier<PipeHandler<ThreadDump, ThreadDump>> factory : stages) {
+      out.add(factory.get());
+    }
+    return out;
   }
 }
