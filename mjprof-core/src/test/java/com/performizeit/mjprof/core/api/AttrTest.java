@@ -28,4 +28,10 @@ class AttrTest {
   void customAttrStillWorks() {
     assertEquals("whatever", new Attr("whatever").getAttrName());
   }
+
+  @Test
+  void equalAttrNamesAreEqual() {
+    assertEquals(new Attr("state"), Attr.STATE);
+    assertEquals(new Attr("state").hashCode(), Attr.STATE.hashCode());
+  }
 }

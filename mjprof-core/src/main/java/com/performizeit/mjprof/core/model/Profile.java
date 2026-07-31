@@ -33,12 +33,17 @@ public class Profile {
     public String test(){
     	return root.sf;
     }
-    // ponytail: format detection sniffs for the literal substring "]\ ", which only appears when a
-    // level-0 node has exactly one child (see SFNode.toStringMulti's ch="\\" case). A merged tree
-    // whose every level-0 node fans out to 2+ children never produces that substring and silently
-    // falls through to parseSingle, mis-parsing a real multi-thread tree as one flat stack. Upgrade
-    // path: an explicit format flag on the constructor, or a dedicated factory method per format,
-    // instead of sniffing the string.
+    // ponytail: format detection sniffs for the literal substring "]\ ". In SFNode.toStringMulti, the
+    // connector char ("\\" for exactly one child, "X" for 2+, "V" for a leaf) is chosen for every
+    // node at every depth, but at depth > 0 that connector is always preceded by at least one
+    // indentation character (a space or "|"), so "]" is never immediately followed by "\\" there.
+    // Only depth-0 nodes (root's direct children - one per merged thread/sample) print the connector
+    // with zero indentation, so "]\ " can only ever come from a depth-0 node with exactly one child.
+    // The bug is reachable whenever every depth-0 node has 0 children (a leaf, "V") or 2+ children
+    // ("X") - e.g. a dump of two threads whose stacks are one distinct frame each renders as two
+    // "]V " lines with no "]\ " anywhere, so parseSingle is wrongly chosen and the whole rendered
+    // tree is misread as one reversed stack trace, silently. Upgrade path: an explicit format flag on
+    // the constructor, or a dedicated factory method per format, instead of sniffing the string.
     public  Profile(String parseString) {
         this();
         if (parseString.contains("]\\ ")) {

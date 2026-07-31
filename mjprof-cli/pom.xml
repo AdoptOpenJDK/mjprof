@@ -76,6 +76,7 @@
                             </execution>
                         </executions>
                         <configuration>
+                            <imageName>mjprof</imageName>
                             <mainClass>com.performizeit.mjprof.cli.MJProf</mainClass>
                             <fallback>false</fallback>
                         </configuration>

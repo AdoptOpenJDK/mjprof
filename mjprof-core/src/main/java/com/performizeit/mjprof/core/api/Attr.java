@@ -17,7 +17,7 @@ public class Attr {
   public static final Attr LOS = new Attr(ThreadInfoProps.LOS);
   public static final Attr COUNT = new Attr(ThreadInfoProps.COUNT);
 
-  public String attrName;
+  public final String attrName;
 
   public Attr(String attrName) {
     this.attrName = attrName;
@@ -30,5 +30,17 @@ public class Attr {
   @Override
   public String toString() {
     return attrName;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof Attr)) return false;
+    return java.util.Objects.equals(attrName, ((Attr) o).attrName);
+  }
+
+  @Override
+  public int hashCode() {
+    return java.util.Objects.hashCode(attrName);
   }
 }

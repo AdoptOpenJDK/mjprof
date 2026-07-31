@@ -2,6 +2,7 @@ package com.performizeit.mjprof.core.pipeline;
 
 import com.performizeit.mjprof.core.api.Attr;
 import com.performizeit.mjprof.core.model.JStackHeader;
+import com.performizeit.mjprof.core.model.Profile;
 import com.performizeit.mjprof.core.parser.ThreadDump;
 import com.performizeit.mjprof.core.parser.ThreadInfo;
 import com.performizeit.mjprof.core.parser.ThreadInfoProps;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -25,6 +27,22 @@ class PipelineFromDumpsTest {
     ti.setVal(ThreadInfoProps.NAME, name);
     ti.setVal(ThreadInfoProps.TID, tid);
     ti.setVal(ThreadInfoProps.CPUNS, cpuNs);
+    ThreadDump d = new ThreadDump();
+    d.setHeader(new JStackHeader("2026-07-31 10:00:00"));
+    ArrayList<ThreadInfo> tis = new ArrayList<>();
+    tis.add(ti);
+    d.setThreadInfos(tis);
+    return d;
+  }
+
+  /** A single-thread dump whose stack is {@code frames} deep, top frame first (as in jstack text). */
+  private static ThreadDump sampleWithStack(String tid, String... frames) {
+    ThreadInfo ti = new ThreadInfo();
+    ti.setVal(ThreadInfoProps.NAME, "worker");
+    ti.setVal(ThreadInfoProps.TID, tid);
+    Profile p = new Profile();
+    p.addSingle(String.join("\n", frames));
+    ti.setVal(ThreadInfoProps.STACK, p);
     ThreadDump d = new ThreadDump();
     d.setHeader(new JStackHeader("2026-07-31 10:00:00"));
     ArrayList<ThreadInfo> tis = new ArrayList<>();
@@ -66,11 +84,54 @@ class PipelineFromDumpsTest {
     assertThrows(MjprofException.class, () -> Pipeline.fromDumps(null));
   }
 
+  // I2: a null element inside the collection used to surface as a message-less NPE from
+  // List.copyOf. It must instead be a MjprofException that explains the actual hazard.
   @Test
-  void collectingTwiceGivesTheSameResult() {
-    Pipeline p = Pipeline.fromDumps(List.of(sample("0x1", 10), sample("0x1", 20)));
-    assertEquals(2, p.collect().size());
-    assertEquals(2, p.collect().size());
+  void nullElementInCollectionIsRejectedWithAnExplanation() {
+    List<ThreadDump> withNull = new ArrayList<>();
+    withNull.add(sample("0x1", 10));
+    withNull.add(null);
+
+    MjprofException e = assertThrows(MjprofException.class, () -> Pipeline.fromDumps(withNull));
+    assertTrue(e.getMessage().contains("null"), e.getMessage());
+  }
+
+  // C1: fromDumps hands stages the caller's own ThreadDump/ThreadInfo/Profile objects, and several
+  // stages (stackTop among them) mutate those objects in place instead of copying them. So a Pipeline
+  // built over fromDumps is NOT safely re-collectible when it contains such a stage: the second
+  // collect() does not see a fresh copy of the input, it sees whatever the first run left behind, and
+  // so does the caller's own retained list. This test observes and documents that, rather than
+  // asserting the (false) reuse guarantee.
+  @Test
+  void collectingTwiceThroughAMutatingStageSeesMutatedInput() {
+    ThreadDump dump = sampleWithStack("0x1", "top", "middle", "bottom");
+    List<ThreadDump> samples = new ArrayList<>(List.of(dump));
+
+    Pipeline p = Pipeline.fromDumps(samples).stackTop(1);
+
+    String firstRun = stackTextOf(p.collect());
+    assertFalse(firstRun.contains("bottom"), "stackTop(1) keeps only the top frame");
+    assertFalse(firstRun.contains("middle"), "stackTop(1) keeps only the top frame");
+    assertTrue(firstRun.contains("top"), "the top frame itself must survive");
+
+    // The caller's own retained ThreadDump - the exact object passed into fromDumps, still sitting
+    // in `samples` - was mutated by the single collect() above. This is the observed hazard: the
+    // class Javadoc's "constructed fresh per run" promise does not hold for fromDumps, because the
+    // *stage* mutates what fromDumps hands out, not the source.
+    String samplesStackNow = dump.getThreadInfos().get(0).stack().toString();
+    assertFalse(samplesStackNow.contains("bottom"),
+        "the caller's own retained dump lost its lower frames after just one collect()");
+
+    // Consequently, a second collect() on the same Pipeline does not re-process a pristine 3-frame
+    // stack - it observes the already-truncated tree left behind by the first run.
+    String secondRun = stackTextOf(p.collect());
+    assertEquals(firstRun, secondRun,
+        "the second collect() sees the same already-mutated stack as the first, not a fresh copy "
+            + "of the original 3-frame input");
+  }
+
+  private static String stackTextOf(List<ThreadDump> dumps) {
+    return dumps.get(0).getThreadInfos().get(0).stack().toString();
   }
 
   // -- deferred gap (Task 4): threadsFlattensDumps in PipelineTest is tautological against a

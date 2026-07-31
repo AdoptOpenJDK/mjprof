@@ -49,7 +49,13 @@ import java.util.function.Supplier;
  *
  * <p>Stages are plugin instances: the plugin constructor arguments are the typed stage arguments, so
  * the compiler checks them. Every method returns a new Pipeline, so a Pipeline can be shared and
- * collected from more than once — the data source is constructed fresh per run.
+ * collected from more than once. That reuse guarantee holds for sources that reconstruct their data
+ * on every run — {@link #fromFile(String)} and {@link #fromStdin()} re-parse the text, {@link
+ * #fromJmx} and {@link #fromJmxWithCpu} re-sample the target — so a fresh Pipeline call gets fresh
+ * {@link ThreadDump}/{@link ThreadInfo}/{@link Profile} objects every time. It does NOT hold for
+ * {@link #fromDumps(Collection)}: that source hands out the very same objects the caller passed in,
+ * on every run, and several stages mutate those objects in place rather than copying them. See {@link
+ * #fromDumps(Collection)}'s own Javadoc.
  *
  * <p>Collection happens on the calling thread. A source configured to take several samples blocks
  * for its own sleep interval: fromJmx(hostPort, 3, 1000, ...) blocks roughly two seconds.
@@ -57,6 +63,8 @@ import java.util.function.Supplier;
  * <p>Stages are held as suppliers, not instances, so every {@link #collect()} builds a fresh stage
  * object for every internal convenience method (merge, group, sort, contains, tree, ...) — a
  * stateful stage such as the one behind {@link #merge(Attr)} does not carry state between runs.
+ * Building a fresh stage instance does not, by itself, protect the {@link ThreadDump}s flowing
+ * through it from being mutated — see the {@link #fromDumps(Collection)} note above.
  *
  * <p>Known limitation, deliberate: {@link #from(Object) from(S source)} reuses the caller's plugin
  * instance rather than building it fresh, so a Pipeline built that way is single-use. Likewise the
@@ -107,10 +115,32 @@ public final class Pipeline {
    * Analyses thread dumps the caller collected itself — sample on your own schedule, keep the dumps,
    * then merge and analyse them later. Combine with merge(Attr.TID) to turn N samples into one
    * sampled profile.
+   *
+   * <p><b>Mutation hazard:</b> unlike the other sources, this one hands every run the same {@link
+   * ThreadDump}/{@link ThreadInfo}/{@link Profile} instances the caller passed in — there is no
+   * re-parse or re-fetch to produce fresh copies. Several stages mutate those instances in place
+   * instead of copying them, notably {@link #stackTop(int)}, {@link #trimBelow(String)} and the
+   * other stack-shaping stages (they prune the {@link Profile} tree destructively), {@link
+   * #mergedCallees(String)} (calls {@code filterDown} on the incoming {@link Profile}), and the
+   * frame eliminators such as {@link #withoutAt()} (rewrite frame strings in place). Running a
+   * Pipeline built this way through any such stage — via {@link #collect()}, {@link #collectOne()},
+   * {@link #threads()}, {@link #tree()} or {@link #treeText()} — permanently changes the dumps you
+   * passed in. So do not rely on the dumps you gave to {@code fromDumps} still being unmodified after
+   * a run, and do not assume a second {@link #collect()} on the resulting Pipeline sees the original
+   * data rather than what the first run left behind. If you need the originals intact, keep a deep
+   * copy before collecting, or re-collect from a source that reconstructs its data per run instead.
    */
   public static Pipeline fromDumps(Collection<ThreadDump> dumps) {
     if (dumps == null) {
-      throw new MjprofException("dumps must not be null");
+      throw new MjprofException("fromDumps(dumps): dumps must not be null");
+    }
+    int i = 0;
+    for (ThreadDump d : dumps) {
+      if (d == null) {
+        throw new MjprofException("fromDumps(dumps): dumps must not contain a null element (index "
+            + i + ") - a null dump would silently truncate the source");
+      }
+      i++;
     }
     List<ThreadDump> snapshot = List.copyOf(dumps);
     return new Pipeline(() -> new DumpsDataSource(snapshot), List.of());
@@ -203,8 +233,10 @@ public final class Pipeline {
    *                         on them collapses nothing. Use merge(Attr.TID) followed by tree().
    */
   public Pipeline group(Attr... attrs) {
-    for (Attr a : attrs) {
-      rejectStack(a, "group");
+    requireNonNull(attrs, "group(attrs)", "attrs");
+    for (int i = 0; i < attrs.length; i++) {
+      requireNonNull(attrs[i], "group(attrs)", "attrs[" + i + "]");
+      rejectStack(attrs[i], "group");
     }
     if (attrs.length == 0) {
       return add(() -> new GroupByProp(""));
@@ -228,6 +260,7 @@ public final class Pipeline {
    * @throws MjprofException if given Attr.STACK — see group(Attr...).
    */
   public Pipeline merge(Attr attr) {
+    requireNonNull(attr, "merge(attr)", "attr");
     rejectStack(attr, "merge");
     return add(() -> new AccumulateDumps(attr.getAttrName()));
   }
@@ -239,20 +272,33 @@ public final class Pipeline {
     }
   }
 
+  /** Rejects a null argument eagerly, at the call to the named public method, not at collect() time. */
+  private static void requireNonNull(Object value, String signature, String param) {
+    if (value == null) {
+      throw new MjprofException(signature + ": " + param + " must not be null");
+    }
+  }
+
   // ------------------------------------------------- filters
 
   /** Keeps threads whose attribute contains the given substring. */
   public Pipeline contains(Attr attr, String value) {
+    requireNonNull(attr, "contains(attr, value)", "attr");
+    requireNonNull(value, "contains(attr, value)", "value");
     return add(() -> new JStackFilterFieldContains(attr.getAttrName(), value));
   }
 
   /** Keeps threads whose attribute does not contain the given substring. */
   public Pipeline notContains(Attr attr, String value) {
+    requireNonNull(attr, "notContains(attr, value)", "attr");
+    requireNonNull(value, "notContains(attr, value)", "value");
     return add(() -> new JStackFilterFieldNotContains(attr.getAttrName(), value));
   }
 
   /** Keeps threads whose attribute matches the given regular expression. */
   public Pipeline matches(Attr attr, String regex) {
+    requireNonNull(attr, "matches(attr, regex)", "attr");
+    requireNonNull(regex, "matches(attr, regex)", "regex");
     return add(() -> new JStackFilterFieldRegexMatches(attr.getAttrName(), regex));
   }
 
@@ -270,16 +316,19 @@ public final class Pipeline {
 
   /** Drops stack frames below the first frame containing the given text. */
   public Pipeline trimBelow(String frameText) {
+    requireNonNull(frameText, "trimBelow(frameText)", "frameText");
     return add(() -> new TrimBelow(frameText));
   }
 
   /** Keeps only stack frames containing the given text. */
   public Pipeline frameContains(String text) {
+    requireNonNull(text, "frameContains(text)", "text");
     return add(() -> new StackFrameContains(text));
   }
 
   /** Drops stack frames containing the given text. */
   public Pipeline frameNotContains(String text) {
+    requireNonNull(text, "frameNotContains(text)", "text");
     return add(() -> new StackFrameNotContains(text));
   }
 
@@ -287,11 +336,13 @@ public final class Pipeline {
 
   /** Sorts threads by an attribute, ascending. */
   public Pipeline sort(Attr attr) {
+    requireNonNull(attr, "sort(attr)", "attr");
     return add(() -> new PropComparator(attr.getAttrName()));
   }
 
   /** Sorts threads by an attribute, descending. */
   public Pipeline sortDesc(Attr attr) {
+    requireNonNull(attr, "sortDesc(attr)", "attr");
     return add(() -> new ReversePropComparator(attr.getAttrName()));
   }
 
@@ -306,6 +357,14 @@ public final class Pipeline {
    * typed pipeline (every stage is {@code ThreadDump -> ThreadDump}), this wraps it unmodified: each
    * dump is accumulated via its public {@code addStackDump}, and once the source is exhausted the
    * merged text is parsed back into a {@link Profile} via its public string constructor.
+   *
+   * <p>That round-trip through text is fallible in one narrow case: {@link Profile}'s string
+   * constructor guesses the single- vs multi-thread format by sniffing for the substring {@code "]\
+   * "}, which requires some top-level entry in the rendered tree to have exactly one child. A merged
+   * tree where every top-level entry is a leaf (e.g. two threads with one distinct frame each) or
+   * branches into 2 or more children never produces that substring, so it is silently mis-parsed as
+   * a single flat stack instead of a multi-thread tree. {@link #treeText()} does not round-trip
+   * through text and is immune to this.
    */
   public Pipeline tree() {
     return add(() -> new TreeMergeStage());
@@ -330,6 +389,7 @@ public final class Pipeline {
 
   /** Merges the callees of the given method across all threads. */
   public Pipeline mergedCallees(String methodName) {
+    requireNonNull(methodName, "mergedCallees(methodName)", "methodName");
     return add(() -> new MergedCallees(methodName));
   }
 
@@ -337,6 +397,7 @@ public final class Pipeline {
 
   /** Removes an attribute from every thread. */
   public Pipeline withoutProp(Attr attr) {
+    requireNonNull(attr, "withoutProp(attr)", "attr");
     return add(() -> new PropEliminator(attr.getAttrName()));
   }
 

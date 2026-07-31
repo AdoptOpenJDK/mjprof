@@ -114,23 +114,14 @@ class ThreadInfoAccessorsTest {
     // Re-parse (this is the path that puts values back as Strings)
     ThreadDump reparsed = ThreadDumpTextualParser.parseStringRepresentation(textForm);
 
-    // Verify the accessor returns the correct values despite Strings
-    if (!reparsed.getThreadInfos().isEmpty()) {
-      ThreadInfo roundTripped = reparsed.getThreadInfos().get(0);
-      assertEquals("worker-1", roundTripped.name(), "name should survive round-trip");
-      assertEquals("0x1234", roundTripped.tid(), "tid should survive round-trip");
-
-      // Numeric accessors should coerce from String back to correct types
-      if (roundTripped.cpuNs() != null) {
-        assertEquals(1_500L, roundTripped.cpuNs(), "cpuNs should coerce from String in round-trip");
-      }
-      if (roundTripped.wallMs() != null) {
-        assertEquals(40L, roundTripped.wallMs(), "wallMs should coerce from String in round-trip");
-      }
-      if (roundTripped.cpuPct() != null) {
-        assertEquals(3.75, roundTripped.cpuPct(), "cpuPct should coerce from String in round-trip");
-      }
-      // count defaults to 1 when absent, which is ok for round-trip
-    }
+    // The test must fail if fidelity breaks: no null-guards, no isEmpty() escape hatch.
+    assertEquals(1, reparsed.getThreadInfos().size(), "re-parsing must yield exactly one thread");
+    ThreadInfo roundTripped = reparsed.getThreadInfos().get(0);
+    assertEquals("worker-1", roundTripped.name(), "name should survive round-trip");
+    assertEquals("0x1234", roundTripped.tid(), "tid should survive round-trip");
+    assertEquals(4, roundTripped.count(), "count should survive round-trip");
+    assertEquals(1_500L, roundTripped.cpuNs(), "cpuNs should coerce from String in round-trip");
+    assertEquals(40L, roundTripped.wallMs(), "wallMs should coerce from String in round-trip");
+    assertEquals(3.75, roundTripped.cpuPct(), "cpuPct should coerce from String in round-trip");
   }
 }

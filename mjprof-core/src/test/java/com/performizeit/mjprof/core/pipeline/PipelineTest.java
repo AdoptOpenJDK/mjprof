@@ -83,6 +83,7 @@ class PipelineTest {
   }
 
   @Test
+  @Timeout(30)
   void nullJmxCredentialsAreAcceptedAsNoAuth() {
     // building the Pipeline must not throw - null user/pass means "no credentials", not a
     // programmer error. If Finding 2's normalization regressed, this line itself would NPE.
@@ -105,5 +106,35 @@ class PipelineTest {
     // reliably reproduces a MalformedURLException without needing a live network attempt.
     assertThrows(MjprofException.class,
         () -> Pipeline.fromJmx("bad\nhost:1", 1, 0, "", ""));
+  }
+
+  // I2: null Attr/String arguments to the convenience stage methods must be rejected eagerly, at the
+  // call itself, with a message naming the method and parameter - not lazily as a bare NPE thrown out
+  // of a lambda at collect() time.
+  @Test
+  void containsRejectsNullArgumentsEagerly() {
+    Pipeline base = Pipeline.fromFile(FIXTURE);
+
+    MjprofException attrEx = assertThrows(MjprofException.class, () -> base.contains(null, "RUNNABLE"));
+    assertTrue(attrEx.getMessage().contains("contains") && attrEx.getMessage().contains("attr"),
+        attrEx.getMessage());
+
+    MjprofException valueEx = assertThrows(MjprofException.class, () -> base.contains(Attr.STATE, null));
+    assertTrue(valueEx.getMessage().contains("contains") && valueEx.getMessage().contains("value"),
+        valueEx.getMessage());
+  }
+
+  @Test
+  void sortRejectsNullAttrEagerly() {
+    Pipeline base = Pipeline.fromFile(FIXTURE);
+    MjprofException e = assertThrows(MjprofException.class, () -> base.sort(null));
+    assertTrue(e.getMessage().contains("sort") && e.getMessage().contains("attr"), e.getMessage());
+  }
+
+  @Test
+  void groupRejectsNullAttrEagerly() {
+    Pipeline base = Pipeline.fromFile(FIXTURE);
+    MjprofException e = assertThrows(MjprofException.class, () -> base.group(Attr.NAME, null));
+    assertTrue(e.getMessage().contains("group"), e.getMessage());
   }
 }
