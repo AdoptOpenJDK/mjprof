@@ -70,6 +70,11 @@ Full dump mappers:
 * _**sort**/attr/_                                                          - Sorts based on an attribute
 * _**-sort**/string/_                                                       - Sorts based on an attribute (descending order)
 
+**Fixed:** `sort`/`-sort` used to throw a `NullPointerException` and crash the whole run when any
+thread lacked the sorted attribute (e.g. `mjprof path/dump.txt/.sort/state/` on an ordinary dump).
+Threads missing the attribute now sort last, in both ascending and descending order, instead of
+crashing.
+
 Terminals:
 ---------
 * _**count**_                                                               - counts number of threads
@@ -127,6 +132,65 @@ Shorten stack traces to include only 10 last stack frames
 Count threads  
 `mjprof jstack/38515/.contains/name,ISCREAM/.sort/state/.eliminate/los/.keeptop/10/.count`
 
+
+
+Java API
+=============
+
+`mjprof-core` is usable as a library. Add the dependency:
+
+```xml
+<dependency>
+    <groupId>com.performizeit</groupId>
+    <artifactId>mjprof-core</artifactId>
+    <version>1.1.0</version>
+</dependency>
+```
+
+Stages are plugin instances, so their constructor arguments are typed and checked by the compiler:
+
+```java
+List<ThreadInfo> runnable = Pipeline.fromFile("dump.txt")
+    .contains(Attr.STATE, "RUNNABLE")
+    .sort(Attr.NAME)
+    .threads();
+```
+
+Anything without a convenience method — including plugins from your own jars — goes through `map`:
+
+```java
+Pipeline.fromStdin()
+    .map(new MergedCallees("java.net.SocketInputStream.read"))
+    .collect();
+```
+
+Sample on your own schedule and merge later:
+
+```java
+List<ThreadDump> samples = new ArrayList<>();
+samples.add(Pipeline.fromJmxWithCpu("localhost:9010", 1, 0, null, null).collectOne());
+// ... more samples, on your cadence ...
+
+List<ThreadInfo> profile = Pipeline.fromDumps(samples)
+    .merge(Attr.TID)        // sums cpu_ns, merges stack trees
+    .withoutNameSuffix()
+    .group(Attr.NAME)
+    .sortDesc(Attr.CPU_NS)
+    .threads();
+```
+
+Notes:
+
+- Collection runs on the calling thread. A source configured for several samples blocks for its own
+  sleep interval.
+- Failures throw `MjprofException` rather than yielding an empty result.
+- `group(Attr.STACK)` and `merge(Attr.STACK)` are rejected: stack profiles have no value equality.
+  Use `merge(Attr.TID)` then `tree()`.
+- Dumps written as jstack text keep `count`, `cpu_ns`, `wall_ms` and `%cpu`. But JMX-sourced dumps
+  do not re-split when concatenated — their header is not date-prefixed — so several JMX samples in
+  one file read back as one dump. Use `fromDumps` for self-collected samples.
+- The expression DSL, macros and the `supported_monads.txt` plugin registry live in `mjprof-cli`,
+  not in the library.
 
 
 Building MJProf

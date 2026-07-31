@@ -8,23 +8,32 @@ mjprof is a command-line "monadic" jstack/thread-dump analyzer. A command is a c
 
 Example: `jstack -l <pid> | mjprof contains/state,RUNNABLE/.tree`
 
+`mjprof-core` also exposes a typed, thread-free Java API (`com.performizeit.mjprof.core.pipeline.Pipeline`) for embedding — see `README.md`'s "Java API" section.
+
+## Modules
+
+This is a two-module Maven reactor (root `pom.xml` is `packaging=pom`, `<modules>mjprof-core, mjprof-cli</modules>`):
+
+- **`mjprof-core`** (`com.performizeit.mjprof.core.*`) — thread-dump parsing, the data model, every plugin implementation, the plugin type interfaces, the threaded `Pipe`/`Generator` plumbing, and the typed `Pipeline`/`PipelineRunner` API. **Zero external main-scope dependencies** — keep it that way; anything that pulls in a library goes in `mjprof-cli` instead.
+- **`mjprof-cli`** (`com.performizeit.mjprof.cli.*`) — the expression DSL (`monads/MJStep`, `monads/Macros`, `internal.macros.properties`), the plugin registry (`plugin/StepsRepository`, `plugin/PluginRepoBuilder`, `plugin/PluginRepositoryScanner`), `MJProf.main`, and the `native` Maven profile. Depends on `mjprof-core` plus the `reflections` library.
+
 ## Build & test
 
 Requires GraalVM JDK (see `.sdkmanrc`: `java=22.3.r19-grl`); compiler target is Java 17.
 
-- Build fat jar: `mvn clean package` → `target/mjprof-1.0-jar-with-dependencies.jar` (main class `com.performizeit.mjprof.MJProf`).
-- Native image: `mvn -Pnative package` (GraalVM `native-maven-plugin`).
-- All tests: `mvn test` (JUnit 5 / Jupiter).
-- Single test: `mvn test -Dtest=MJProfTest` or a method `mvn test -Dtest=StackFrameTest#someMethod`.
-- Run without full package: `mvn exec:java -Dexec.mainClass=com.performizeit.mjprof.MJProf -Dexec.args="..."` (or run the jar directly).
+- All tests, both modules, from the repo root: `mvn test` (JUnit 5 / Jupiter).
+- Single test class/method needs `-pl` to target a module, e.g. `mvn -pl mjprof-core test -Dtest=StackTreeTest` or `mvn -pl mjprof-cli test -Dtest=MJProfTest#someMethod`.
+- Build fat jar: `mvn clean package` → `mjprof-cli/target/mjprof-cli-1.1.0-jar-with-dependencies.jar` (main class `com.performizeit.mjprof.cli.MJProf`).
+- Native image: `mvn -Pnative package -pl mjprof-cli -am` (GraalVM `native-maven-plugin`; `-am` also builds `mjprof-core` first since the profile lives only in `mjprof-cli`).
+- Run without full package: `mvn -pl mjprof-cli exec:java -Dexec.mainClass=com.performizeit.mjprof.cli.MJProf -Dexec.args="..."` (or run the jar directly).
 
-Coverage via JaCoCo runs during the `test` phase.
+Coverage via JaCoCo runs during the `test` phase in each module.
 
 ## Plugin (monad) system — the core abstraction
 
-Every user-facing step is a **plugin** class annotated with `@Plugin(name=..., params={...}, category=..., description=...)` (`api/Plugin.java`). `category` is a `PluginCategory` enum value; the value determines which interface the class must implement and where MJProf places it in the pipeline:
+Every user-facing step is a **plugin** class annotated with `@Plugin(name=..., params={...}, category=..., description=...)` (`mjprof-core`'s `core/api/Plugin.java`). `category` is a `PluginCategory` enum value; the value determines which interface the class must implement and where MJProf places it in the pipeline:
 
-| Category | Interface (`plugin/types/`) | Role |
+| Category | Interface (`core/plugin/types/`) | Role |
 |---|---|---|
 | `DATA_SOURCE` | `DataSource` | Generates thread dumps (jmx, path, stdin, visualvm) |
 | `FILTER` | `Filter` | Keep/drop whole threads |
@@ -34,37 +43,47 @@ Every user-facing step is a **plugin** class annotated with `@Plugin(name=..., p
 | `TERMINAL` | `Terminal` | Consume the stream (count, tree, flat, list) |
 | `OUTPUTER` | `Outputer` | Write results (stdout, snapshot, gui) |
 
-Implementations live under `plugins/<category>/`.
+Implementations live under `mjprof-core`'s `core/plugins/<category>/`.
+
+### Two execution runtimes share the same plugins
+
+Every plugin instance is also a `PipeHandler<ThreadDump, ThreadDump>` (or the `ThreadInfo`-level equivalent), and there are **two** ways that gets driven:
+
+1. **CLI**: `mjprof-cli`'s `MJProf.constructPlumbing` wraps each step in a `core/plumbing/Pipe` — a `Thread` with a `BlockingQueue` — chained via `setOutgoingPipe`; data sources become `core/plumbing/Generator` threads. Genuinely multi-threaded, one thread per stage.
+2. **API**: `mjprof-core`'s `pipeline/PipelineRunner` drives the same plugin instances synchronously on the calling thread, no threads or queues, via `pipeline/Pipeline`'s typed builder methods.
+
+**Consequence:** a new or changed plugin must keep working under both. Don't assume `handleMsg`/`handleDone` are only ever called from a `Pipe`'s thread — `PipelineRunner` calls them directly and reuses the same instance across the whole run.
 
 ### Plugin discovery is two-phase — this matters
 
-1. At build (`process-classes` phase), `PluginRepoBuilder` uses the `reflections` library to scan `com.performizeit` for `@Plugin` classes and writes their FQNs to `target/classes/supported_monads.txt`.
-2. At runtime, `StepsRepository` (static init) reads `/supported_monads.txt` from the classpath. **Only if that file is missing** does it fall back to a live reflection scan (`resolvePluginsDynamically`).
+1. At build (`mjprof-cli`'s `process-classes` phase), `cli/plugin/PluginRepoBuilder` uses the `reflections` library to scan `com.performizeit` for `@Plugin` classes and writes their FQNs to `mjprof-cli/target/classes/supported_monads.txt`.
+2. At runtime, `cli/monads/StepsRepository` (static init) reads `/supported_monads.txt` from the classpath. **Only if that file is missing** does it fall back to a live reflection scan (`resolvePluginsDynamically`).
 
-The generated file exists because reflection-based scanning does **not** work in GraalVM native images. `StepsRepository.addPluginToRepo` also eagerly instantiates each plugin once so GraalVM records the reflective constructor call (native profile additionally runs `PluginRepositoryScanner` under the native-image agent to capture reflection metadata).
+The generated file exists because reflection-based scanning does **not** work in GraalVM native images. `StepsRepository.addPluginToRepo` also eagerly instantiates each plugin once so GraalVM records the reflective constructor call (the `native` profile in `mjprof-cli` additionally runs `PluginRepositoryScanner` under the native-image agent to capture reflection metadata).
 
-**Consequence:** after adding/removing/renaming a plugin or changing its `@Plugin` name, you must rebuild so `supported_monads.txt` regenerates — a stale file silently drops or misnames monads.
+**Consequence:** after adding/removing/renaming a plugin or changing its `@Plugin` name, you must rebuild `mjprof-cli` so `supported_monads.txt` regenerates — a stale file silently drops or misnames monads. Changing a plugin constructor's signature or parameter types can likewise break the native build even when the jar works fine, since both the codegen step and the native-image agent instantiate every plugin.
 
-## Execution model
+## Execution model (CLI)
 
-`MJProf.main`:
+`MJProf.main` (`mjprof-cli`):
 1. Parse the command line into `List<MJStep>` (`parseCommandLine` → `splitCommandLine` respecting `/.../` arg boundaries; `findNextSeperator` handles the `.`/space separator logic).
 2. Expand macros (`Macros`, from `internal.macros.properties` + external `-Dmacros.configFile`). A macro name expands to a sub-chain of steps.
 3. Auto-insert defaults: prepend `stdin` if no explicit data source; append `stdout` if the last step isn't an outputer.
-4. `constructPlumbing`: turn each step into a `Pipe` (a `Thread` with a `BlockingQueue`, in `plumbing/`). Data sources become `Generator`s feeding the chain. Pipes are linked producer→consumer; `producerDone` propagates completion down the chain. So the pipeline is genuinely multi-threaded, one thread per stage.
+4. `constructPlumbing`: turn each step into a `Pipe` (from `mjprof-core`'s `plumbing/`). Data sources become `Generator`s feeding the chain. Pipes are linked producer→consumer; `producerDone` propagates completion down the chain.
 
 `buildArgsArray` coerces string args to the declared `Param` types (int/long/boolean/`Attr`/String), applying `optional`/`defaultValue`.
 
-## Data model & parsing
+## Data model & parsing (mjprof-core)
 
-- `parser/` — `ThreadDumpTextualParser` / `JStackTextualFormatParser` turn jstack text into `ThreadDump` → `ThreadInfo` (thread props: state, nid, tid, name, stack, los, cpu, etc., keyed by `ThreadInfoProps` / `Attr`).
-- `model/` — `Profile`, `SFNode` (stack-frame tree), `ThreadInfoAggregator`, `ProfileEntryHelper` support the tree/flat/group/merge terminals and reducers.
+- `core/parser/` — `ThreadDumpTextualParser` / `JStackTextualFormatParser` turn jstack text into `ThreadDump` → `ThreadInfo` (thread props: state, nid, tid, name, stack, los, cpu, etc., keyed by `ThreadInfoProps` / `Attr`).
+- `core/model/` — `Profile`, `SFNode` (stack-frame tree), `ThreadInfoAggregator`, `ProfileEntryHelper` support the tree/flat/group/merge terminals and reducers.
 
 ## Adding a new monad (checklist)
 
-1. Create a class under `plugins/<category>/` implementing the matching `plugin/types/*` interface.
+1. Create a class under `mjprof-core`'s `core/plugins/<category>/` implementing the matching `core/plugin/types/*` interface. New plugins go in `mjprof-core`; anything that touches the expression DSL, macros or the plugin registry goes in `mjprof-cli`.
 2. Annotate with `@Plugin(name="...", params={@Param(...)}, category=PluginCategory.X, description="...")`.
-3. `mvn package` (regenerates `supported_monads.txt`).
-4. Add a test under the mirrored path in `src/test/java`; sample dumps live in `src/test/res/`.
+3. `mvn package` (regenerates `mjprof-cli/target/classes/supported_monads.txt`).
+4. Add a test under the mirrored path in the owning module's `src/test/java`; sample dumps live in `mjprof-core/src/test/res/`.
+5. Verify the plugin works under both runtimes: the threaded CLI path and the synchronous `PipelineRunner` (add a `Pipeline` test in `mjprof-core` if there's a convenience method for it).
 
 **IMPORTANT**: before you do anything else, run the `beans prime` command and heed its output.

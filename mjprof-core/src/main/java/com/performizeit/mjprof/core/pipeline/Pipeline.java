@@ -63,6 +63,11 @@ import java.util.function.Supplier;
  * four {@code map(P stage)} overloads are handed an already-constructed instance with no way to
  * fabricate a fresh copy of it, so that one stage is shared across repeated {@link #collect()} calls
  * on the same or derived Pipelines — construct a new plugin instance per run if that matters.
+ *
+ * <p>To sample on your own schedule and analyse later, keep the ThreadDump objects and use
+ * fromDumps. Writing dumps out as jstack text and re-reading them preserves count, cpu_ns, wall_ms
+ * and %cpu, but dumps taken over JMX do not re-split when concatenated, because their header is not
+ * date-prefixed — so several JMX samples in one file come back as a single dump.
  */
 public final class Pipeline {
 
