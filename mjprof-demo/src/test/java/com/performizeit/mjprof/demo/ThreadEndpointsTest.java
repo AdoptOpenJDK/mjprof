@@ -44,4 +44,49 @@ class ThreadEndpointsTest {
         .andExpect(jsonPath("$[0].key").exists())
         .andExpect(jsonPath("$[0].threads").exists());
   }
+
+  @Test
+  void stateEndpointFiltersToThatStateOnly() throws Exception {
+    mockMvc.perform(get("/api/threads/state/RUNNABLE"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$").isArray())
+        .andExpect(jsonPath("$[*].state",
+            org.hamcrest.Matchers.everyItem(org.hamcrest.Matchers.is("RUNNABLE"))));
+  }
+
+  @Test
+  void stateEndpointAcceptsLowerCase() throws Exception {
+    mockMvc.perform(get("/api/threads/state/runnable"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$").isArray());
+  }
+
+  @Test
+  void unknownStateIsRejectedWithBadRequest() throws Exception {
+    mockMvc.perform(get("/api/threads/state/NOT_A_STATE"))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void poolsEndpointCollapsesNumberedThreadNames() throws Exception {
+    mockMvc.perform(get("/api/threads/pools"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$").isArray())
+        .andExpect(jsonPath("$[0].key").exists())
+        .andExpect(jsonPath("$[0].threads").exists());
+  }
+
+  @Test
+  void searchEndpointFindsThreadsWhoseStackMentionsAFrame() throws Exception {
+    // every thread serving this request has java.* frames on its stack
+    mockMvc.perform(get("/api/threads/search").param("frame", "java"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$").isArray());
+  }
+
+  @Test
+  void searchEndpointRequiresANonBlankFrame() throws Exception {
+    mockMvc.perform(get("/api/threads/search").param("frame", "  "))
+        .andExpect(status().isBadRequest());
+  }
 }
