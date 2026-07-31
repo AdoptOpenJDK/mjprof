@@ -4,6 +4,7 @@ import com.performizeit.mjprof.core.api.Attr;
 import com.performizeit.mjprof.core.parser.ThreadInfo;
 import com.performizeit.mjprof.core.pipeline.Pipeline;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +23,9 @@ import java.util.Locale;
 @RestController
 @RequestMapping("/api/threads")
 public class ThreadEndpoints {
+
+  private static final int MAX_SAMPLES = 50;
+  private static final int MAX_SLEEP_MS = 2_000;
 
   /** Every live thread, with the top frames of its stack. */
   @GetMapping
@@ -88,5 +92,50 @@ public class ThreadEndpoints {
         .threads().stream()
         .map(t -> ThreadViewMapper.toView(t, frames))
         .toList();
+  }
+
+  /**
+   * Sampled CPU profile of this process: takes several CPU-aware snapshots, merges them per thread
+   * id so cpu_ns sums and stacks fold into a tree, then ranks by CPU.
+   *
+   * <p>Blocks the request thread for roughly samples * sleepMs.
+   */
+  @GetMapping("/hot")
+  public List<HotThread> hot(@RequestParam(defaultValue = "5") int samples,
+                             @RequestParam(defaultValue = "100") int sleepMs,
+                             @RequestParam(defaultValue = "10") int top,
+                             @RequestParam(defaultValue = "5") int frames) {
+    if (samples < 1 || samples > MAX_SAMPLES) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+          "samples must be between 1 and " + MAX_SAMPLES + ", got " + samples);
+    }
+    if (sleepMs < 0 || sleepMs > MAX_SLEEP_MS) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+          "sleepMs must be between 0 and " + MAX_SLEEP_MS + ", got " + sleepMs);
+    }
+    if (top < 1) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "top must be at least 1");
+    }
+    return Pipeline.fromSelfWithCpu(samples, sleepMs)
+        .merge(Attr.TID)
+        .sortDesc(Attr.CPU_NS)
+        .threads().stream()
+        .limit(top)
+        .map(t -> new HotThread(t.name(), t.tid(), t.cpuNs(), t.count(),
+            ThreadViewMapper.frames(t, frames)))
+        .toList();
+  }
+
+  /**
+   * All stacks of this process merged into one call tree, as text — the API's treeText() terminal,
+   * which is what the CLI's {@code tree} monad prints.
+   */
+  @GetMapping(value = "/tree", produces = MediaType.TEXT_PLAIN_VALUE)
+  public String tree(@RequestParam(required = false) String state) {
+    Pipeline pipeline = Pipeline.fromSelf();
+    if (state != null && !state.isBlank()) {
+      pipeline = pipeline.contains(Attr.STATE, state.toUpperCase(Locale.ROOT));
+    }
+    return pipeline.treeText();
   }
 }

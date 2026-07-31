@@ -6,6 +6,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -88,5 +89,32 @@ class ThreadEndpointsTest {
   void searchEndpointRequiresANonBlankFrame() throws Exception {
     mockMvc.perform(get("/api/threads/search").param("frame", "  "))
         .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void hotEndpointRanksThreadsByCpu() throws Exception {
+    mockMvc.perform(get("/api/threads/hot")
+            .param("samples", "2").param("sleepMs", "1").param("top", "5"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$").isArray())
+        .andExpect(jsonPath("$.length()", org.hamcrest.Matchers.lessThanOrEqualTo(5)))
+        .andExpect(jsonPath("$[0].name").exists())
+        .andExpect(jsonPath("$[0].samples").exists());
+  }
+
+  @Test
+  void hotEndpointRejectsAnAbsurdSampleCount() throws Exception {
+    mockMvc.perform(get("/api/threads/hot").param("samples", "0"))
+        .andExpect(status().isBadRequest());
+    mockMvc.perform(get("/api/threads/hot").param("samples", "1000"))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void treeEndpointReturnsPlainText() throws Exception {
+    mockMvc.perform(get("/api/threads/tree"))
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith("text/plain"))
+        .andExpect(content().string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.blankOrNullString())));
   }
 }
