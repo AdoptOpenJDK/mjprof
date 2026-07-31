@@ -59,9 +59,11 @@ Every plugin instance is also a `PipeHandler<ThreadDump, ThreadDump>` (or the `T
 1. At build (`mjprof-cli`'s `process-classes` phase), `cli/plugin/PluginRepoBuilder` uses the `reflections` library to scan `com.performizeit` for `@Plugin` classes and writes their FQNs to `mjprof-cli/target/classes/supported_monads.txt`.
 2. At runtime, `cli/monads/StepsRepository` (static init) reads `/supported_monads.txt` from the classpath. **Only if that file is missing** does it fall back to a live reflection scan (`resolvePluginsDynamically`).
 
-The generated file exists because reflection-based scanning does **not** work in GraalVM native images. `StepsRepository.addPluginToRepo` also eagerly instantiates each plugin once so GraalVM records the reflective constructor call (the `native` profile in `mjprof-cli` additionally runs `PluginRepositoryScanner` under the native-image agent to capture reflection metadata).
+The generated file exists because reflection-based scanning does **not** work in GraalVM native images.
 
-**Consequence:** after adding/removing/renaming a plugin or changing its `@Plugin` name, you must rebuild `mjprof-cli` so `supported_monads.txt` regenerates — a stale file silently drops or misnames monads. Changing a plugin constructor's signature or parameter types can likewise break the native build even when the jar works fine, since both the codegen step and the native-image agent instantiate every plugin.
+The same `PluginRepoBuilder` run also writes `META-INF/native-image/reflect-config.json` (every plugin, `allDeclaredConstructors`) and `resource-config.json` (`supported_monads.txt`, `internal.macros.properties`) — generated deterministically from the discovered plugin list, on a plain JDK. It used to be produced by running `PluginRepositoryScanner` under the `native-image-agent` in the `native` profile, but that agent library ships only with GraalVM, so `mvn -Pnative package` failed on an ordinary JDK before native-image was ever reached. `PluginRepositoryScanner` is kept as a manual way to cross-check the generated config against what the agent would record (run it under a GraalVM with `-agentlib:native-image-agent=config-output-dir=...`); it is no longer part of any build.
+
+**Consequence:** after adding/removing/renaming a plugin or changing its `@Plugin` name, you must rebuild `mjprof-cli` so `supported_monads.txt` regenerates — a stale file silently drops or misnames monads. Changing a plugin constructor's signature or parameter types can likewise break the native build even when the jar works fine, since `reflect-config.json` is regenerated from the plugin list and `StepsRepository.addPluginToRepo` instantiates every plugin at startup.
 
 ## Execution model (CLI)
 

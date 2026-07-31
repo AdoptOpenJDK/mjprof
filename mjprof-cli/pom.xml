@@ -36,31 +36,10 @@
             <id>native</id>
             <build>
                 <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <version>3.5.0</version>
-                        <executions>
-                            <execution>
-                                <id>create-plugin-reflection-metadata</id>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <phase>prepare-package</phase>
-                                <configuration>
-                                    <executable>java</executable>
-                                    <arguments>
-                                        <argument>
-                                            -agentlib:native-image-agent=config-output-dir=${project.build.outputDirectory}/META-INF/native-image
-                                        </argument>
-                                        <argument>-classpath</argument>
-                                        <classpath/>
-                                        <argument>com.performizeit.mjprof.cli.plugin.PluginRepositoryScanner</argument>
-                                    </arguments>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
+                    <!-- Reflection/resource metadata is generated in the default build by
+                         PluginRepoBuilder (process-classes), not by the native-image-agent. The agent
+                         library exists only in a GraalVM JDK, so running it here made this profile fail
+                         on a plain JDK before native-image was ever invoked. -->
                     <plugin>
                         <groupId>org.graalvm.buildtools</groupId>
                         <artifactId>native-maven-plugin</artifactId>
@@ -106,6 +85,9 @@
                                 <classpath/>
                                 <argument>com.performizeit.mjprof.cli.plugin.PluginRepoBuilder</argument>
                                 <argument>${project.build.outputDirectory}/supported_monads.txt</argument>
+                                <!-- second arg: native-image metadata, generated deterministically so a
+                                     plain JDK can build it (the native-image-agent ships only with GraalVM) -->
+                                <argument>${project.build.outputDirectory}/META-INF/native-image</argument>
                             </arguments>
                         </configuration>
                     </execution>
