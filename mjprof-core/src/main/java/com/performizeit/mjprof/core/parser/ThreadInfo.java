@@ -17,6 +17,7 @@
 
 package com.performizeit.mjprof.core.parser;
 
+import com.performizeit.mjprof.core.model.Profile;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -88,5 +89,47 @@ public class ThreadInfo {
   @Override
   public String toString() {
     return new JStackTextualFormatParser().toJStackFormat(props);
+  }
+
+  public String name() {
+    return (String) getVal(ThreadInfoProps.NAME);
+  }
+
+  public String state() {
+    return (String) getVal(ThreadInfoProps.STATE);
+  }
+
+  public String status() {
+    return (String) getVal(ThreadInfoProps.STATUS);
+  }
+
+  public String tid() {
+    return (String) getVal(ThreadInfoProps.TID);
+  }
+
+  public Long cpuNs() {
+    return (Long) getVal(ThreadInfoProps.CPUNS);
+  }
+
+  public Long wallMs() {
+    return (Long) getVal(ThreadInfoProps.WALL);
+  }
+
+  public Double cpuPct() {
+    return (Double) getVal(ThreadInfoProps.CPU_PREC);
+  }
+
+  /** Number of threads this entry represents; 1 when the dump was never grouped or merged. */
+  public int count() {
+    Integer c = (Integer) getVal(ThreadInfoProps.COUNT);
+    return c == null ? 1 : c;
+  }
+
+  public Profile stack() {
+    return (Profile) getVal(ThreadInfoProps.STACK);
+  }
+
+  public boolean daemon() {
+    return Boolean.TRUE.equals(getVal(ThreadInfoProps.DAEMON));
   }
 }

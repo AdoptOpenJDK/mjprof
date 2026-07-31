@@ -1,6 +1,22 @@
 package com.performizeit.mjprof.core.api;
 
+import com.performizeit.mjprof.core.parser.ThreadInfoProps;
+
 public class Attr {
+  public static final Attr NAME = new Attr(ThreadInfoProps.NAME);
+  public static final Attr TID = new Attr(ThreadInfoProps.TID);
+  public static final Attr NID = new Attr(ThreadInfoProps.NID);
+  public static final Attr DAEMON = new Attr(ThreadInfoProps.DAEMON);
+  public static final Attr PRIO = new Attr(ThreadInfoProps.PRIO);
+  public static final Attr STATUS = new Attr(ThreadInfoProps.STATUS);
+  public static final Attr STATE = new Attr(ThreadInfoProps.STATE);
+  public static final Attr CPU_NS = new Attr(ThreadInfoProps.CPUNS);
+  public static final Attr WALL_MS = new Attr(ThreadInfoProps.WALL);
+  public static final Attr CPU_PCT = new Attr(ThreadInfoProps.CPU_PREC);
+  public static final Attr STACK = new Attr(ThreadInfoProps.STACK);
+  public static final Attr LOS = new Attr(ThreadInfoProps.LOS);
+  public static final Attr COUNT = new Attr(ThreadInfoProps.COUNT);
+
   public String attrName;
 
   public Attr(String attrName) {
