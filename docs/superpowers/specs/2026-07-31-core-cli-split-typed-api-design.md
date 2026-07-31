@@ -274,8 +274,8 @@ List<ThreadInfo> profile = Pipeline.fromDumps(samples)
 
 `ThreadInfoAggregator` sums `cpu_ns`, takes max `wall_ms`, recomputes `%cpu`, and merges each
 thread's `Profile` into a stack tree with per-node `count` — so N cheap samples become a sampled
-profile. `merge(Attr.TID)` folds per thread; `merge(Attr.STACK)` folds identical stacks across all
-threads and samples.
+profile. `merge(Attr.TID)` folds per thread; `tree()` afterwards folds the merged profiles into one
+stack tree. Folding by stack *as a grouping key* is not available — see open question 1.
 
 Across restarts, persist as text and re-read:
 
@@ -302,7 +302,9 @@ Core unit tests, over `src/test/res/test.txt`:
 - `handleDone` fan-forward: a `merge()` stage followed by another stage produces the merged result
 - `fromDumps` + `merge(Attr.TID)` over two hand-built dumps sums `cpu_ns` and `count`
 - `collectOne()` throws `MjprofException` when the source emits more than one dump
-- `MjprofException` on a missing file and on an unreachable JMX endpoint
+- `MjprofException` on a missing file, and on `group`/`merge` handed `Attr.STACK`
+- text round-trip loss is asserted, not assumed: a dump carrying `cpu_ns` re-read from
+  `toString()` output comes back without it
 - typed `Attr` constants resolve to the same strings as `ThreadInfoProps`
 
 CLI regression guard for the rename: before splitting, capture `mjprof <expr>` stdout for about six
@@ -317,17 +319,27 @@ Build verification:
 - generated `supported_monads.txt` lists every plugin under its new package name, same count as
   before the split
 
-## Open questions, resolved during implementation
+## Open questions — resolved against the code
 
-1. **`Profile.equals`** — `group(Attr.STACK)` and `merge(Attr.STACK)` key on a `Profile` object. If
-   `Profile` does not implement `equals`/`hashCode`, grouping by stack silently groups nothing.
-   Either implement them or document `STACK` as unsupported for grouping. Check first, since a test
-   above depends on the answer.
-2. **`ThreadDump.toString()` round-trip** — the text-persistence pattern requires `toString()` to
-   emit a date-prefixed header line (or `StreamDataSourcePluginBase` will not split concatenated
-   dumps) and to render every prop worth keeping. `cpu_ns` from the `jmxc` source is the likely
-   casualty. Verify; if lossy, say so in the Javadoc rather than building a format.
-3. **`PathDataSourcePlugin` missing-file behavior** — see Error handling.
+1. **`Profile` has no `equals`/`hashCode`** (neither does `SFNode`), so `ThreadInfoAggregator` keys on
+   object identity and `group(Attr.STACK)` / `merge(Attr.STACK)` group nothing. Adding value equality
+   is not an option: the aggregator *mutates* profiles while merging (`Profile.addMulti`), and a
+   mutable object cannot be a hash key. **Resolution:** `group(Attr...)` and `merge(Attr)` throw
+   `MjprofException` when handed `Attr.STACK`, with a message pointing at `merge(Attr.TID).tree()` —
+   which produces the merged stack tree that "group by stack" is actually reaching for. The `group`
+   and `merge` monads keep their current silent behavior; only the API guards.
+2. **Text round-trip is lossy, and structurally broken for JMX sources.** `toJStackFormat` writes
+   `count=`, `cpu_ns=`, `wall_ms=`, `%cpu=`, but the parser has no cases to read them back, so those
+   props are lost. Separately, `JmxDataSourcePlugin` sets its header to `new Date() + "\nThread dump
+   via JMX of ..."`, and `Date.toString()` ("Fri Jul 31 10:23:45 IDT 2026") does not match the
+   `^\d\d\d\d-\d\d-\d\d` pattern `StreamDataSourcePluginBase` splits on — so concatenated JMX dumps
+   do not re-split into separate dumps. **Resolution:** the in-memory pattern (`fromDumps`) is the
+   supported way to collect and merge your own samples. Text persistence is documented as
+   jstack-text-only and lossy, with a test asserting the loss so it is known rather than discovered.
+   A lossless dump format is a follow-up, not part of this change.
+3. **`PathDataSourcePlugin` already throws** `RuntimeException(FileNotFoundException)` from
+   `initReader()` on a missing file. No plugin change needed; the runner wraps it in
+   `MjprofException`.
 
 ## Follow-up: replace classpath scanning with an annotation processor
 
