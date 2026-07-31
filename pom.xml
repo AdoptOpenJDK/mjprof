@@ -105,7 +105,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>3.5.0</version>
                 <executions>
                     <execution>
                         <id>copy-property-files</id>
@@ -132,7 +132,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.7.1</version>
+                <version>3.8.0</version>
                 <executions>
                     <execution>
                         <id>create-jars-with-dependencies</id>
@@ -156,7 +156,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.12</version>
+                <version>0.8.13</version>
                 <executions>
                     <execution>
                         <id>jacoco-prepare-agent</id>
@@ -181,10 +181,10 @@
             <dependency>
                 <groupId>org.junit</groupId>
                 <artifactId>junit-bom</artifactId>
-                <version>5.10.3</version>
+                <version>5.12.2</version>
                 <type>pom</type>
                 <scope>import</scope>
-                <!-- Not updating to 5.13.0-M2 as it's a milestone release -->
+                <!-- 5.13.x is milestone-only as of 2026-07-31; stay on latest stable -->
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -207,13 +207,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.12.1</version>
-        </dependency>
-
 
     </dependencies>
 
