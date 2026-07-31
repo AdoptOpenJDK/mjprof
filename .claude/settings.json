@@ -1,0 +1,12 @@
+{
+  "extraKnownMarketplaces": {
+    "caveman":                 { "source": { "source": "github", "repo": "JuliusBrussee/caveman" } },
+    "ponytail":                { "source": { "source": "github", "repo": "DietrichGebert/ponytail" } },
+    "superpowers-marketplace": { "source": { "source": "github", "repo": "obra/superpowers-marketplace" } }
+  },
+  "enabledPlugins": {
+    "caveman@caveman":                    true,
+    "ponytail@ponytail":                  true,
+    "superpowers@superpowers-marketplace": true
+  }
+}
