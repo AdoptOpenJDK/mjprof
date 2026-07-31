@@ -370,6 +370,21 @@ public final class Pipeline {
     return out;
   }
 
+  /**
+   * Runs the pipeline and returns the merged call tree of every dump it produced, rendered exactly
+   * as the CLI's {@code tree} monad would print it — the honest, allocation- and round-trip-free
+   * path: no synthetic {@link ThreadDump}/{@link ThreadInfo} is built and no {@link Profile} is
+   * reconstructed from text. Prefer {@link #tree()} instead when further stages need to chain after
+   * the merge; this method is the leaf.
+   */
+  public String treeText() {
+    StackTreeMerger merger = new StackTreeMerger();
+    for (ThreadDump d : collect()) {
+      merger.addStackDump(d);
+    }
+    return merger.toString();
+  }
+
   private List<PipeHandler<ThreadDump, ThreadDump>> freshStages() {
     return new ArrayList<>(stages);
   }

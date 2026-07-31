@@ -19,7 +19,6 @@ package com.performizeit.mjprof.core.plugins.comparators;
 import com.performizeit.mjprof.core.api.Plugin;
 import com.performizeit.mjprof.core.api.Param;
 import com.performizeit.mjprof.core.api.PluginCategory;
-import com.performizeit.mjprof.core.parser.ThreadInfo;
 
 @SuppressWarnings("unused")
 @Plugin(name = "-sort", params = {@Param()},
@@ -30,8 +29,12 @@ public class ReversePropComparator extends PropComparator {
     super(prop);
   }
 
+  // Reversing compare() directly would also flip null-vs-non-null to null-first, which is wrong:
+  // absent attributes must sort last in both directions. compare() (inherited from PropComparator)
+  // keeps nulls last and only delegates the non-null comparison to compareNonNull(), so reversing
+  // just that leaves null placement untouched.
   @Override
-  public int compare(ThreadInfo o1, ThreadInfo o2) {
-    return -super.compare(o1, o2);
+  protected int compareNonNull(Comparable v1, Object v2) {
+    return -super.compareNonNull(v1, v2);
   }
 }

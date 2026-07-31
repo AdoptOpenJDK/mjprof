@@ -66,17 +66,71 @@ class PipelineConvenienceTest {
   }
 
   @Test
+  void treeMergedEntryActuallyContainsTheStackContent() {
+    // size() == 1 alone would also be true if TreeMergeStage's Profile round-trip silently produced
+    // a bogus single-frame profile -- assert the merge actually carried real frames from the fixture.
+    ThreadInfo merged = fixture().tree().threads().get(0);
+    String rendered = merged.stack().toString();
+    assertFalse(rendered.isBlank());
+    assertTrue(rendered.contains("WorkerPool.startJob"));
+  }
+
+  @Test
+  void chainingAnAttributeFilterAfterTreeDropsTheSyntheticEntry() {
+    // TreeMergeStage.handleDone() synthesizes a ThreadDump whose sole ThreadInfo has only STACK
+    // set -- name/tid/state are all null, by design (there is no single "name" for a merged tree of
+    // every thread). So any attribute filter chained after tree() drops that entry: documented
+    // behavior, not a bug to paper over with an invented name/tid/state for the synthetic entry.
+    List<ThreadInfo> t = fixture().tree().contains(Attr.NAME, "main").threads();
+    assertTrue(t.isEmpty());
+  }
+
+  @Test
+  void treeTextReturnsTheMergedTreeAsPlainStringWithoutChaining() {
+    String text = fixture().treeText();
+    assertFalse(text.isBlank());
+    assertTrue(text.contains("WorkerPool.startJob"));
+  }
+
+  @Test
   void chainingSeveralConvenienceStagesWorks() {
-    // Sorts by NAME, not COUNT: group(Attr.NAME) leaves singleton groups (most thread names in a
-    // real dump are unique) without a count property at all -- ThreadInfoAggregator only sets COUNT
-    // once an actual merge happens -- so sorting those by COUNT throws a NullPointerException deep in
-    // PropComparator. NAME is the grouping key, so it is always present on every resulting entry.
     List<ThreadInfo> t = fixture()
         .contains(Attr.STACK, "at")
         .withoutNameSuffix()
         .group(Attr.NAME)
-        .sortDesc(Attr.NAME)
+        .sortDesc(Attr.COUNT)
         .threads();
     assertFalse(t.isEmpty());
+  }
+
+  @Test
+  void sortDescByCountPutsEntriesMissingCountLast() {
+    // group(Attr.NAME) leaves singleton groups (most thread names in a real dump are unique)
+    // without a count property at all -- ThreadInfoAggregator only sets COUNT once an actual merge
+    // happens. PropComparator/ReversePropComparator must treat that as "sorts last", not throw.
+    List<ThreadInfo> t = fixture()
+        .contains(Attr.STACK, "at")
+        .withoutNameSuffix()
+        .group(Attr.NAME)
+        .sortDesc(Attr.COUNT)
+        .threads();
+    assertFalse(t.isEmpty());
+    assertTrue(t.stream().anyMatch(x -> x.getVal(Attr.COUNT.getAttrName()) == null),
+        "expected at least one singleton group with no count property");
+    ThreadInfo last = t.get(t.size() - 1);
+    assertEquals(null, last.getVal(Attr.COUNT.getAttrName()));
+  }
+
+  @Test
+  void sortAscByCountAlsoPutsEntriesMissingCountLast() {
+    List<ThreadInfo> t = fixture()
+        .contains(Attr.STACK, "at")
+        .withoutNameSuffix()
+        .group(Attr.NAME)
+        .sort(Attr.COUNT)
+        .threads();
+    assertFalse(t.isEmpty());
+    ThreadInfo last = t.get(t.size() - 1);
+    assertEquals(null, last.getVal(Attr.COUNT.getAttrName()));
   }
 }

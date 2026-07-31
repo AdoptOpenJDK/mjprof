@@ -33,6 +33,12 @@ public class Profile {
     public String test(){
     	return root.sf;
     }
+    // ponytail: format detection sniffs for the literal substring "]\ ", which only appears when a
+    // level-0 node has exactly one child (see SFNode.toStringMulti's ch="\\" case). A merged tree
+    // whose every level-0 node fans out to 2+ children never produces that substring and silently
+    // falls through to parseSingle, mis-parsing a real multi-thread tree as one flat stack. Upgrade
+    // path: an explicit format flag on the constructor, or a dedicated factory method per format,
+    // instead of sniffing the string.
     public  Profile(String parseString) {
         this();
         if (parseString.contains("]\\ ")) {

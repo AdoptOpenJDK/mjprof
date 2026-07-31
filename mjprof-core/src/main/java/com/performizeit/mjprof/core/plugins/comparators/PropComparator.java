@@ -29,9 +29,23 @@ public class PropComparator extends SortMapper{
     public PropComparator(String prop) {
         this.prop = prop;
     }
+
+    // Threads that never got this attribute set (e.g. a singleton group() entry, which never goes
+    // through ThreadInfoAggregator's merge path that would populate "count") have a null value here.
+    // Nulls sort last regardless of direction: ReversePropComparator reverses compareNonNull(), not
+    // this method, so the null placement below is shared by both sort/ and -sort/.
     @Override
     public int compare(ThreadInfo o1, ThreadInfo o2) {
-        return ((Comparable)o1.getVal(prop)) .compareTo(o2.getVal(prop));
+        Object v1 = o1.getVal(prop);
+        Object v2 = o2.getVal(prop);
+        if (v1 == null && v2 == null) return 0;
+        if (v1 == null) return 1;
+        if (v2 == null) return -1;
+        return compareNonNull((Comparable) v1, v2);
+    }
 
+    @SuppressWarnings("unchecked")
+    protected int compareNonNull(Comparable v1, Object v2) {
+        return v1.compareTo(v2);
     }
 }
