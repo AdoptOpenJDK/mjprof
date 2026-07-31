@@ -108,21 +108,42 @@ public class ThreadInfo {
   }
 
   public Long cpuNs() {
-    return (Long) getVal(ThreadInfoProps.CPUNS);
+    return asLong(getVal(ThreadInfoProps.CPUNS));
   }
 
   public Long wallMs() {
-    return (Long) getVal(ThreadInfoProps.WALL);
+    return asLong(getVal(ThreadInfoProps.WALL));
   }
 
   public Double cpuPct() {
-    return (Double) getVal(ThreadInfoProps.CPU_PREC);
+    return asDouble(getVal(ThreadInfoProps.CPU_PREC));
   }
 
   /** Number of threads this entry represents; 1 when the dump was never grouped or merged. */
   public int count() {
-    Integer c = (Integer) getVal(ThreadInfoProps.COUNT);
+    Integer c = asInt(getVal(ThreadInfoProps.COUNT));
     return c == null ? 1 : c;
+  }
+
+  private static Long asLong(Object value) {
+    if (value == null) return null;
+    if (value instanceof Number) return ((Number) value).longValue();
+    if (value instanceof String) return Long.parseLong((String) value);
+    return (Long) value;  // will throw ClassCastException with clear message
+  }
+
+  private static Double asDouble(Object value) {
+    if (value == null) return null;
+    if (value instanceof Number) return ((Number) value).doubleValue();
+    if (value instanceof String) return Double.parseDouble((String) value);
+    return (Double) value;  // will throw ClassCastException with clear message
+  }
+
+  private static Integer asInt(Object value) {
+    if (value == null) return null;
+    if (value instanceof Number) return ((Number) value).intValue();
+    if (value instanceof String) return Integer.parseInt((String) value);
+    return (Integer) value;  // will throw ClassCastException with clear message
   }
 
   public Profile stack() {

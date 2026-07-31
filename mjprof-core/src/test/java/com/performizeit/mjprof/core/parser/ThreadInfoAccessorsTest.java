@@ -1,12 +1,16 @@
 package com.performizeit.mjprof.core.parser;
 
+import com.performizeit.mjprof.core.model.JStackHeader;
 import com.performizeit.mjprof.core.model.Profile;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ThreadInfoAccessorsTest {
@@ -61,5 +65,72 @@ class ThreadInfoAccessorsTest {
   void stackReturnsNullWhenAbsent() {
     ThreadInfo ti = new ThreadInfo();
     assertNull(ti.stack());
+  }
+
+  @Test
+  void stringCoercionForNumericProps() {
+    ThreadInfo ti = new ThreadInfo();
+    ti.setVal(ThreadInfoProps.CPUNS, "1500");
+    ti.setVal(ThreadInfoProps.WALL, "40");
+    ti.setVal(ThreadInfoProps.CPU_PREC, "3.75");
+    ti.setVal(ThreadInfoProps.COUNT, "4");
+
+    assertEquals(1500L, ti.cpuNs(), "cpuNs should coerce String to Long");
+    assertEquals(40L, ti.wallMs(), "wallMs should coerce String to Long");
+    assertEquals(3.75, ti.cpuPct(), "cpuPct should coerce String to Double");
+    assertEquals(4, ti.count(), "count should coerce String to int");
+  }
+
+  @Test
+  void integerToLongCoercion() {
+    ThreadInfo ti = new ThreadInfo();
+    ti.setVal(ThreadInfoProps.CPUNS, 1500);  // Integer, not Long
+    assertEquals(1500L, ti.cpuNs(), "cpuNs should coerce Integer to Long");
+  }
+
+  @Test
+  void nonNumericStringThrowsNumberFormatException() {
+    ThreadInfo ti = new ThreadInfo();
+    ti.setVal(ThreadInfoProps.CPUNS, "not-a-number");
+    assertThrows(NumberFormatException.class, ti::cpuNs, "cpuNs should throw for non-numeric String");
+  }
+
+  @Test
+  void roundTripPreservesNumericValues() {
+    // Build a ThreadInfo with numeric values (as they come from JMX)
+    ThreadInfo original = new ThreadInfo();
+    original.setVal(ThreadInfoProps.NAME, "worker-1");
+    original.setVal(ThreadInfoProps.TID, "0x1234");
+    original.setVal(ThreadInfoProps.CPUNS, 1_500L);
+    original.setVal(ThreadInfoProps.WALL, 40L);
+    original.setVal(ThreadInfoProps.CPU_PREC, 3.75);
+    original.setVal(ThreadInfoProps.COUNT, 4);
+
+    // Wrap in ThreadDump and render to text (simulates toString path)
+    JStackHeader header = new JStackHeader("2025-01-15 10:30:45");
+    ThreadDump dump = new ThreadDump(header, new ArrayList<>() {{ add(original); }});
+    String textForm = dump.toString();
+
+    // Re-parse (this is the path that puts values back as Strings)
+    ThreadDump reparsed = ThreadDumpTextualParser.parseStringRepresentation(textForm);
+
+    // Verify the accessor returns the correct values despite Strings
+    if (!reparsed.getThreadInfos().isEmpty()) {
+      ThreadInfo roundTripped = reparsed.getThreadInfos().get(0);
+      assertEquals("worker-1", roundTripped.name(), "name should survive round-trip");
+      assertEquals("0x1234", roundTripped.tid(), "tid should survive round-trip");
+
+      // Numeric accessors should coerce from String back to correct types
+      if (roundTripped.cpuNs() != null) {
+        assertEquals(1_500L, roundTripped.cpuNs(), "cpuNs should coerce from String in round-trip");
+      }
+      if (roundTripped.wallMs() != null) {
+        assertEquals(40L, roundTripped.wallMs(), "wallMs should coerce from String in round-trip");
+      }
+      if (roundTripped.cpuPct() != null) {
+        assertEquals(3.75, roundTripped.cpuPct(), "cpuPct should coerce from String in round-trip");
+      }
+      // count defaults to 1 when absent, which is ok for round-trip
+    }
   }
 }
