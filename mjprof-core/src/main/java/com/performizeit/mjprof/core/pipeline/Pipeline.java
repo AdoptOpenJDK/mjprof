@@ -1,5 +1,6 @@
 package com.performizeit.mjprof.core.pipeline;
 
+import com.performizeit.mjprof.core.api.Attr;
 import com.performizeit.mjprof.core.api.ThreadInfoComparator;
 import com.performizeit.mjprof.core.parser.ThreadDump;
 import com.performizeit.mjprof.core.parser.ThreadInfo;
@@ -7,10 +8,12 @@ import com.performizeit.mjprof.core.plugin.types.DataSource;
 import com.performizeit.mjprof.core.plugin.types.DumpReducer;
 import com.performizeit.mjprof.core.plugin.types.Filter;
 import com.performizeit.mjprof.core.plugin.types.SingleThreadMapper;
+import com.performizeit.mjprof.core.plugins.combiners.AccumulateDumps;
 import com.performizeit.mjprof.core.plugins.dataSource.JmxDataSourcePlugin;
 import com.performizeit.mjprof.core.plugins.dataSource.JmxDataSourcePluginWithCpu;
 import com.performizeit.mjprof.core.plugins.dataSource.PathDataSourcePlugin;
 import com.performizeit.mjprof.core.plugins.dataSource.StdinDataSourcePlugin;
+import com.performizeit.mjprof.core.plugins.mappers.GroupByProp;
 import com.performizeit.mjprof.core.plumbing.GeneratorHandler;
 import com.performizeit.mjprof.core.plumbing.PipeHandler;
 
@@ -135,6 +138,51 @@ public final class Pipeline {
   /** Adds any comparator plugin instance as a stage. */
   public <P extends ThreadInfoComparator & PipeHandler<ThreadDump, ThreadDump>> Pipeline map(P stage) {
     return add(stage);
+  }
+
+  /**
+   * Groups threads within each dump on a composite key of the given attributes, collapsing matching
+   * threads into one entry carrying count, summed cpu_ns and a merged stack tree. With no arguments,
+   * merges every thread of the dump into one entry.
+   *
+   * @throws MjprofException if given Attr.STACK — stack profiles have no value equality, so grouping
+   *                         on them collapses nothing. Use merge(Attr.TID) followed by tree().
+   */
+  public Pipeline group(Attr... attrs) {
+    for (Attr a : attrs) {
+      rejectStack(a, "group");
+    }
+    if (attrs.length == 0) {
+      return add(new GroupByProp(""));
+    }
+    List<String> props = new ArrayList<>();
+    for (Attr a : attrs) {
+      props.add(a.getAttrName());
+    }
+    return add(new GroupByProp(props));
+  }
+
+  /** Combines every dump into one, matching threads on their thread id. */
+  public Pipeline merge() {
+    return merge(Attr.TID);
+  }
+
+  /**
+   * Combines every dump into one, matching threads on the given attribute. Summed cpu_ns, max
+   * wall_ms, recomputed %cpu and merged stack trees make N samples into one sampled profile.
+   *
+   * @throws MjprofException if given Attr.STACK — see group(Attr...).
+   */
+  public Pipeline merge(Attr attr) {
+    rejectStack(attr, "merge");
+    return add(new AccumulateDumps(attr.getAttrName()));
+  }
+
+  private static void rejectStack(Attr attr, String method) {
+    if (Attr.STACK.getAttrName().equals(attr.getAttrName())) {
+      throw new MjprofException(method + "(Attr.STACK) is not supported: stack profiles have no "
+          + "value equality, so nothing would be collapsed. Use merge(Attr.TID) then tree().");
+    }
   }
 
   Pipeline add(PipeHandler<ThreadDump, ThreadDump> stage) {

@@ -26,7 +26,7 @@ import com.performizeit.mjprof.core.parser.ThreadDump;
 import com.performizeit.mjprof.core.parser.ThreadInfo;
 import com.performizeit.mjprof.core.plumbing.PipeHandler;
 
-import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("unused")
 @Plugin(name = "group",
@@ -34,16 +34,20 @@ import java.util.ArrayList;
     category = PluginCategory.DUMP_REDUCER,
     description = "Group a single thread dump by an attribute. If not attribute is specified all dump is merged")
 public class GroupByProp implements DumpReducer, PipeHandler<ThreadDump, ThreadDump> {
-  private final String prop;
+  private final List<String> props;
 
+  /** Single-attribute grouping; the form the {@code group} monad uses. */
   public GroupByProp(String prop) {
-    this.prop = prop;
+    this.props = List.of(prop);
+  }
+
+  /** Groups on a composite key of several attributes. API only — the monad passes one attribute. */
+  public GroupByProp(List<String> props) {
+    this.props = List.copyOf(props);
   }
 
   public ThreadDump map(final ThreadDump jsd) {
-    ArrayList<String> a = new ArrayList<>();
-    a.add(prop);
-    ThreadInfoAggregator aggr = new ThreadInfoAggregator(a);
+    ThreadInfoAggregator aggr = new ThreadInfoAggregator(props);
     for (ThreadInfo mss : jsd.getThreadInfos()) {
       aggr.accumulateThreadInfo(mss);
     }
