@@ -12,10 +12,13 @@ Example: `jstack -l <pid> | mjprof contains/state,RUNNABLE/.tree`
 
 ## Modules
 
-This is a two-module Maven reactor (root `pom.xml` is `packaging=pom`, `<modules>mjprof-core, mjprof-cli</modules>`):
+This is a three-module Maven reactor (root `pom.xml` is `packaging=pom`, `<modules>mjprof-core, mjprof-cli, mjprof-demo</modules>`):
 
 - **`mjprof-core`** (`com.performizeit.mjprof.core.*`) — thread-dump parsing, the data model, every plugin implementation, the plugin type interfaces, the threaded `Pipe`/`Generator` plumbing, and the typed `Pipeline`/`PipelineRunner` API. **Zero external main-scope dependencies** — keep it that way; anything that pulls in a library goes in `mjprof-cli` instead.
 - **`mjprof-cli`** (`com.performizeit.mjprof.cli.*`) — the expression DSL (`monads/MJStep`, `monads/Macros`, `internal.macros.properties`), the plugin registry (`monads/StepsRepository`, `plugin/PluginRepoBuilder`, `plugin/PluginRepositoryScanner`), `MJProf.main`, and the `native` Maven profile. Depends on `mjprof-core` plus the `reflections` library.
+- **`mjprof-demo`** (`com.performizeit.mjprof.demo.*`) — a Spring Boot 3.5.16 sample service whose REST endpoints analyse their own JVM through `Pipeline.fromSelf()`. Depends on `mjprof-core` only (nothing depends on `mjprof-demo`); pulls in Spring Boot via a `dependencyManagement` import of `spring-boot-dependencies` rather than the usual `spring-boot-starter-parent`, because the reactor parent is already `com.performizeit:mjprof`. Not published, not part of the release (absent from `jreleaser.yml` and the release workflow), and excluded from the `native` profile (which lives only in `mjprof-cli`'s `pom.xml`).
+
+`SelfDataSource` (`mjprof-core`'s in-process data source backing `Pipeline.fromSelf()`/`fromSelfWithCpu()`) is deliberately left un-annotated with `@Plugin`, so it stays out of `supported_monads.txt` — an in-process source means nothing on the command line. This is the pattern for any future API-only source: implement `DataSource`, wire it through a `Pipeline` factory method, skip the annotation.
 
 ## Build & test
 

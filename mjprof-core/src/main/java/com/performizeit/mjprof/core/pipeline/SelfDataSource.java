@@ -20,8 +20,9 @@ import java.util.HashMap;
  * <p>Deliberately NOT annotated with @Plugin: an in-process source cannot mean anything on a command
  * line, and it must not appear in supported_monads.txt. Reach it through Pipeline.fromSelf().
  *
- * <p>Produces the same property shape as the remote JMX source, so downstream stages cannot tell the
- * two apart: name, tid, state, daemon, stack, and optionally cpu_ns.
+ * <p>Produces a superset of the remote JMX source's properties — name, tid, state, stack, and
+ * optionally cpu_ns, plus daemon (which {@code JmxDataSourcePlugin} never sets) — so downstream
+ * stages that only rely on the shared properties work unchanged against either source.
  */
 final class SelfDataSource implements DataSource, GeneratorHandler<ThreadDump> {
 

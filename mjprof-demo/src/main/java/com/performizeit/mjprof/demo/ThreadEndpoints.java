@@ -1,7 +1,6 @@
 package com.performizeit.mjprof.demo;
 
 import com.performizeit.mjprof.core.api.Attr;
-import com.performizeit.mjprof.core.parser.ThreadInfo;
 import com.performizeit.mjprof.core.pipeline.Pipeline;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -85,7 +84,11 @@ public class ThreadEndpoints {
         .toList();
   }
 
-  /** Threads whose stack mentions the given text, trimmed to the frames around it. */
+  /**
+   * Threads whose stack mentions the given text. {@code topFrames} is still just the top
+   * {@code frames} lines of the stack (see {@link ThreadViewMapper#frames}), so a match deeper
+   * than that will select the thread but will not itself appear in the response.
+   */
   @GetMapping("/search")
   public List<ThreadView> search(@RequestParam String frame,
                                  @RequestParam(defaultValue = "10") int frames) {

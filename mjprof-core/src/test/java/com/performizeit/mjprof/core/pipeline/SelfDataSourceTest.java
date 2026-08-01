@@ -69,6 +69,16 @@ class SelfDataSourceTest {
   }
 
   @Test
+  void collectingTwiceFromTheSamePipelineEachYieldsTheFullSampleCount() {
+    Pipeline pipeline = Pipeline.fromSelf(3, 0);
+
+    assertEquals(3, pipeline.collect().size());
+    assertEquals(3, pipeline.collect().size(),
+        "a second collect() on the same Pipeline must build a fresh source, not reuse an "
+            + "exhausted one");
+  }
+
+  @Test
   void mergingSelfSamplesFoldsEachThreadIntoOneEntry() {
     List<ThreadInfo> merged = Pipeline.fromSelf(3, 0).merge(Attr.TID).threads();
     List<ThreadInfo> single = Pipeline.fromSelf(1, 0).threads();
@@ -84,6 +94,10 @@ class SelfDataSourceTest {
     Assumptions.assumeTrue(ManagementFactory.getThreadMXBean().isThreadCpuTimeSupported(),
         "this JVM does not support per-thread CPU time");
 
+    // Timing-dependent in principle, but not flaky in practice: by the time this line runs, the
+    // test thread itself has necessarily executed everything above it (JUnit dispatch, the
+    // assumption check, ManagementFactory lookups), which burns measurable CPU. The snapshot
+    // always finds at least the current thread with cpu_ns > 0.
     List<ThreadInfo> threads = Pipeline.fromSelfWithCpu(1, 0).threads();
     assertTrue(threads.stream().anyMatch(t -> t.cpuNs() != null && t.cpuNs() > 0),
         "expected at least one thread with positive cpu_ns");

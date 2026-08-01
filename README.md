@@ -189,8 +189,15 @@ List<ThreadInfo> profile = Pipeline.fromDumps(samples)
     .threads();
 ```
 
+A runnable example lives in `mjprof-demo` — a Spring Boot service whose endpoints analyse their own
+process through this API (`Pipeline.fromSelf()`), including a sampled CPU profile and a merged stack
+tree. See `mjprof-demo/README.md`.
+
 Notes:
 
+- `Pipeline.fromSelf()`, `fromSelf(count, sleepMs)` and `fromSelfWithCpu(count, sleepMs)` snapshot
+  the current JVM with no JMX connection, and are API-only — there is no equivalent monad on the
+  command line.
 - Collection runs on the calling thread. A source configured for several samples blocks for its own
   sleep interval.
 - Failures throw `MjprofException` rather than yielding an empty result.
