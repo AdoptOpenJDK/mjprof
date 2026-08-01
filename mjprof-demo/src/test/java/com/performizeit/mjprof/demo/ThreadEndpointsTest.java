@@ -117,4 +117,17 @@ class ThreadEndpointsTest {
         .andExpect(content().contentTypeCompatibleWith("text/plain"))
         .andExpect(content().string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.blankOrNullString())));
   }
+
+  @Test
+  void treeEndpointRejectsAnUnknownState() throws Exception {
+    mockMvc.perform(get("/api/threads/tree").param("state", "NOTASTATE"))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void treeEndpointAcceptsAKnownStateCaseInsensitively() throws Exception {
+    mockMvc.perform(get("/api/threads/tree").param("state", "runnable"))
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith("text/plain"));
+  }
 }

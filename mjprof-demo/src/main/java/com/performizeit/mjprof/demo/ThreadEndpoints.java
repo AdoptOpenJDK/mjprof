@@ -50,19 +50,24 @@ public class ThreadEndpoints {
   @GetMapping("/state/{state}")
   public List<ThreadView> byState(@PathVariable String state,
                                   @RequestParam(defaultValue = "5") int frames) {
-    String wanted = state.toUpperCase(Locale.ROOT);
+    return Pipeline.fromSelf()
+        .contains(Attr.STATE, validState(state))
+        .threads().stream()
+        .map(t -> ThreadViewMapper.toView(t, frames))
+        .toList();
+  }
+
+  /** Uppercases and validates a thread-state name, rejecting anything not in {@link Thread.State}. */
+  private static String validState(String raw) {
+    String wanted = raw.toUpperCase(Locale.ROOT);
     try {
       Thread.State.valueOf(wanted);
     } catch (IllegalArgumentException e) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-          "unknown thread state '" + state + "'; expected one of "
+          "unknown thread state '" + raw + "'; expected one of "
               + Arrays.toString(Thread.State.values()));
     }
-    return Pipeline.fromSelf()
-        .contains(Attr.STATE, wanted)
-        .threads().stream()
-        .map(t -> ThreadViewMapper.toView(t, frames))
-        .toList();
+    return wanted;
   }
 
   /**
@@ -98,7 +103,10 @@ public class ThreadEndpoints {
    * Sampled CPU profile of this process: takes several CPU-aware snapshots, merges them per thread
    * id so cpu_ns sums and stacks fold into a tree, then ranks by CPU.
    *
-   * <p>Blocks the request thread for roughly samples * sleepMs.
+   * <p>Blocks the request thread for roughly samples * sleepMs; worst case is
+   * (MAX_SAMPLES - 1) * MAX_SLEEP_MS ~= 98s (no sleep after the final sample), and each
+   * concurrent caller occupies its own request thread for that long — these bounds are a demo-grade
+   * guard against a single abusive request, not a production rate limit or a concurrency limit.
    */
   @GetMapping("/hot")
   public List<HotThread> hot(@RequestParam(defaultValue = "5") int samples,
@@ -134,7 +142,7 @@ public class ThreadEndpoints {
   public String tree(@RequestParam(required = false) String state) {
     Pipeline pipeline = Pipeline.fromSelf();
     if (state != null && !state.isBlank()) {
-      pipeline = pipeline.contains(Attr.STATE, state.toUpperCase(Locale.ROOT));
+      pipeline = pipeline.contains(Attr.STATE, validState(state));
     }
     return pipeline.treeText();
   }
