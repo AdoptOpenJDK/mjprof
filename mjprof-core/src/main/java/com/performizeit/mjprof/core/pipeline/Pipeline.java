@@ -111,6 +111,41 @@ public final class Pipeline {
     return new Pipeline(StdinDataSourcePlugin::new, List.of());
   }
 
+  /** Takes one snapshot of the threads of the JVM this code is running in. */
+  public static Pipeline fromSelf() {
+    return fromSelf(1, 0);
+  }
+
+  /**
+   * Samples the threads of the JVM this code is running in.
+   *
+   * @param count   number of snapshots to take
+   * @param sleepMs milliseconds to wait between snapshots; blocks the calling thread
+   */
+  public static Pipeline fromSelf(int count, int sleepMs) {
+    return selfPipeline("fromSelf", count, sleepMs, false);
+  }
+
+  /**
+   * As {@link #fromSelf(int, int)}, additionally recording per-thread CPU time — {@code cpu_ns} and
+   * {@code wall_ms} — for the interval each sample measures, so several samples merged on {@code
+   * Attr.TID} sum to the CPU each thread burned across the whole sampling window and give a sampled
+   * CPU profile of this process.
+   *
+   * <p>Every sample <i>is</i> an interval of {@code sleepMs}: this blocks the calling thread for
+   * roughly {@code count * sleepMs}, including after the last sample. With {@code sleepMs == 0} the
+   * interval has essentially no length, so {@code cpu_ns} is present but near zero and worthless for
+   * ranking — {@code fromSelfWithCpu(1, 0)} is a snapshot with a CPU column, not a profile.
+   */
+  public static Pipeline fromSelfWithCpu(int count, int sleepMs) {
+    return selfPipeline("fromSelfWithCpu", count, sleepMs, true);
+  }
+
+  private static Pipeline selfPipeline(String caller, int count, int sleepMs, boolean collectCpu) {
+    SelfDataSource.validateSampling(caller, count, sleepMs);
+    return new Pipeline(() -> new SelfDataSource(count, sleepMs, collectCpu), List.of());
+  }
+
   /**
    * Analyses thread dumps the caller collected itself — sample on your own schedule, keep the dumps,
    * then merge and analyse them later. Combine with merge(Attr.TID) to turn N samples into one

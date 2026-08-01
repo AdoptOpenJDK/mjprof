@@ -21,6 +21,7 @@
     <modules>
         <module>mjprof-core</module>
         <module>mjprof-cli</module>
+        <module>mjprof-demo</module>
     </modules>
 
     <properties>
