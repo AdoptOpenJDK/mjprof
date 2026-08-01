@@ -82,7 +82,8 @@ class ThreadEndpointsTest {
     // every thread serving this request has java.* frames on its stack
     mockMvc.perform(get("/api/threads/search").param("frame", "java"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$").isArray());
+        .andExpect(jsonPath("$").isArray())
+        .andExpect(jsonPath("$").isNotEmpty());   // an always-empty stack filter must not pass
   }
 
   @Test
@@ -121,6 +122,14 @@ class ThreadEndpointsTest {
   @Test
   void treeEndpointRejectsAnUnknownState() throws Exception {
     mockMvc.perform(get("/api/threads/tree").param("state", "NOTASTATE"))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void treeEndpointRejectsABlankState() throws Exception {
+    // same rule as a blank frame on /search: a supplied but empty filter is a bad request,
+    // not a silently ignored one
+    mockMvc.perform(get("/api/threads/tree").param("state", "  "))
         .andExpect(status().isBadRequest());
   }
 

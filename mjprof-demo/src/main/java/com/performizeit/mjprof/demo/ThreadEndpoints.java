@@ -92,7 +92,7 @@ public class ThreadEndpoints {
   @GetMapping("/search")
   public List<ThreadView> search(@RequestParam String frame,
                                  @RequestParam(defaultValue = "10") int frames) {
-    if (frame == null || frame.isBlank()) {
+    if (frame.isBlank()) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "frame must not be blank");
     }
     return Pipeline.fromSelf()
@@ -103,12 +103,13 @@ public class ThreadEndpoints {
   }
 
   /**
-   * Sampled CPU profile of this process: takes several CPU-aware snapshots, merges them per thread
-   * id so cpu_ns sums and stacks fold into a tree, then ranks by CPU.
+   * Sampled CPU profile of this process: takes several CPU-aware snapshots, each measuring the CPU
+   * every thread burned over a sleepMs interval, merges them per thread id so those per-interval
+   * cpu_ns sum over the sampling window and stacks fold into a tree, then ranks by CPU.
    *
-   * <p>Blocks the request thread for roughly samples * sleepMs; worst case is
-   * (MAX_SAMPLES - 1) * MAX_SLEEP_MS ~= 98s (no sleep after the final sample), and each
-   * concurrent caller occupies its own request thread for that long — these bounds are a demo-grade
+   * <p>Blocks the request thread for roughly samples * sleepMs — every sample is an interval, so the
+   * last one sleeps too; worst case is MAX_SAMPLES * MAX_SLEEP_MS ~= 100s, and each concurrent
+   * caller occupies its own request thread for that long — these bounds are a demo-grade
    * guard against a single abusive request, not a production rate limit or a concurrency limit.
    */
   @GetMapping("/hot")
@@ -144,7 +145,8 @@ public class ThreadEndpoints {
   @GetMapping(value = "/tree", produces = MediaType.TEXT_PLAIN_VALUE)
   public String tree(@RequestParam(required = false) String state) {
     Pipeline pipeline = Pipeline.fromSelf();
-    if (state != null && !state.isBlank()) {
+    // a blank state is a 400 here too, via validState — same as a blank frame on /search
+    if (state != null) {
       pipeline = pipeline.contains(Attr.STATE, validState(state));
     }
     return pipeline.treeText();

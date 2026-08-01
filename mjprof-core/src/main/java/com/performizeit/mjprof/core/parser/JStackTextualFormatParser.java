@@ -119,7 +119,9 @@ public class JStackTextualFormatParser {
     if (props.get(COUNT) != null) {
       mdStr.append(" " + COUNT + "=").append(props.get(COUNT));
     }
-    if (props.get(DAEMON) != null) {
+    // the marker means "is a daemon", so test the value: sources that store a real Boolean also
+    // store daemon=false, and presence alone would render those as daemons
+    if (Boolean.TRUE.equals(props.get(DAEMON))) {
       mdStr.append(" " + DAEMON);
     }
     if (props.get(PRIO) != null) {

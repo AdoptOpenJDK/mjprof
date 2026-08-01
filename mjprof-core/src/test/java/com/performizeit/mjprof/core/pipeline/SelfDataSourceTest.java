@@ -13,6 +13,8 @@ import java.lang.management.ManagementFactory;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -94,13 +96,57 @@ class SelfDataSourceTest {
     Assumptions.assumeTrue(ManagementFactory.getThreadMXBean().isThreadCpuTimeSupported(),
         "this JVM does not support per-thread CPU time");
 
-    // Timing-dependent in principle, but not flaky in practice: by the time this line runs, the
-    // test thread itself has necessarily executed everything above it (JUnit dispatch, the
-    // assumption check, ManagementFactory lookups), which burns measurable CPU. The snapshot
-    // always finds at least the current thread with cpu_ns > 0.
+    // fromSelfWithCpu(1, 0) measures an interval of essentially zero length, so cpu_ns is present
+    // but near zero — never a cumulative since-thread-start value. Only presence and sanity are
+    // asserted here; the windowed semantics are pinned by cpuNsIsPerIntervalNotSinceThreadStart.
     List<ThreadInfo> threads = Pipeline.fromSelfWithCpu(1, 0).threads();
-    assertTrue(threads.stream().anyMatch(t -> t.cpuNs() != null && t.cpuNs() > 0),
-        "expected at least one thread with positive cpu_ns");
+    assertTrue(threads.stream().anyMatch(t -> t.cpuNs() != null),
+        "expected at least one thread carrying cpu_ns");
+    assertTrue(threads.stream().allMatch(t -> t.cpuNs() == null || t.cpuNs() >= 0),
+        "cpu_ns must never be negative");
+  }
+
+  @Test
+  void cpuNsIsPerIntervalNotSinceThreadStart() throws InterruptedException {
+    Assumptions.assumeTrue(ManagementFactory.getThreadMXBean().isThreadCpuTimeSupported(),
+        "this JVM does not support per-thread CPU time");
+
+    AtomicBoolean run = new AtomicBoolean(true);
+    Thread busy = new Thread(() -> {
+      long sink = 0;
+      while (run.get()) {
+        sink += ThreadLocalRandom.current().nextLong();   // tight loop, real CPU
+      }
+      if (sink == Long.MIN_VALUE) {
+        System.out.print("");   // keep the loop from being optimised away entirely
+      }
+    }, "cpu-burner");
+    busy.setDaemon(true);
+    busy.start();
+    try {
+      Thread.sleep(500);   // build up lifetime CPU that a cumulative counter would report
+
+      long startNs = System.nanoTime();
+      List<ThreadInfo> merged = Pipeline.fromSelfWithCpu(5, 20).merge(Attr.TID).threads();
+      long windowNs = System.nanoTime() - startNs;
+
+      ThreadInfo burner = merged.stream()
+          .filter(t -> "cpu-burner".equals(t.name()))
+          .findFirst().orElseThrow();
+      assertNotNull(burner.cpuNs(), "the busy thread should carry cpu_ns");
+
+      // A per-interval delta summed over the window cannot exceed the window itself, let alone the
+      // window times every core. Five samples of a cumulative counter (5 x ~0.5s+ of lifetime CPU)
+      // blows straight through this bound.
+      long ceiling = windowNs * Runtime.getRuntime().availableProcessors();
+      assertTrue(burner.cpuNs() <= ceiling,
+          "merged cpu_ns " + burner.cpuNs() + " exceeds the sampling window " + windowNs
+              + "ns x " + Runtime.getRuntime().availableProcessors()
+              + " cores - looks like a cumulative counter, not a per-interval delta");
+    } finally {
+      run.set(false);
+      busy.join(2000);
+    }
   }
 
   @Test
@@ -119,6 +165,24 @@ class SelfDataSourceTest {
 
     assertEquals(2, Pipeline.fromFile(file.toString()).collect().size(),
         "two written snapshots must read back as two dumps");
+  }
+
+  @Test
+  void aNonDaemonThreadSurvivesATextRoundTripAsNonDaemon(@TempDir Path dir) throws IOException {
+    // the serializer used to write the daemon marker on presence of the property, so a source
+    // storing a real boolean rendered daemon=false threads as daemons
+    Assumptions.assumeFalse(Thread.currentThread().isDaemon(),
+        "this test needs a non-daemon subject thread");
+    String thisThread = Thread.currentThread().getName();
+
+    Path file = dir.resolve("self.txt");
+    Files.writeString(file, Pipeline.fromSelf().collectOne().toString() + "\n");
+
+    ThreadInfo me = Pipeline.fromFile(file.toString())
+        .contains(Attr.NAME, thisThread)
+        .threads().stream().findFirst().orElseThrow();
+
+    assertFalse(me.daemon(), "'" + thisThread + "' is not a daemon thread");
   }
 
   @Test

@@ -1,11 +1,11 @@
 ---
 # mjprof-iuex
 title: 'Task 6: demo workload, READMEs, docs'
-status: todo
+status: completed
 type: task
 priority: normal
 created_at: 2026-07-31T13:28:48Z
-updated_at: 2026-07-31T13:29:38Z
+updated_at: 2026-08-01T07:20:44Z
 parent: mjprof-tdxa
 blocked_by:
     - mjprof-9yi6
@@ -13,8 +13,16 @@ blocked_by:
 
 Plan Task 6.
 
-- [ ] DemoWorkload: busy/blocked/waiting daemon threads so endpoints show something
-- [ ] VERIFY the states actually appear by running the app and hitting every endpoint; record real output
-- [ ] mjprof-demo/README.md, root README pointer, CLAUDE.md modules section
-- [ ] Leave CLAUDE.md's final beans prime line untouched
-- [ ] Commit
+- [x] DemoWorkload: daemon threads only, volatile stop flag, @PreDestroy interrupts, JIT-proof busy loop, demo.busy-threads configurable
+- [x] Live verification: BLOCKED appeared (demo-lock-holder, demo-blocked-1); /hot ranked demo-busy-1/2 first (~51.8s vs ~2.25s)
+- [x] mjprof-demo/README.md with an endpoint-to-capability table
+- [x] Root README and CLAUDE.md cover fromSelf and the third module; beans prime line untouched
+- [x] All six carried-over minors fixed
+- [x] 140 tests (107 core, 19 cli, 14 demo)
+- [x] Commit c006484
+
+## Summary of Changes
+
+The demo now has threads worth looking at, and the docs describe what was actually observed rather than what was hoped for — the implementer ran the app and recorded real endpoint output before writing the claims.
+
+Reviewer confirmed no deadlock is possible (single lock, no nesting), that blocked threads park rather than spin, that the anti-dead-code-elimination idiom in the busy loop genuinely holds, and that DemoWorkload stays out of the @WebMvcTest slice so the endpoint tests do not depend on demo threads existing.
